@@ -1,0 +1,17 @@
+{
+  "name": "3jstest",
+  "version": "1.0.0",
+  "description": "Testing this stuff",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "parcel": "^2.12.0"
+  },
+  "dependencies": {
+    "three": "^0.164.1"
+  }
+}
