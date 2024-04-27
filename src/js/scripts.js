@@ -40,6 +40,9 @@ const sphereMaterial = new THREE.MeshBasicMaterial({
     wireframe: true
 })
 const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
+sphere.position.x = 6;
+sphere.position.y = 5;
+sphere.position.z = 8;
 
 plane.rotation.x = -0.5 * Math.PI;
 //plane.rotateX(-0.5 * Math.PI);
