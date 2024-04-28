@@ -5,35 +5,39 @@ export default class LightingManager{
     constructor(sceneRenderer){
         let self = this;
         this.sceneRenderer = sceneRenderer;
-        this.selectedLightName = '';
+        this.selectedLightNames = [];
         this.lights = [];
     }
     
-    setUpSpotLight(isSelected){
-        const spotLight = new THREE.SpotLight(0xFFFFFF);
+    setUpSpotLight(isSelected, x, y, z, intensity){
+        const spotLight = new THREE.SpotLight(0xFFFFFF,intensity);
         let lightName = 'spotLight';
+        spotLight.position.set(x, y, z);
+        spotLight.angle = 0.4;
+        const spotlightHelper = new THREE.SpotLightHelper(spotLight);
+        this.sceneRenderer.addToScene(spotlightHelper);
         this.sceneRenderer.addToScene(spotLight);
-        this.lights.push({name:lightName, object: spotLight})
+        this.lights.push({name:lightName, object: spotLight, helper:spotlightHelper})
         if(isSelected){
-            this.selectedLightName = lightName;
+            this.selectedLightNames.push(lightName);
         }
     }
     
-    setUpAmbientLight(isSelected){
-        const ambientLight = new THREE.AmbientLight(0xFFFFFF);
+    setUpAmbientLight(isSelected, intensity){
+        const ambientLight = new THREE.AmbientLight(0xFFFFFF, intensity);
         let lightName = 'ambientLight';
         this.sceneRenderer.addToScene(ambientLight);
-        this.lights.push({name:lightName, object: ambientLight})
+        this.lights.push({name:lightName, object: ambientLight, helper:null})
         if(isSelected){
-            this.selectedLightName = lightName;
+            this.selectedLightNames.push(lightName);
         }
         return ambientLight;
     }
     
-    setUpDirectionalLight(isSelected){
-        const directionalLight = new THREE.DirectionalLight(0xFFFFFF, 8);
+    setUpDirectionalLight(isSelected, x, y, z, intensity){
+        const directionalLight = new THREE.DirectionalLight(0xFFFFFF, intensity);
         let lightName = 'directionalLight';
-        directionalLight.position.set(-30, 50, 0);
+        directionalLight.position.set(x, y, z);
         directionalLight.shadow.camera.bottom = -10.5;
         const directionalLightHelper = new THREE.DirectionalLightHelper(directionalLight,5);
         const directionalLightCameraHelper = new THREE.CameraHelper(directionalLight.shadow.camera);
@@ -41,9 +45,9 @@ export default class LightingManager{
         this.sceneRenderer.addToScene(directionalLightHelper);
         this.sceneRenderer.addToScene(directionalLightCameraHelper);
     
-        this.lights.push({name:lightName, object: directionalLight})
+        this.lights.push({name:lightName, object: directionalLight, helper: directionalLightHelper})
         if(isSelected){
-            this.selectedLightName = lightName;
+            this.selectedLightNames.push(lightName);
         }
         return directionalLight;
     }

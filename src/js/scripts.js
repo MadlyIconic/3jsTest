@@ -2,7 +2,9 @@ import * as THREE from 'three';
 import * as dat from 'dat.gui'; 
 import SceneRenderer from './sceneRenderer';
 import LightingManager from './lightingManager';
-const sceneRenderer = new SceneRenderer();
+import nebula from '../img/nebula.jpg'
+import stars from '../img/stars.jpg'
+const sceneRenderer = new SceneRenderer(nebula, stars);
 const lightingManager = new LightingManager(sceneRenderer);
 //sceneRenderer.getScene();
 const sphereRadius = 4;
@@ -10,6 +12,9 @@ const fov = 75;
 const perspectiveRatio = window.innerWidth/window.innerHeight;
 const near = 0.1;
 const far = 100;
+const ambientLightIntinsity = 0.01;
+const spotLightIntinsity = 2000;
+const directionalLightIntinsity = 1;
 
 const gridHelper = new THREE.GridHelper(30,10)
 const camera = new THREE.PerspectiveCamera(
@@ -24,7 +29,10 @@ const options = {
     sphereColor: '#ff00ff',
     wireframe: false,
     speed: 0.02,
-    shadowmap: true
+    shadowmap: true,
+    angle: 0.05,
+    penumbra: 0,
+    intensity: 200
 }
 
 
@@ -42,14 +50,14 @@ const box = new THREE.Mesh(boxGeometry, boxMaterial);
 
 const planeGeometry = new THREE.PlaneGeometry(30,30);
 const planeMaterial = new THREE.MeshStandardMaterial({
-    color:0xaaaeFF,
+    color: 0xFFFFFF,
     side: THREE.DoubleSide
 });
 const plane = new THREE.Mesh(planeGeometry, planeMaterial);
 
 const sphereGeometry = new THREE.SphereGeometry(sphereRadius,50,50);
 const sphereMaterial = new THREE.MeshStandardMaterial({
-    wireframe: options.shadowmap
+    wireframe: options.wireframe
 })
 const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
 sphere.position.set(-10, 10, 0);
@@ -63,7 +71,10 @@ gui.addColor(options, 'sphereColor').onChange(function(e){
 gui.add(options, 'wireframe').onChange(function(e){
     sphere.material.wireframe = e;  
 });
-gui.add(options, 'speed',0,0.1);
+gui.add(options, 'speed',0 , 0.1);
+gui.add(options, 'angle',0 , 1);
+gui.add(options, 'penumbra',0 , 1);
+gui.add(options, 'intensity',0 , spotLightIntinsity);
 gui.add(options, 'shadowmap').onChange(function(e){
     sceneRenderer.renderer.shadowMap.enabled = e;
 })
@@ -81,29 +92,27 @@ sceneRenderer.addToScene(gridHelper);
 
 
 
-lightingManager.setUpAmbientLight();
-lightingManager.setUpDirectionalLight(true);
-lightingManager.setUpSpotLight();
-const selectedLightName = lightingManager.selectedLightName;
+lightingManager.setUpAmbientLight(true, ambientLightIntinsity);
+//lightingManager.setUpDirectionalLight(true, -30, 50, 0, directionalLightIntinsity);
+lightingManager.setUpSpotLight(true, -50, 50, 0, spotLightIntinsity);
+
 function animate(time){
-    console.log('selectedLightName', selectedLightName);
     box.rotation.x = time / 1000;
     box.rotation.y = time / 1000;
-    renderObjects(selectedLightName);
+    renderObjects();
     sceneRenderer.renderScene(camera);
 }
 
-function renderObjects(selectedLight){
-    let light = lights.find((element) => element.name == selectedLight);
-    if(light){
-        sceneRenderer.setupShadows(options, light.object, sphere, plane);
-    }
-    
+function renderObjects(){
+    let lightsWithShadow = lights.filter((light) => light.object.shadow);
+    sceneRenderer.setupShadows(options, lightsWithShadow, sphere, plane, box);
     step += options.speed;
+    
     sphere.position.y = 10 *Math.abs(Math.sin(step));
     sphere.material.wireframe = options.wireframe;
     sphere.material.color.set(options.sphereColor);
     sphereMaterial.wireframe =  options.wireframe;
+    boxMaterial.wireframe =  options.wireframe;
 }
 
 sceneRenderer.setUpRenderer(camera);

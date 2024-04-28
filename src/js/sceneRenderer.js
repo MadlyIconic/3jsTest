@@ -3,11 +3,22 @@ import { OrbitControls } from 'three/examples/jsm/Addons.js';
 
 export default class SceneRenderer {
     
-    constructor(){
+    constructor(nebula, stars){
         let self = this;
         this.renderer = new THREE.WebGLRenderer();
         document.body.appendChild(this.renderer.domElement);
         this.scene = new THREE.Scene();
+        //this.scene.fog = new THREE.FogExp2(0xFFFFFF, 0.01);
+        //const textureLoader = new THREE.TextureLoader();
+        const cubeTextureLoader = new THREE.CubeTextureLoader();
+        this.scene.background = cubeTextureLoader.load([
+            nebula,
+            nebula,
+            stars,
+            stars,
+            stars,
+            stars,
+        ])
     }
         
     setUpRenderer(camera){
@@ -28,9 +39,19 @@ export default class SceneRenderer {
         this.scene.add(obj);
     }
     
-    setupShadows(options, directionalLight, sphere, plane){
+    setupShadows(options, lights, sphere, plane, box){
         this.renderer.shadowMap.enabled = options.shadowmap;
-        directionalLight.castShadow = options.shadowmap;    
+        lights.forEach(light => {
+            if(light.name == 'spotLight'){
+                light.object.angle = options.angle;
+                light.object.penumbra = options.penumbra;
+                light.object.intensity = options.intensity;
+                light.helper.update();
+            }
+            light.object.castShadow = options.shadowmap;        
+        });
+        
+        box.castShadow = options.shadowmap;
         sphere.castShadow = options.shadowmap;
         plane.receiveShadow = options.shadowmap;    
     }
