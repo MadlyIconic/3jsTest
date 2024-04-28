@@ -1,14 +1,15 @@
 import * as THREE from 'three';
 import * as dat from 'dat.gui'; 
-import sceneRenderer from './sceneRenderer';
-import lightingManager from './lightingManager';
-
-sceneRenderer.getScene();
+import SceneRenderer from './sceneRenderer';
+import LightingManager from './lightingManager';
+const sceneRenderer = new SceneRenderer();
+const lightingManager = new LightingManager(sceneRenderer);
+//sceneRenderer.getScene();
 const sphereRadius = 4;
-const fov = 45;
+const fov = 75;
 const perspectiveRatio = window.innerWidth/window.innerHeight;
 const near = 0.1;
-const far = 1000;
+const far = 100;
 
 const gridHelper = new THREE.GridHelper(30,10)
 const camera = new THREE.PerspectiveCamera(
@@ -29,8 +30,7 @@ const options = {
 
 let step = 0;
 let boxColor = 0x00FF00
-
-sceneRenderer.setUpRenderer(camera);
+let lights = lightingManager.lights;
 
 const axesHelper = new THREE.AxesHelper(3);
 
@@ -69,9 +69,9 @@ gui.add(options, 'shadowmap').onChange(function(e){
 })
 box.rotation.x = 5;
 box.rotation.y = 5;
-camera.position.z = 50;
-camera.position.y = 50;
-camera.position.x = 0;
+camera.position.z = 40;
+camera.position.y = 30;
+camera.position.x = -20;
 
 sceneRenderer.addToScene(axesHelper);
 sceneRenderer.addToScene(box);
@@ -82,17 +82,23 @@ sceneRenderer.addToScene(gridHelper);
 
 
 lightingManager.setUpAmbientLight();
-directionalLight = lightingManager.setUpDirectionalLight();
-
+lightingManager.setUpDirectionalLight(true);
+lightingManager.setUpSpotLight();
+const selectedLightName = lightingManager.selectedLightName;
 function animate(time){
+    console.log('selectedLightName', selectedLightName);
     box.rotation.x = time / 1000;
     box.rotation.y = time / 1000;
-    renderObjects();
+    renderObjects(selectedLightName);
     sceneRenderer.renderScene(camera);
 }
 
-function renderObjects(){
-    sceneRenderer.setupShadows(options, directionalLight, sphere, plane);
+function renderObjects(selectedLight){
+    let light = lights.find((element) => element.name == selectedLight);
+    if(light){
+        sceneRenderer.setupShadows(options, light.object, sphere, plane);
+    }
+    
     step += options.speed;
     sphere.position.y = 10 *Math.abs(Math.sin(step));
     sphere.material.wireframe = options.wireframe;
@@ -100,6 +106,7 @@ function renderObjects(){
     sphereMaterial.wireframe =  options.wireframe;
 }
 
-sceneRenderer.setUpAnimationLoop(animate);
+sceneRenderer.setUpRenderer(camera);
+sceneRenderer.renderer.setAnimationLoop(animate);
 
 

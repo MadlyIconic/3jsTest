@@ -1,44 +1,51 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/Addons.js';
 
-const renderer = new THREE.WebGLRenderer();
-const scene = new THREE.Scene();
-
-function setUpRenderer(camera){
-    document.body.appendChild(renderer.domElement);
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    const orbit = new OrbitControls(camera,renderer.domElement);
-    orbit.update();
-}
-
-function renderScene(camera){
-    renderer.render(scene,camera);
-}
-
-function getScene(){
-    console.log('Returning a previously created scene');
-    return scene;
-}
-
-function addToScene(obj){
-    scene.add(obj);
-}
-
-function setupShadows(options, directionalLight, sphere, plane){
-        renderer.shadowMap.enabled = options.shadowmap;
+export default class SceneRenderer {
+    
+    constructor(){
+        let self = this;
+        this.renderer = new THREE.WebGLRenderer();
+        document.body.appendChild(this.renderer.domElement);
+        this.scene = new THREE.Scene();
+    }
+        
+    setUpRenderer(camera){
+        this.renderer.setSize(window.innerWidth, window.innerHeight);
+        this.orbit = new OrbitControls(camera,this.renderer.domElement);
+        this.orbit.update();
+    }
+    
+    renderScene(camera){
+        this.renderer.render(this.scene,camera);
+    }
+    
+    getScene(){
+        return this.scene;
+    }
+    
+    addToScene(obj){
+        this.scene.add(obj);
+    }
+    
+    setupShadows(options, directionalLight, sphere, plane){
+        this.renderer.shadowMap.enabled = options.shadowmap;
         directionalLight.castShadow = options.shadowmap;    
         sphere.castShadow = options.shadowmap;
         plane.receiveShadow = options.shadowmap;    
+    }
+    
+    setUpAnimationLoop(animate){
+        renderer.setAnimationLoop(animate);
+    }
 }
 
-function setUpAnimationLoop(animate){
-    renderer.setAnimationLoop(animate);
-}
 
-exports.renderer = renderer;
-exports.setUpAnimationLoop = setUpAnimationLoop;
-exports.setUpRenderer = setUpRenderer;
-exports.renderScene = renderScene;
-exports.addToScene = addToScene;
-exports.getScene = getScene;
-exports.setupShadows = setupShadows;
+
+// exports.renderer = renderer;
+// exports.setUpAnimationLoop = setUpAnimationLoop;
+// exports.setUpRenderer = setUpRenderer;
+// exports.renderScene = renderScene;
+// exports.addToScene = addToScene;
+// exports.getScene = getScene;
+// exports.setupShadows = setupShadows;
