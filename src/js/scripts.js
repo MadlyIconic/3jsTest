@@ -1,29 +1,16 @@
 import * as THREE from 'three';
 import * as dat from 'dat.gui'; 
-import { OrbitControls } from 'three/examples/jsm/Addons.js';
-import { DirectionalLightHelper } from 'three';
+import sceneRenderer from './sceneRenderer';
+import lightingManager from './lightingManager';
+
+sceneRenderer.getScene();
 const sphereRadius = 4;
 const fov = 45;
 const perspectiveRatio = window.innerWidth/window.innerHeight;
 const near = 0.1;
 const far = 1000;
-const renderer = new THREE.WebGLRenderer();
-renderer.shadowMap.enabled = true;
-let step = 0;
 
-const gui = new dat.GUI();
-
-const options = {
-    sphereColor: '#ffea00',
-    wireframe: true,
-    speed: 0.01,
-    shadowmap: true
-}
-renderer.setSize(window.innerWidth, window.innerHeight);
-
-document.body.appendChild(renderer.domElement);
-
-const scene = new THREE.Scene();
+const gridHelper = new THREE.GridHelper(30,10)
 const camera = new THREE.PerspectiveCamera(
     fov,
     perspectiveRatio,
@@ -31,38 +18,43 @@ const camera = new THREE.PerspectiveCamera(
     far
 );
 
-const orbit = new OrbitControls(camera,renderer.domElement);
+const gui = new dat.GUI();
+const options = {
+    sphereColor: '#ff00ff',
+    wireframe: false,
+    speed: 0.02,
+    shadowmap: true
+}
+
+
+let step = 0;
+let boxColor = 0x00FF00
+
+sceneRenderer.setUpRenderer(camera);
+
 const axesHelper = new THREE.AxesHelper(3);
 
 const boxGeometry = new THREE.BoxGeometry();
 const boxMaterial = new THREE.MeshStandardMaterial({
-    color:0x00FF00
+    color: boxColor
 }) 
 const box = new THREE.Mesh(boxGeometry, boxMaterial);
 
 const planeGeometry = new THREE.PlaneGeometry(30,30);
 const planeMaterial = new THREE.MeshStandardMaterial({
-    color:0xFFFFFF,
+    color:0xaaaeFF,
     side: THREE.DoubleSide
 });
 const plane = new THREE.Mesh(planeGeometry, planeMaterial);
 
 const sphereGeometry = new THREE.SphereGeometry(sphereRadius,50,50);
 const sphereMaterial = new THREE.MeshStandardMaterial({
-    color:0x0000FF,
-    wireframe: false
+    wireframe: options.shadowmap
 })
 const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
-sphere.position.x = 0;
-sphere.position.y = sphereRadius;
-sphere.position.z = 8;
-sphere.castShadow = true;
+sphere.position.set(-10, 10, 0);
 
-plane.rotation.x = -0.5 * Math.PI;
-//plane.rotateX(-0.5 * Math.PI);
-plane.receiveShadow = true;
-const gridHelper = new THREE.GridHelper(30,10)
-
+plane.rotateX(-0.5 * Math.PI);
 
 
 gui.addColor(options, 'sphereColor').onChange(function(e){
@@ -73,36 +65,41 @@ gui.add(options, 'wireframe').onChange(function(e){
 });
 gui.add(options, 'speed',0,0.1);
 gui.add(options, 'shadowmap').onChange(function(e){
-    renderer.shadowMap.enabled = e;  
+    sceneRenderer.renderer.shadowMap.enabled = e;
 })
 box.rotation.x = 5;
 box.rotation.y = 5;
-camera.position.z = -10;
-camera.position.y = 30;
-camera.position.x = 30;
-orbit.update();
-scene.add(axesHelper);
-scene.add(box);
-scene.add(sphere);
-scene.add(plane);
-scene.add(gridHelper);
+camera.position.z = 50;
+camera.position.y = 50;
+camera.position.x = 0;
 
-const ambientLight = new THREE.AmbientLight(0xFFFFFF);
-const directionalLight = new THREE.DirectionalLight(0xFFFFFF, 8);
-const directionalLightHelper = new DirectionalLightHelper(directionalLight,5);
-const directionalLightCameraHelper = new THREE.CameraHelper(directionalLight.shadow.camera);
-directionalLight.position.set(-30, 20, 0);
-directionalLight.castShadow = true;
-scene.add(ambientLight);
-scene.add(directionalLight);
-scene.add(directionalLightHelper);
-scene.add(directionalLightCameraHelper);
+sceneRenderer.addToScene(axesHelper);
+sceneRenderer.addToScene(box);
+sceneRenderer.addToScene(sphere);
+sceneRenderer.addToScene(plane);
+sceneRenderer.addToScene(gridHelper);
+
+
+
+lightingManager.setUpAmbientLight();
+directionalLight = lightingManager.setUpDirectionalLight();
+
 function animate(time){
     box.rotation.x = time / 1000;
     box.rotation.y = time / 1000;
-    step += options.speed;
-    sphere.position.y = 10 *Math.abs(Math.sin(step));
-    renderer.render(scene,camera);
+    renderObjects();
+    sceneRenderer.renderScene(camera);
 }
 
-renderer.setAnimationLoop(animate);
+function renderObjects(){
+    sceneRenderer.setupShadows(options, directionalLight, sphere, plane);
+    step += options.speed;
+    sphere.position.y = 10 *Math.abs(Math.sin(step));
+    sphere.material.wireframe = options.wireframe;
+    sphere.material.color.set(options.sphereColor);
+    sphereMaterial.wireframe =  options.wireframe;
+}
+
+sceneRenderer.setUpAnimationLoop(animate);
+
+
