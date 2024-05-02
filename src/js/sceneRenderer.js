@@ -8,17 +8,15 @@ export default class SceneRenderer {
         this.renderer = new THREE.WebGLRenderer();
         document.body.appendChild(this.renderer.domElement);
         this.scene = new THREE.Scene();
-        //this.scene.fog = new THREE.FogExp2(0xFFFFFF, 0.01);
-        //const textureLoader = new THREE.TextureLoader();
         const cubeTextureLoader = new THREE.CubeTextureLoader();
-        this.scene.background = cubeTextureLoader.load([
-            nebula,
-            nebula,
-            stars,
-            stars,
-            stars,
-            stars,
-        ])
+        // this.scene.background = cubeTextureLoader.load([
+        //     nebula,
+        //     nebula,
+        //     stars,
+        //     stars,
+        //     stars,
+        //     stars,
+        // ]);
     }
         
     setUpRenderer(camera){
@@ -60,13 +58,3 @@ export default class SceneRenderer {
         renderer.setAnimationLoop(animate);
     }
 }
-
-
-
-// exports.renderer = renderer;
-// exports.setUpAnimationLoop = setUpAnimationLoop;
-// exports.setUpRenderer = setUpRenderer;
-// exports.renderScene = renderScene;
-// exports.addToScene = addToScene;
-// exports.getScene = getScene;
-// exports.setupShadows = setupShadows;

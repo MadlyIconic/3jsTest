@@ -1,0 +1,10 @@
+{
+    'testValue': 5,
+    'sphereColor': '#ff00ff',
+    'wireframe': false,
+    'speed': 0.02,
+    'shadowmap': true,
+    'angle': 0.05,
+    'penumbra': 0,
+    'intensity': 200
+}

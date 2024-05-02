@@ -9,11 +9,11 @@ export default class LightingManager{
         this.lights = [];
     }
     
-    setUpSpotLight(isSelected, x, y, z, intensity){
+    setUpSpotLight(isSelected, x, y, z, intensity, angle){
         const spotLight = new THREE.SpotLight(0xFFFFFF,intensity);
         let lightName = 'spotLight';
         spotLight.position.set(x, y, z);
-        spotLight.angle = 0.4;
+        spotLight.angle = angle;
         const spotlightHelper = new THREE.SpotLightHelper(spotLight);
         this.sceneRenderer.addToScene(spotlightHelper);
         this.sceneRenderer.addToScene(spotLight);
