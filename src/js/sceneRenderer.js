@@ -3,12 +3,13 @@ import { OrbitControls } from 'three/examples/jsm/Addons.js';
 
 export default class SceneRenderer {
     
-    constructor(nebula, stars){
+    constructor(width, height, nebula, stars){
         let self = this;
-        this.renderer = new THREE.WebGLRenderer();
+        this.renderer = new THREE.WebGLRenderer(window.devicePixelRatio);
+        this.renderer.setSize(width, height);
         document.body.appendChild(this.renderer.domElement);
         this.scene = new THREE.Scene();
-        const cubeTextureLoader = new THREE.CubeTextureLoader();
+        //const cubeTextureLoader = new THREE.CubeTextureLoader();
         // this.scene.background = cubeTextureLoader.load([
         //     nebula,
         //     nebula,
@@ -20,7 +21,6 @@ export default class SceneRenderer {
     }
         
     setUpRenderer(camera){
-        this.renderer.setSize(window.innerWidth, window.innerHeight);
         this.orbit = new OrbitControls(camera,this.renderer.domElement);
         this.orbit.update();
     }

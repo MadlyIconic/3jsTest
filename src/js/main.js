@@ -16,7 +16,7 @@ export default class Main{
         this.axesHelper = new THREE.AxesHelper(3);
         this.gui = new dat.GUI();
         this.gridHelper = new THREE.GridHelper(gridsize, griddivisions)
-        this.sceneRenderer = new SceneRenderer(nebula, stars);
+        this.sceneRenderer = new SceneRenderer(window.innerWidth, window.innerHeight, nebula, stars);
         this.lightingManager = new LightingManager(this.sceneRenderer);
         this.boxBuilder = new BoxBuilder();
         this.cameraBuilder = new CameraBuilder();

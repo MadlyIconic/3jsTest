@@ -4,13 +4,14 @@
   "description": "Testing this stuff",
   "main": "index.js",
   "scripts": {
-    "start": "parcel",
-    "build": "parcel build",
+    "dev": "vite ./src",
+    "build": "vite build ./src",
+    "preview": "vite preview",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "devDependencies": {
     "buffer": "^6.0.3",
-    "parcel": "latest"
+    "vite": "^5.2.11"
   },
   "author": "",
   "license": "ISC",

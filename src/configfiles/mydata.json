@@ -2,12 +2,12 @@
     "testValue": 5,
     "sphereColor": "#ff00ff",
     "wireframe": false,
-    "speed": 0.02,
+    "speed": 0.03,
     "shadowmap": true,
-    "angle": 0.05,
-    "penumbra": 0,
-    "intensity": 200,
+    "angle": 0.3,
+    "penumbra": 1,
+    "intensity": 2000,
     "fov": 75,
     "near":0.1,
-    "far": 200
+    "far": 2000
 }

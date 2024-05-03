@@ -40,6 +40,7 @@ box.rotation.y = 5;
 camera.position.z = 40;
 camera.position.y = 30;
 camera.position.x = -20;
+camera.lookAt(0,0,0);
 
 main.sceneRenderer.addToScene(main.axesHelper);
 main.sceneRenderer.addToScene(box);
