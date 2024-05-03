@@ -1,4 +1,4 @@
-import Main from "./main";
+import Main from "./js/main";
 let step = 0;
 const perspectiveRatio = window.innerWidth/window.innerHeight;
 const main = new Main();
