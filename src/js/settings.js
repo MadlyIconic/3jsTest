@@ -10,7 +10,10 @@ export default class Settings{
             shadowmap: mydatajson.shadowmap,
             angle: mydatajson.angle,
             penumbra: mydatajson.penumbra,
-            intensity: mydatajson.intensity
+            intensity: mydatajson.intensity,
+            fov: mydatajson.fov,
+            near: mydatajson.near,
+            far: mydatajson.far
         }
 
         if(debug){
