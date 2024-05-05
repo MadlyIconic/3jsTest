@@ -23,6 +23,8 @@ export default class Main{
         this.planeBuilder = new PlaneBuilder();
         this.sphereBuilder = new SphereBuilder();
         this.settings = new Settings(true);
+        Promise.resolve(this.settings.loadConfig());
+        console.log('In main:', this.settings.options);
     
     }
 }
