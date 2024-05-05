@@ -1,23 +1,27 @@
+
+import EventDrivenObject from "./eventDrivenObject";
 import { load } from "./load";
 
-export default class Settings{
+export default class Settings extends EventDrivenObject {
 
     constructor(debug){
+        super();
+        self = this;
+        this.events = {};
+        this.registerEvent('loadconfig');
         this.options = {};
-        
+        this.configLoaded = false;
+        Promise.resolve(this.loadConfig()).then(
+            function(value){
+                self.options = value;
+                self.configLoaded = true;
+                self.dispatchEvent('loadconfig');
+            }
+        );
     }
 
     async loadConfig(){
-        let localoptions = {};
-        let mydatajson = load('../configfiles/mydata.json', this.populateOptions);
-        
-        Promise.resolve(mydatajson.then(function(data){
-            localoptions = data
-            return localoptions;
-        })).then(value => {
-            this.options = value;
-            console.log(value);
-        })
+        return load('../configfiles/mydata.json', this.populateOptions);
     }
 
     populateOptions = function(localoptions){
@@ -34,6 +38,4 @@ export default class Settings{
             far: mydatajson.far
         }
     }
-
-
 }
