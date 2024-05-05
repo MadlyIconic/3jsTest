@@ -4,14 +4,14 @@ import { load } from "./load";
 
 export default class Settings extends EventDrivenObject {
 
-    constructor(debug){
+    constructor(configFile){
         super();
         self = this;
         this.events = {};
         this.registerEvent('loadconfig');
         this.options = {};
         this.configLoaded = false;
-        Promise.resolve(this.loadConfig()).then(
+        Promise.resolve(this.loadConfig(configFile)).then(
             function(value){
                 self.options = value;
                 self.configLoaded = true;
@@ -20,8 +20,8 @@ export default class Settings extends EventDrivenObject {
         );
     }
 
-    async loadConfig(){
-        return load('../configfiles/mydata.json', this.populateOptions);
+    async loadConfig(configFile){
+        return load(configFile, this.populateOptions);
     }
 
     populateOptions = function(localoptions){

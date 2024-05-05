@@ -2,8 +2,9 @@ import Main from "./js/main";
 let step = 0;
 const perspectiveRatio = window.innerWidth/window.innerHeight;
 
-const main = new Main();
-main.addEventListener('configloaded', function () {
+const main = new Main('../configfiles/mydata.json');
+
+let mainFunction = function () {
     console.log('config loaded', main.options);
     const options = main.options;
 
@@ -79,6 +80,7 @@ main.addEventListener('configloaded', function () {
     main.sceneRenderer.setUpRenderer(camera);
     main.sceneRenderer.renderer.setAnimationLoop(animate);
 
-});
+};
 
 
+main.addEventListener('configloaded', mainFunction);

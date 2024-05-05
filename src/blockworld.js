@@ -1,8 +1,5 @@
 import Main from "./js/main";
-
-const perspectiveRatio = window.innerWidth/window.innerHeight;
-const main = new Main();
+const main = new Main('../configfiles/blockworld.json');
 main.addEventListener('configloaded', function () {
     console.log('config loaded', main.options);
-
 });

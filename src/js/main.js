@@ -12,29 +12,28 @@ import Settings from './settings';
 import EventDrivenObject from './eventDrivenObject';
 
 export default class Main extends EventDrivenObject{
-    constructor(gridsize = 30, griddivisions = 10)
+    constructor(configFile, gridsize = 30, griddivisions = 10)
     {
         super();
         this.events = {};
         this.registerEvent('configloaded');
         let self = this;
-        this.settings = new Settings(true);
-        this.settings.addEventListener('loadconfig', function () {
-            self.options = self.settings.options;
-            console.log('Data is loaded!');
-            self.dispatchEvent('configloaded');
-          });
+        this.sceneRenderer = new SceneRenderer(window.innerWidth, window.innerHeight, nebula, stars);
+        this.settings = new Settings(configFile);
         this.options = {};
         this.axesHelper = new THREE.AxesHelper(3);
         this.gui = new dat.GUI();
         this.gridHelper = new THREE.GridHelper(gridsize, griddivisions)
-        this.sceneRenderer = new SceneRenderer(window.innerWidth, window.innerHeight, nebula, stars);
         this.lightingManager = new LightingManager(this.sceneRenderer);
         this.boxBuilder = new BoxBuilder();
         this.cameraBuilder = new CameraBuilder();
         this.planeBuilder = new PlaneBuilder();
         this.sphereBuilder = new SphereBuilder();
-        
+        this.settings.addEventListener('loadconfig', function () {
+            self.options = self.settings.options;
+            console.log('Data is loaded!');
+            self.dispatchEvent('configloaded');
+          });
         // this.settings.registerEvent('myevent');
         // this.settings.addEventListener('myevent', function () {console.log('This is the myevent listener!');});
         // this.settings.addEventListener('myevent', function () {console.log('This is another myevent listener!');});
