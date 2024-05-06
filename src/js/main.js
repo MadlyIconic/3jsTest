@@ -12,13 +12,13 @@ import Settings from './settings';
 import EventDrivenObject from './eventDrivenObject';
 
 export default class Main extends EventDrivenObject{
-    constructor(configFile, gridsize = 30, griddivisions = 10)
+    constructor(configFile, canvasName, gridsize = 30, griddivisions = 10)
     {
         super();
         this.events = {};
         this.registerEvent('configloaded');
         let self = this;
-        this.sceneRenderer = new SceneRenderer(window.innerWidth, window.innerHeight, nebula, stars);
+        this.sceneRenderer = new SceneRenderer(window.innerWidth, window.innerHeight, canvasName);
         this.settings = new Settings(configFile);
         this.options = {};
         this.axesHelper = new THREE.AxesHelper(3);
@@ -34,6 +34,7 @@ export default class Main extends EventDrivenObject{
             console.log('Data is loaded!');
             self.dispatchEvent('configloaded');
           });
+
         // this.settings.registerEvent('myevent');
         // this.settings.addEventListener('myevent', function () {console.log('This is the myevent listener!');});
         // this.settings.addEventListener('myevent', function () {console.log('This is another myevent listener!');});

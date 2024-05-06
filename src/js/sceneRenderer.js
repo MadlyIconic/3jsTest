@@ -3,30 +3,28 @@ import { OrbitControls } from 'three/examples/jsm/Addons.js';
 
 export default class SceneRenderer {
     
-    constructor(width, height, nebula, stars){
+    constructor(width, height, canvasName){
         let self = this;
-        this.renderer = new THREE.WebGLRenderer(window.devicePixelRatio);
+        this.orbit = null;
+        let myCanvas = document.getElementById(canvasName);
+        this.renderer = new THREE.WebGLRenderer({ antialias: true, canvas: myCanvas });
         this.renderer.setSize(width, height);
         document.body.appendChild(this.renderer.domElement);
         this.scene = new THREE.Scene();
-        //const cubeTextureLoader = new THREE.CubeTextureLoader();
-        // this.scene.background = cubeTextureLoader.load([
-        //     nebula,
-        //     nebula,
-        //     stars,
-        //     stars,
-        //     stars,
-        //     stars,
-        // ]);
     }
         
     setUpRenderer(camera){
-        this.orbit = new OrbitControls(camera,this.renderer.domElement);
-        this.orbit.update();
+        let self = this;
+        self.orbit = new OrbitControls(camera,this.renderer.domElement);
+        self.orbit.update();
     }
     
     renderScene(camera){
         this.renderer.render(this.scene,camera);
+    }
+
+    renderSetSize(width, height){
+        this.renderer.setSize(width, height);
     }
     
     getScene(){
@@ -44,14 +42,22 @@ export default class SceneRenderer {
                 light.object.angle = options.angle;
                 light.object.penumbra = options.penumbra;
                 light.object.intensity = options.intensity;
-                light.helper.update();
+                if(light.helper){
+                    light.helper.update();
+                }
+                
             }
             light.object.castShadow = options.shadowmap;        
         });
         
         box.castShadow = options.shadowmap;
-        sphere.castShadow = options.shadowmap;
-        plane.receiveShadow = options.shadowmap;    
+        if(sphere){
+            sphere.castShadow = options.shadowmap;
+        }
+        if(plane){
+            plane.receiveShadow = options.shadowmap;    
+        }
+        
     }
     
     setUpAnimationLoop(animate){

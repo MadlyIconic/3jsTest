@@ -1,4 +1,3 @@
-
 import EventDrivenObject from "./eventDrivenObject";
 import { load } from "./load";
 
@@ -21,21 +20,6 @@ export default class Settings extends EventDrivenObject {
     }
 
     async loadConfig(configFile){
-        return load(configFile, this.populateOptions);
-    }
-
-    populateOptions = function(localoptions){
-        localoptions = {
-            sphereColor: mydatajson.sphereColor,
-            wireframe: mydatajson.wireframe,
-            speed: mydatajson.speed,
-            shadowmap: mydatajson.shadowmap,
-            angle: mydatajson.angle,
-            penumbra: mydatajson.penumbra,
-            intensity: mydatajson.intensity,
-            fov: mydatajson.fov,
-            near: mydatajson.near,
-            far: mydatajson.far
-        }
+        return load(configFile);
     }
 }

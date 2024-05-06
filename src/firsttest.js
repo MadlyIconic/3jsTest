@@ -2,7 +2,7 @@ import Main from "./js/main";
 let step = 0;
 const perspectiveRatio = window.innerWidth/window.innerHeight;
 
-const main = new Main('../configfiles/mydata.json');
+const main = new Main('../configfiles/mydata.json', 'myCanvas');
 
 let mainFunction = function () {
     console.log('config loaded', main.options);
@@ -19,7 +19,7 @@ let mainFunction = function () {
 
     let lights = main.lightingManager.lights;
 
-    const box = main.boxBuilder.build(boxColor);
+    const box = main.boxBuilder.build(boxColor,"My Box", false, 0,0,0);
     const plane = main.planeBuilder.build(0xFFFFFF,100,100);
     const sphere = main.sphereBuilder.build(sphereRadius, 50, 50, options.wireframe);
     sphere.position.set(-10, 10, 0);
@@ -79,7 +79,17 @@ let mainFunction = function () {
 
     main.sceneRenderer.setUpRenderer(camera);
     main.sceneRenderer.renderer.setAnimationLoop(animate);
+    window.addEventListener('resize', () => {
+        camera.aspect = calculateAspect();
+        camera.updateProjectionMatrix();
+        main.sceneRenderer.renderSetSize(window.innerWidth, window.innerHeight);
+    })
+};
 
+
+function calculateAspect(){
+    const perspectiveRatio = window.innerWidth/window.innerHeight;
+    return perspectiveRatio;
 };
 
 
