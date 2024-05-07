@@ -1,6 +1,6 @@
 {
-    "worldwidth": 32,
-    "worldheight": 16,
+    "worldwidth": 128,
+    "worldheight": 48,
     "skycolor":"#80a0e0",
     "testValue": 5,
     "sphereColor": "#ff00ff",
@@ -13,7 +13,7 @@
     "fov": 75,
     "near":0.1,
     "far": 2000,
-    "directionalLightIntinsity":10.6,
-    "ambientLightIntinsity": 0.01,
+    "directionalLightIntinsity":0.6,
+    "ambientLightIntinsity": 1,
     "spotLightIntensity": 0.6
 }

@@ -3,6 +3,7 @@ import Main from "./js/main";
 import { World } from "./js/world";
 import Stats from 'three/examples/jsm/libs/stats.module.js';
 const stats = new Stats();
+
 document.body.append(stats.dom);
 const main = new Main('../configfiles/blockworld.json', 'myCanvas');
 main.addEventListener('configloaded', function () {
@@ -24,7 +25,6 @@ main.addEventListener('configloaded', function () {
     const boxMaterial = new THREE.MeshLambertMaterial({color: 0x00a0e0})
     world.generate(boxGeometry, boxMaterial);
 
-
     main.sceneRenderer.setUpRenderer(camera);
 
     let controls = main.sceneRenderer.orbit;
@@ -38,9 +38,10 @@ main.addEventListener('configloaded', function () {
     main.sceneRenderer.renderer.setAnimationLoop(animate);
     main.sceneRenderer.renderer.setClearColor(skyColor);
     main.lightingManager.setUpAmbientLight(true, ambientLightIntinsity);
-    main.lightingManager.setUpDirectionalLight(true, 10,10,1, directionalLightIntinsity);
-    main.lightingManager.setUpDirectionalLight(true, -1,1,-0.5, directionalLightIntinsity/2);
+    main.lightingManager.setUpDirectionalLight(true, 180,10,500, directionalLightIntinsity);
+    main.lightingManager.setUpDirectionalLight(true, 380,200,500, directionalLightIntinsity);
 
+    createUI(world);
     function animate(time){
         stats.update();
         renderObjects();
@@ -49,7 +50,7 @@ main.addEventListener('configloaded', function () {
 
     function renderObjects(){
         let lightsWithShadow = lights.filter((light) => light.object.shadow);
-        let theBlocks = main.sceneRenderer.scene.children.filter((e) => e.name == "TheBlocks");
+        let theBlocks = main.sceneRenderer.scene.children.filter((e) => !e.isLight);
         
         main.sceneRenderer.setupShadows(options, lightsWithShadow, null, null, theBlocks);
 
@@ -63,7 +64,30 @@ main.addEventListener('configloaded', function () {
 });
 
 
+function createUI(world){
+    const gui = main.gui;
+    gui.add(world.size, 'width',8 , 128, 1).name('Width').onChange(function(e){
+        world.generate();
+    });
+    gui.add(world.size, 'height',8 , 64, 1).name('Height').onChange(function(e){
+        world.generate();
+    });
 
+    const terrainFolder = gui.addFolder('Terrain');
+    terrainFolder.add(world.params.terrain, 'scale',10,100).name('Scale').onChange(function(e){
+        world.generate();
+    });
+    terrainFolder.add(world.params.terrain, 'magnitude',0,1).name('Magnitude').onChange(function(e){
+        world.generate();
+    });
+    terrainFolder.add(world.params.terrain, 'offset',0,1).name('Offset').onChange(function(e){
+        world.generate();
+    });
+    // gui.add(world, 'threshold',0 , 1).name('Noise').onChange(function(e){
+    //     world.generate();
+    // });
+    //gui.add(world, 'generate');
+}
 
 function calculateAspect(){
     const perspectiveRatio = window.innerWidth/window.innerHeight;
