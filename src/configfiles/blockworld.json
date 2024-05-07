@@ -1,6 +1,6 @@
 {
     "worldwidth": 128,
-    "worldheight": 48,
+    "worldheight": 32,
     "skycolor":"#80a0e0",
     "testValue": 5,
     "sphereColor": "#ff00ff",
@@ -13,7 +13,14 @@
     "fov": 75,
     "near":0.1,
     "far": 2000,
-    "directionalLightIntinsity":0.6,
+    "directionalLightIntinsity":5,
     "ambientLightIntinsity": 1,
-    "spotLightIntensity": 0.6
+    "spotLightIntensity": 0.6,
+    "params": {
+        "terrain":{
+            "scale": 80,
+            "magnitude": 0.2,
+            "offset": 0.7
+        }
+    }
 }

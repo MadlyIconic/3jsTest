@@ -10,17 +10,13 @@ export class World extends THREE.Group {
      * @param {*} main
      */
     // data = [];
-    constructor(size = {width:32, height:16}, main){
+    constructor(size = {width:32, height:16}, main, params){
         super();
+        console.log(params);
         this.size = size;
         this.main = main;
-        this.params = {
-            terrain:{
-                scale: 30,
-                magnitude: 0.26,
-                offset: 0.3
-            }
-        }
+        this.params = params;
+        
     }
 
 
