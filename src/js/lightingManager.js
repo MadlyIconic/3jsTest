@@ -14,7 +14,7 @@ export default class LightingManager{
         let lightName = 'spotLight';
         spotLight.position.set(x, y, z);
         spotLight.angle = angle;
-        const spotlightHelper = null;
+        let spotlightHelper = null;
         if(includeHelper){
             spotlightHelper = new THREE.SpotLightHelper(spotLight);
             this.sceneRenderer.addToScene(spotlightHelper);
@@ -42,7 +42,7 @@ export default class LightingManager{
         const directionalLight = new THREE.DirectionalLight(0xFFFFFF, intensity);
         let lightName = 'directionalLight';
         directionalLight.position.set(x, y, z);
-        directionalLight.shadow.camera.bottom = -10.5;
+        directionalLight.shadow.camera.bottom = -20.5;
         let directionalLightHelper = null;
         if(includeHelper){
             console.log('Including helper');

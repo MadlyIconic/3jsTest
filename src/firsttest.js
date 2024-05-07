@@ -16,13 +16,13 @@ let mainFunction = function () {
     const directionalLightIntinsity = 1;
     const gui = main.gui;
     const camera = main.cameraBuilder.build(options.fov, perspectiveRatio, options.near, options.far);
-
+    camera.position.set(-32,16,-32);
     let lights = main.lightingManager.lights;
 
     const box = main.boxBuilder.build(boxColor,"My Box", false, 0,0,0);
     const plane = main.planeBuilder.build(0xFFFFFF,100,100);
     const sphere = main.sphereBuilder.build(sphereRadius, 50, 50, options.wireframe);
-    sphere.position.set(-10, 10, 0);
+    sphere.position.set(-10, 0, 0);
 
     plane.rotateX(-0.5 * Math.PI);
 
@@ -45,7 +45,7 @@ let mainFunction = function () {
     camera.position.y = 30;
     camera.position.x = -20;
     camera.lookAt(0,0,0);
-
+    camera.position.set(-80,50,0);
     main.sceneRenderer.addToScene(main.axesHelper);
     main.sceneRenderer.addToScene(box);
     main.sceneRenderer.addToScene(sphere);
@@ -55,8 +55,8 @@ let mainFunction = function () {
 
 
     main.lightingManager.setUpAmbientLight(true, ambientLightIntinsity);
-    main.lightingManager.setUpDirectionalLight(true, -30, 50, 0, directionalLightIntinsity);
-    main.lightingManager.setUpSpotLight(true, -50, 50, 0, spotLightIntinsity, spotlightAngle);
+    main.lightingManager.setUpDirectionalLight(true, -50, 50, 0, directionalLightIntinsity, true);
+    main.lightingManager.setUpSpotLight(true, -80, 80, 0, spotLightIntinsity, spotlightAngle, true);
 
     function animate(time){
         box.rotation.x = time / 1000;

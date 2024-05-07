@@ -41,12 +41,33 @@ export default class SceneRenderer {
             if(light.name == 'spotLight'){
                 light.object.angle = options.angle;
                 light.object.penumbra = options.penumbra;
-                light.object.intensity = options.intensity;
+                light.object.intensity = options.spotLightIntensity;
                 if(light.helper){
                     light.helper.update();
                 }
                 
             }
+
+            if(light.name == 'directionalLight'){
+                light.object.angle = options.angle;
+                light.object.penumbra = options.penumbra;
+                light.object.intensity = options.directionalLightIntinsity;
+                if(light.helper){
+                    light.helper.update();
+                }
+                
+            }
+
+            if(light.name == 'ambientLight'){
+                light.object.angle = options.angle;
+                light.object.penumbra = options.penumbra;
+                light.object.intensity = options.intinsity;
+                if(light.helper){
+                    light.helper.update();
+                }
+                
+            }
+
             light.object.castShadow = options.shadowmap;        
         });
         

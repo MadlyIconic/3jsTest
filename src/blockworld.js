@@ -49,12 +49,9 @@ main.addEventListener('configloaded', function () {
 
     function renderObjects(){
         let lightsWithShadow = lights.filter((light) => light.object.shadow);
-        // var blocks = world.setupWorld(worldSize);
-        // blocks.forEach(blockSet => {
-        //     blockSet.forEach(block => {
-        //         main.sceneRenderer.setupShadows(options, lightsWithShadow, null, null, block);
-        //     });
-        // });
+        let theBlocks = main.sceneRenderer.scene.children.filter((e) => e.name == "TheBlocks");
+        
+        main.sceneRenderer.setupShadows(options, lightsWithShadow, null, null, theBlocks);
 
     }
 

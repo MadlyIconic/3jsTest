@@ -6,7 +6,7 @@ export default class PlaneBuilder{
     
     build(planeColor, width=30, height=30){
         const planeGeometry = new THREE.PlaneGeometry(width,height);
-        const planeMaterial = new THREE.MeshStandardMaterial({
+        const planeMaterial = new THREE.MeshLambertMaterial({
             color: planeColor,
             side: THREE.DoubleSide
         });

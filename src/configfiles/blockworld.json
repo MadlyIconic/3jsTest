@@ -13,6 +13,7 @@
     "fov": 75,
     "near":0.1,
     "far": 2000,
-    "directionalLightIntinsity":0.6,
-    "ambientLightIntinsity": 0.01
+    "directionalLightIntinsity":10.6,
+    "ambientLightIntinsity": 0.01,
+    "spotLightIntensity": 0.6
 }
