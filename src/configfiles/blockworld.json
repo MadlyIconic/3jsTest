@@ -6,20 +6,20 @@
     "sphereColor": "#ff00ff",
     "wireframe": false,
     "speed": 0.03,
-    "shadowmap": true,
+    "shadowmap": false,
     "angle": 0.3,
     "penumbra": 1,
     "intensity": 2000,
     "fov": 75,
     "near":0.1,
     "far": 2000,
-    "directionalLightIntinsity":5,
-    "ambientLightIntinsity": 1,
+    "directionalLightIntinsity":2,
+    "ambientLightIntinsity": 0.3,
     "spotLightIntensity": 0.6,
     "params": {
         "seed": 0,
         "terrain":{
-            "scale": 30,
+            "scale": 28,
             "magnitude": 0.5,
             "offset": 0.2
         }

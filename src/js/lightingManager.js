@@ -43,10 +43,17 @@ export default class LightingManager{
         const directionalLight = new THREE.DirectionalLight(0xFFFFFF, intensity);
         let lightName = 'directionalLight';
         directionalLight.position.set(x, y, z);
-        directionalLight.shadow.camera.bottom = 20.5;
+        
+        //  directionalLight.shadow.camera.left = 100;
+        //  directionalLight.shadow.camera.right = -100;
+        //  directionalLight.shadow.camera.top = 0;
+        //  directionalLight.shadow.camera.bottom = 100;
+        //  directionalLight.shadow.camera.near = -100;
+        //  directionalLight.shadow.camera.far = 10;
+        // directionalLight.shadow.bias = -0.0005;
         let directionalLightHelper = null;
         if(includeHelper){
-            directionalLightHelper = new THREE.DirectionalLightHelper(directionalLight,5);
+            directionalLightHelper = new THREE.DirectionalLightHelper(directionalLight,5, 0xFFFFFF);
             this.sceneRenderer.addToScene(directionalLightHelper);
             const directionalLightCameraHelper = new THREE.CameraHelper(directionalLight.shadow.camera);
             this.sceneRenderer.addToScene(directionalLightCameraHelper);

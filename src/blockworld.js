@@ -20,13 +20,10 @@ main.addEventListener('configloaded', function () {
     const directionalLightIntinsity = options.directionalLightIntinsity;
     const ambientLightIntinsity = options.ambientLightIntinsity;
     camera = main.cameraBuilder.build(options.fov, calculateAspect(), options.near, options.far);
-    camera.position.set(32,86,-1);
-    //camera.lookAt(0,0,0);
-
+    camera.position.set(300,200,-100);
+    
     let world = new World(worldSize, main, options.params);
-    const boxGeometry = new THREE.BoxGeometry();
-    const boxMaterial = new THREE.MeshLambertMaterial({color: 0x00a0e0})
-    world.generate(boxGeometry, boxMaterial);
+    world.generate();
 
     main.sceneRenderer.setUpRenderer(camera);
 
@@ -39,12 +36,14 @@ main.addEventListener('configloaded', function () {
         return this.split('').map(char => char.charCodeAt(0).toString(16).padStart(2, '0')).join('');
     };
 
+    //main.lightingManager.setUpAmbientLight(true, ambientLightIntinsity);
+    main.lightingManager.setUpDirectionalLight(true, 180,100,400, directionalLightIntinsity, true);
+    //main.lightingManager.setUpDirectionalLight(true, 50,50,50, directionalLightIntinsity, true);
+
+
     main.sceneRenderer.renderer.setAnimationLoop(animate);
     main.sceneRenderer.renderer.setClearColor(skyColor);
-    main.lightingManager.setUpAmbientLight(true, ambientLightIntinsity);
-    //main.lightingManager.setUpDirectionalLight(true, 180,100,400, directionalLightIntinsity, true);
-    main.lightingManager.setUpDirectionalLight(true, 380,200,500, directionalLightIntinsity, true);
-
+    
     createUI(world);
     function animate(time){
         stats.update();
@@ -55,7 +54,6 @@ main.addEventListener('configloaded', function () {
 
     function renderObjects(){
         let lightsWithShadow = lights.filter((light) => light.object.shadow);
-        let theBlocks = main.sceneRenderer.scene.children.filter((e) => !e.isLight);
         lightsWithShadow.filter((camera) => camera.object.isDirectionalLight == true).forEach((e) => {
             // Attempt at getting a light to rotate like the sun
             // camera.position.copy( theBlocks );
@@ -66,10 +64,7 @@ main.addEventListener('configloaded', function () {
             // camera.lookAt( tempVector );
         })
 
-        main.sceneRenderer.setupShadows(options, lightsWithShadow, null, null, theBlocks);
-
-        
-
+        main.sceneRenderer.setupShadows(options, lightsWithShadow);
     }
 
     window.addEventListener('resize', () => {

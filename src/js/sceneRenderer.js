@@ -35,10 +35,11 @@ export default class SceneRenderer {
         this.scene.add(obj);
     }
     
-    setupShadows(options, lights, sphere, plane, box){
+    setupShadows(options, lights){
         this.renderer.shadowMap.enabled = options.shadowmap;
         lights.forEach(light => {
             if(light.name == 'spotLight'){
+                light.object.castShadow = options.shadowmap;
                 light.object.angle = options.angle;
                 light.object.penumbra = options.penumbra;
                 light.object.intensity = options.spotLightIntensity;
@@ -49,6 +50,7 @@ export default class SceneRenderer {
             }
 
             if(light.name == 'directionalLight'){
+                light.object.castShadow = options.shadowmap;
                 light.object.angle = options.angle;
                 light.object.penumbra = options.penumbra;
                 light.object.intensity = options.directionalLightIntinsity;
@@ -69,16 +71,7 @@ export default class SceneRenderer {
             }
 
             light.object.castShadow = options.shadowmap;        
-        });
-        
-        box.castShadow = options.shadowmap;
-        if(sphere){
-            sphere.castShadow = options.shadowmap;
-        }
-        if(plane){
-            plane.receiveShadow = options.shadowmap;    
-        }
-        
+        });        
     }
     
     setUpAnimationLoop(animate){

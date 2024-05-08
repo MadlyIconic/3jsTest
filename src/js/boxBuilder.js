@@ -126,6 +126,8 @@ export default class BoxBuilder{
                 let mesh = new THREE.InstancedMesh(boxGeometry, blockType.material, maxCount);
                 mesh.name = blockType.name;
                 mesh.count = 0;
+                mesh.castShadow = true;
+                mesh.receiveShadow = true;
                 meshes[blockType.id] = mesh;
             })
         

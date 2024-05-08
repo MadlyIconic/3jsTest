@@ -3,17 +3,19 @@ const textureLoader = new THREE.TextureLoader();
 
 function loadTexture(path){
     const texture = textureLoader.load(path);
+    texture.minFilter = THREE.NearestFilter;
+    texture.magFilter = THREE.NearestFilter;
     texture.colorSpace = THREE.SRGBColorSpace;
     return texture;
 }
 
 const textures =  {
-    dirt: loadTexture('texture/dirt.png'),
-    grass: loadTexture('texture/grass.png'),
-    grassSide: loadTexture('texture/grass_side.png'),
-    stone: loadTexture('texture/stone.png'),
-    coalOre: loadTexture('texture/coal_ore.png'),
-    ironOre: loadTexture('texture/iron_ore.png')
+    dirt: loadTexture('texttures/dirt.png'),
+    grass: loadTexture('texttures/grass.png'),
+    grassSide: loadTexture('texttures/grass_side.png'),
+    stone: loadTexture('texttures/stone.png'),
+    coalOre: loadTexture('texttures/coal_ore.png'),
+    ironOre: loadTexture('texttures/iron_ore.png')
 }
 
 export const blocks = {
@@ -57,11 +59,11 @@ export const blocks = {
         name: "coal",
         color: 0x202020,
         scale: {
-            x:20,
-            y:20,
-            z:20
+            x:15,
+            y:15,
+            z:15
         },
-        scarcity: 0.5,
+        scarcity: 0.6,
         material: new THREE.MeshLambertMaterial({map: textures.coalOre})
     },
     ironOre: {
@@ -69,9 +71,9 @@ export const blocks = {
         name: "iron",
         color: 0x806060,
         scale: {
-            x:60,
-            y:60,
-            z:60
+            x:16,
+            y:16,
+            z:16
         },
         scarcity: 0.5,
         material: new THREE.MeshLambertMaterial({map: textures.ironOre})
