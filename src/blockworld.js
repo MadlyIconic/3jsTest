@@ -1,9 +1,12 @@
 import * as THREE from 'three'
 import Main from "./js/main";
 import { World } from "./js/world";
+
 import Stats from 'three/examples/jsm/libs/stats.module.js';
+import { blocks, resources } from './js/blocks';
 const stats = new Stats();
 var camera = null;
+
 document.body.append(stats.dom);
 const main = new Main('../configfiles/blockworld.json', 'myCanvas');
 main.addEventListener('configloaded', function () {
@@ -111,10 +114,25 @@ function createUI(world){
     terrainFolder.add(world.params.terrain, 'offset',0,1).name('Offset').onChange(function(e){
         world.generate();
     });
-    // gui.add(world, 'threshold',0 , 1).name('Noise').onChange(function(e){
-    //     world.generate();
-    // });
-    //gui.add(world, 'generate');
+
+    const resourcesFolder = gui.addFolder('Resources');
+
+    resources.forEach(resource => {
+        resourcesFolder.add(resource,'scarcity',0,1).name('Scarcity ' + resource.name).onChange(function(e){
+            world.generate();
+        });
+        const scaleFolder = resourcesFolder.addFolder('Scale ' + resource.name);
+        scaleFolder.add(resource.scale,'x',10,100).name('X Scale').onChange(function(e){
+            world.generate();
+        });
+        scaleFolder.add(resource.scale,'y',10,100).name('Y Scale').onChange(function(e){
+            world.generate();
+        });
+        scaleFolder.add(resource.scale,'z',10,100).name('Z Scale').onChange(function(e){
+            world.generate();
+        });        
+    });
+
 }
 
 function calculateAspect(){

@@ -1,7 +1,6 @@
 import * as THREE from 'three';
 import {SimplexNoise} from 'three/examples/jsm/math/SimplexNoise.js'
-import {RNG} from './rng';
-import { blocks } from './blocks';
+import { blocks, resources } from './blocks';
 
 export default class BoxBuilder{
     
@@ -60,9 +59,34 @@ export default class BoxBuilder{
             self.data.push(slice);
         }   
     }
+    generateResources(size, rng){        
+        const simplex = new SimplexNoise(rng);
+        resources.forEach(resource => {
+            this.generateResourceType(resource, size, simplex);
+        });
+        
+    }
 
-    generateTerrain(size, params){
-        const rng = new RNG(params.seed);
+    generateResourceType(resource, size, simplex){
+        for (let x = 0; x < size.width; x++) {
+            for (let y = 0; y < size.height; y++) {
+                for (let z = 0; z < size.width; z++) {
+    
+                    const value = simplex.noise3d(
+                        x / resource.scale.x,
+                        y / resource.scale.y,
+                        z / resource.scale.z
+                    );
+
+                    if(value > resource.scarcity){
+                        this.setBlockId(x,y,z,resource.id,size);
+                    }
+                }   
+            }
+        }
+    }
+
+    generateTerrain(size, params, rng){        
         const simplex = new SimplexNoise(rng);
         for (let x = 0; x < size.width; x++) {
             for (let z = 0; z < size.width; z++) {
@@ -76,13 +100,13 @@ export default class BoxBuilder{
                 height = Math.max(0, Math.min(height, size.height));
 
                 for (let y = 0; y < size.height; y++) {
-                    //this.setBlockId(x,y,z,1,size);                    
-                    if(y < height){
+                                    
+                    if(y < height && this.getBlock(x,y,z,size).id === blocks.empty.id){
                         //console.log('Setting block as dirt');
                         this.setBlockId(x,y,z,blocks.dirt.id,size);                    
-                    }else if(y == height){
+                    }else if(y === height){
                         this.setBlockId(x,y,z,blocks.grass.id,size);                    
-                    } else{
+                    } else if(y > height){
                         this.setBlockId(x,y,z,blocks.empty.id,size);                    
                     }
                 }
@@ -90,7 +114,7 @@ export default class BoxBuilder{
         }
     }
 
-    buildInstanced = function(boxColor, size){
+    generateMeshes = function(size){
         let self =this;
         const boxGeometry = new THREE.BoxGeometry();
         const boxMaterial = new THREE.MeshLambertMaterial() 

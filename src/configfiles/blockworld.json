@@ -1,6 +1,6 @@
 {
-    "worldwidth": 128,
-    "worldheight": 64,
+    "worldwidth": 64,
+    "worldheight": 32,
     "skycolor":"#80a0e0",
     "testValue": 5,
     "sphereColor": "#ff00ff",
@@ -17,11 +17,11 @@
     "ambientLightIntinsity": 1,
     "spotLightIntensity": 0.6,
     "params": {
-        "seed": 2803,
+        "seed": 0,
         "terrain":{
-            "scale": 43,
-            "magnitude": 0.26,
-            "offset": 0.34
+            "scale": 30,
+            "magnitude": 0.5,
+            "offset": 0.2
         }
     }
 }
