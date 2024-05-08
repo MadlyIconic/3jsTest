@@ -1,7 +1,8 @@
-const textureLoader = new ThreeMFLoader.textureLoader();
+import * as THREE from 'three';
+const textureLoader = new THREE.TextureLoader();
 
 function loadTexture(path){
-    const texture = textureLoader.loadTexture(path);
+    const texture = textureLoader.load(path);
     texture.colorSpace = THREE.SRGBColorSpace;
     return texture;
 }
