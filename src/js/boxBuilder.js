@@ -1,5 +1,7 @@
 import * as THREE from 'three';
 import {SimplexNoise} from 'three/examples/jsm/math/SimplexNoise.js'
+import {RNG} from './rng';
+import { blocks } from './blocks';
 
 export default class BoxBuilder{
     
@@ -49,7 +51,7 @@ export default class BoxBuilder{
                 const row = [];
                 for (let z = 0; z < size.width; z++) {
                     row.push({
-                        id: 0,
+                        id: blocks.empty.id,
                         instanceId: null
                     })
                 }
@@ -60,7 +62,8 @@ export default class BoxBuilder{
     }
 
     generateTerrain(size, params){
-        const simplex = new SimplexNoise();
+        const rng = new RNG(params.seed);
+        const simplex = new SimplexNoise(rng);
         for (let x = 0; x < size.width; x++) {
             for (let z = 0; z < size.width; z++) {
                 const value = simplex.noise(
@@ -72,8 +75,16 @@ export default class BoxBuilder{
                 let height = Math.floor(size.height * scaledNoise);
                 height = Math.max(0, Math.min(height, size.height));
 
-                for (let y = 0; y < height; y++) {
-                    this.setBlockId(x,y,z,1,size);                    
+                for (let y = 0; y < size.height; y++) {
+                    //this.setBlockId(x,y,z,1,size);                    
+                    if(y < height){
+                        //console.log('Setting block as dirt');
+                        this.setBlockId(x,y,z,blocks.dirt.id,size);                    
+                    }else if(y == height){
+                        this.setBlockId(x,y,z,blocks.grass.id,size);                    
+                    } else{
+                        this.setBlockId(x,y,z,blocks.empty.id,size);                    
+                    }
                 }
             }            
         }
@@ -82,7 +93,7 @@ export default class BoxBuilder{
     buildInstanced = function(boxColor, size){
         let self =this;
         const boxGeometry = new THREE.BoxGeometry();
-        const boxMaterial = new THREE.MeshLambertMaterial({color: boxColor}) 
+        const boxMaterial = new THREE.MeshLambertMaterial() 
         
         let maxCount = size.width * size.width * size.height;
         let mesh = new THREE.InstancedMesh(boxGeometry, boxMaterial, maxCount);
@@ -95,10 +106,12 @@ export default class BoxBuilder{
             for (let y = 0; y < size.height; y++) {
                 for (let z = 0; z < size.width; z++) {
                     const blockId = this.getBlock(x,y,z, size).id;
+                    const blockType = Object.values(blocks).find(e => e.id === blockId);
                     const instanceId = mesh.count;
-                    if(blockId!==0){
+                    if(blockId!== blocks.empty.id && !this.isBlockObscured(x,y,z, size)){
                         matrix.setPosition(x+0.5,y+0.5,z+0.5);
                         mesh.setMatrixAt(instanceId, matrix);
+                        mesh.setColorAt(instanceId, new THREE.Color(blockType.color))
                         self.setBlockInstanceId(x,y,z,instanceId, size);
                         mesh.count++;
                     }
@@ -108,6 +121,27 @@ export default class BoxBuilder{
         }
 
         return mesh;
+    }
+
+    isBlockObscured(x,y,z, size){
+        const up = this.getBlock(x,y+1,z, size)?.id ?? blocks.empty.id;
+        const down = this.getBlock(x,y-1,z, size)?.id ?? blocks.empty.id;
+        const left = this.getBlock(x+1,y,z, size)?.id ?? blocks.empty.id;
+        const right = this.getBlock(x-1,y,z, size)?.id ?? blocks.empty.id;
+        const forward = this.getBlock(x,y,z+1, size)?.id ?? blocks.empty.id;
+        const back = this.getBlock(x,y,z-1, size)?.id ?? blocks.empty.id;
+
+        if( up === blocks.empty.id ||
+            down === blocks.empty.id ||
+            left === blocks.empty.id ||
+            right === blocks.empty.id ||
+            forward === blocks.empty.id ||
+            back === blocks.empty.id            
+        ){
+            return false;
+        }else{
+            return true;
+        }
     }
 
     build = function(boxColor, name, isBasicMaterial){

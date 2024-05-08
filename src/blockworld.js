@@ -79,6 +79,7 @@ main.addEventListener('configloaded', function () {
 
 function createUI(world){
     const gui = main.gui;
+    
     gui.add(world.size, 'width',8 , 128, 1).name('Width').onChange(function(e){
         world.generate();
     });
@@ -98,6 +99,9 @@ function createUI(world){
 
 
     const terrainFolder = gui.addFolder('Terrain');
+    terrainFolder.add(world.params, 'seed', 1 , 10000).name('Seed').onChange(function(e){
+        world.generate();
+    });
     terrainFolder.add(world.params.terrain, 'scale',10,100).name('Scale').onChange(function(e){
         world.generate();
     });
