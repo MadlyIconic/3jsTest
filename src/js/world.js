@@ -33,7 +33,7 @@ export class World extends THREE.Group {
         self.main.boxBuilder.initialiseTerrain(size);
         self.main.boxBuilder.generateResources(size, rng);
         self.main.boxBuilder.generateTerrain(size, self.params, rng);
-        let mesh = self.main.boxBuilder.generateMeshes(this.size);
-        self.main.sceneRenderer.addToScene(mesh);
+        let meshes = self.main.boxBuilder.generateMeshes(this.size);
+        self.main.sceneRenderer.addToScene(meshes);
     }
 }

@@ -116,13 +116,19 @@ export default class BoxBuilder{
 
     generateMeshes = function(size){
         let self =this;
-        const boxGeometry = new THREE.BoxGeometry();
-        const boxMaterial = new THREE.MeshLambertMaterial() 
-        
         let maxCount = size.width * size.width * size.height;
-        let mesh = new THREE.InstancedMesh(boxGeometry, boxMaterial, maxCount);
-        mesh.name = "TheBlocks";
-        mesh.count = 0;
+        const boxGeometry = new THREE.BoxGeometry();
+        //const boxMaterial = new THREE.MeshLambertMaterial() 
+        const meshes = {};
+        Object.values(blocks)
+            .filter(blockType => blockType.id !== blocks.empty.id)
+            .forEach(blockType => {
+                let mesh = new THREE.InstancedMesh(boxGeometry, blockType.material, maxCount);
+                mesh.name = blockType.name;
+                mesh.count = 0;
+                meshes[blockType.id] = mesh;
+            })
+        
         
         const matrix  = new THREE.Matrix4();
 
@@ -130,12 +136,16 @@ export default class BoxBuilder{
             for (let y = 0; y < size.height; y++) {
                 for (let z = 0; z < size.width; z++) {
                     const blockId = this.getBlock(x,y,z, size).id;
-                    const blockType = Object.values(blocks).find(e => e.id === blockId);
+                    //const blockType = Object.values(blocks).find(e => e.id === blockId);
+                    if(blockId === blocks.empty.id){
+                        continue;
+                    }
+                    const mesh = meshes[blockId];
                     const instanceId = mesh.count;
-                    if(blockId!== blocks.empty.id && !this.isBlockObscured(x,y,z, size)){
+                    if(!this.isBlockObscured(x,y,z, size)){
                         matrix.setPosition(x+0.5,y+0.5,z+0.5);
                         mesh.setMatrixAt(instanceId, matrix);
-                        mesh.setColorAt(instanceId, new THREE.Color(blockType.color))
+                        //mesh.setColorAt(instanceId, new THREE.Color(blockType.color))
                         self.setBlockInstanceId(x,y,z,instanceId, size);
                         mesh.count++;
                     }
@@ -144,7 +154,7 @@ export default class BoxBuilder{
             }
         }
 
-        return mesh;
+        return meshes;
     }
 
     isBlockObscured(x,y,z, size){
