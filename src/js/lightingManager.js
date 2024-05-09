@@ -27,46 +27,46 @@ export default class LightingManager{
         }
     }
     
-    setUpAmbientLight(isSelected, intensity){
-        const ambientLight = new THREE.AmbientLight(0xFFFFFF, intensity);
-        let lightName = 'ambientLight';
-        let ambientLightHelper = null;
-        this.sceneRenderer.addToScene(ambientLight);
-        this.lights.push({name:lightName, object: ambientLight, helper:null})
-        if(isSelected){
-            this.selectedLightNames.push(lightName);
-        }
-        return ambientLight;
-    }
+    // setUpAmbientLight(isSelected, intensity){
+    //     const ambientLight = new THREE.AmbientLight(0xFFFFFF, intensity);
+    //     let lightName = 'ambientLight';
+    //     let ambientLightHelper = null;
+    //     this.sceneRenderer.addToScene(ambientLight);
+    //     this.lights.push({name:lightName, object: ambientLight, helper:null})
+    //     if(isSelected){
+    //         this.selectedLightNames.push(lightName);
+    //     }
+    //     return ambientLight;
+    // }
     
-    setUpDirectionalLight(isSelected, x, y, z, intensity, includeHelper){
-        const directionalLight = new THREE.DirectionalLight(0xFFFFFF, intensity);
-        let lightName = 'directionalLight';
-        directionalLight.position.set(x, y, z);
+    // setUpDirectionalLight(isSelected, x, y, z, intensity, includeHelper){
+    //     const directionalLight = new THREE.DirectionalLight(0xFFFFFF, intensity);
+    //     let lightName = 'directionalLight';
+    //     directionalLight.position.set(x, y, z);
         
-        //  directionalLight.shadow.camera.left = 100;
-        //  directionalLight.shadow.camera.right = -100;
-        //  directionalLight.shadow.camera.top = 0;
-        //  directionalLight.shadow.camera.bottom = 100;
-        //  directionalLight.shadow.camera.near = -100;
-        //  directionalLight.shadow.camera.far = 10;
-        // directionalLight.shadow.bias = -0.0005;
-        let directionalLightHelper = null;
-        if(includeHelper){
-            directionalLightHelper = new THREE.DirectionalLightHelper(directionalLight,5, 0xFFFFFF);
-            this.sceneRenderer.addToScene(directionalLightHelper);
-            const directionalLightCameraHelper = new THREE.CameraHelper(directionalLight.shadow.camera);
-            this.sceneRenderer.addToScene(directionalLightCameraHelper);
-        }
+    //     //  directionalLight.shadow.camera.left = 100;
+    //     //  directionalLight.shadow.camera.right = -100;
+    //     //  directionalLight.shadow.camera.top = 0;
+    //     //  directionalLight.shadow.camera.bottom = 100;
+    //     //  directionalLight.shadow.camera.near = -100;
+    //     //  directionalLight.shadow.camera.far = 10;
+    //     // directionalLight.shadow.bias = -0.0005;
+    //     let directionalLightHelper = null;
+    //     if(includeHelper){
+    //         directionalLightHelper = new THREE.DirectionalLightHelper(directionalLight,5, 0xFFFFFF);
+    //         this.sceneRenderer.addToScene(directionalLightHelper);
+    //         const directionalLightCameraHelper = new THREE.CameraHelper(directionalLight.shadow.camera);
+    //         this.sceneRenderer.addToScene(directionalLightCameraHelper);
+    //     }
                
-        this.sceneRenderer.addToScene(directionalLight);
+    //     this.sceneRenderer.addToScene(directionalLight);
             
-        this.lights.push({name:lightName, object: directionalLight, helper: directionalLightHelper})
-        if(isSelected){
-            this.selectedLightNames.push(lightName);
-        }
-        return directionalLight;
-    }
+    //     this.lights.push({name:lightName, object: directionalLight, helper: directionalLightHelper})
+    //     if(isSelected){
+    //         this.selectedLightNames.push(lightName);
+    //     }
+    //     return directionalLight;
+    // }
 }
 
 

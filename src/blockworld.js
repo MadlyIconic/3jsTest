@@ -20,7 +20,7 @@ main.addEventListener('configloaded', function () {
     const directionalLightIntinsity = options.directionalLightIntinsity;
     const ambientLightIntinsity = options.ambientLightIntinsity;
     camera = main.cameraBuilder.build(options.fov, calculateAspect(), options.near, options.far);
-    camera.position.set(300,200,-100);
+    camera.position.set(options.cameraPosition.x,options.cameraPosition.y,options.cameraPosition.z);
     
     let world = new World(worldSize, main, options.params);
     world.generate();
@@ -37,9 +37,34 @@ main.addEventListener('configloaded', function () {
     };
 
     //main.lightingManager.setUpAmbientLight(true, ambientLightIntinsity);
-    main.lightingManager.setUpDirectionalLight(true, 180,100,400, directionalLightIntinsity, true);
+    //main.lightingManager.setUpDirectionalLight(true, 180,100,400, directionalLightIntinsity, true);
     //main.lightingManager.setUpDirectionalLight(true, 50,50,50, directionalLightIntinsity, true);
 
+    const sun = new THREE.DirectionalLight();
+    sun.position.set(100,50,50);
+    sun.target.position.set( 40, 0, 40 );
+    sun.name = "directionalLight";
+    sun.castShadow = true;
+    sun.shadow.camera.left = -50;
+    sun.shadow.camera.right = 50;
+    
+    sun.shadow.camera.bottom = -50;
+    sun.shadow.camera.top = 50;
+
+    sun.shadow.camera.near = 0.1;
+    sun.shadow.camera.far = 150;
+
+    const directionalLightHelper = new THREE.DirectionalLightHelper(sun);
+    main.sceneRenderer.addToScene(directionalLightHelper);
+    const directionalLightCameraHelper = new THREE.CameraHelper(sun.shadow.camera);
+    main.sceneRenderer.addToScene(directionalLightCameraHelper);
+    main.lightingManager.lights.push({name:sun.name, object: sun, helper: directionalLightHelper})
+    main.sceneRenderer.addToScene(sun);
+
+    // update the light's shadow camera's projection matrix
+    sun.shadow.camera.updateProjectionMatrix();
+    // and now update the camera helper we're using to show the light's shadow camera
+    directionalLightCameraHelper.update();
 
     main.sceneRenderer.renderer.setAnimationLoop(animate);
     main.sceneRenderer.renderer.setClearColor(skyColor);
@@ -54,14 +79,13 @@ main.addEventListener('configloaded', function () {
 
     function renderObjects(){
         let lightsWithShadow = lights.filter((light) => light.object.shadow);
-        lightsWithShadow.filter((camera) => camera.object.isDirectionalLight == true).forEach((e) => {
-            // Attempt at getting a light to rotate like the sun
-            // camera.position.copy( theBlocks );
-            // camera.position.x+=Math.sin(camera.rotationy)*3;
-            // camera.position.z+=Math.cos(camera.rotationy)*3;
-            // camera.position.y+=cameraHeight; // optional
-            // tempVector.copy(theBlocks).y+=cameraHeight; // the += is optional
-            // camera.lookAt( tempVector );
+        lightsWithShadow.filter((camera) => camera.object.isDirectionalLight == true).forEach((light) => {
+            let editableLight = light.object;
+            let editableHelper = light.helper;
+            
+            editableLight.shadow.camera.updateProjectionMatrix();
+            // and now update the camera helper we're using to show the light's shadow camera
+            editableHelper.update();
         })
 
         main.sceneRenderer.setupShadows(options, lightsWithShadow);
