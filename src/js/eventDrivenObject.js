@@ -7,7 +7,7 @@ export default class EventDrivenObject{
 EventDrivenObject.prototype.registerEvent = function (eventName) {
     var myEvent = new BlockLoadEvent(eventName, {
         detail: {
-            info:'bob'
+            info:'eventName'
         },
         bubbles: true,
         cancelable: true,

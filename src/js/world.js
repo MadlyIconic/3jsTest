@@ -11,7 +11,6 @@ export class World extends THREE.Group {
      * @param {*} size
      * @param {*} main
      */
-    // data = [];
     constructor(size = {width:32, height:16}, main, params){
         super();
         console.log(params);

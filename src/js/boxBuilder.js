@@ -102,7 +102,6 @@ export default class BoxBuilder{
                 for (let y = 0; y < size.height; y++) {
                                     
                     if(y < height && this.getBlock(x,y,z,size).id === blocks.empty.id){
-                        //console.log('Setting block as dirt');
                         this.setBlockId(x,y,z,blocks.dirt.id,size);                    
                     }else if(y === height){
                         this.setBlockId(x,y,z,blocks.grass.id,size);                    
@@ -118,7 +117,6 @@ export default class BoxBuilder{
         let self =this;
         let maxCount = size.width * size.width * size.height;
         const boxGeometry = new THREE.BoxGeometry();
-        //const boxMaterial = new THREE.MeshLambertMaterial() 
         const meshes = {};
         Object.values(blocks)
             .filter(blockType => blockType.id !== blocks.empty.id)
@@ -138,7 +136,6 @@ export default class BoxBuilder{
             for (let y = 0; y < size.height; y++) {
                 for (let z = 0; z < size.width; z++) {
                     const blockId = this.getBlock(x,y,z, size).id;
-                    //const blockType = Object.values(blocks).find(e => e.id === blockId);
                     if(blockId === blocks.empty.id){
                         continue;
                     }
@@ -147,7 +144,6 @@ export default class BoxBuilder{
                     if(!this.isBlockObscured(x,y,z, size)){
                         matrix.setPosition(x+0.5,y+0.5,z+0.5);
                         mesh.setMatrixAt(instanceId, matrix);
-                        //mesh.setColorAt(instanceId, new THREE.Color(blockType.color))
                         self.setBlockInstanceId(x,y,z,instanceId, size);
                         mesh.count++;
                     }

@@ -1,3 +1,8 @@
+/* 
+// This sets up the random noise generator allowing for a seed.
+// This code is outside of my understanding at the moment...
+// One day I will try and understand it!
+*/
 export class RNG {
     m_w = 123456789;
     m_z = 987654321;

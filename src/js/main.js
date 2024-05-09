@@ -12,18 +12,25 @@ import Settings from './settings';
 import EventDrivenObject from './eventDrivenObject';
 
 export default class Main extends EventDrivenObject{
-    constructor(configFile, canvasName, gridsize = 30, griddivisions = 10)
+    constructor(configFile, canvasName, gridsize = 150, griddivisions = 10)
     {
         super();
         this.events = {};
         this.registerEvent('configloaded');
         let self = this;
+        this.gridHelper = new THREE.GridHelper(gridsize, griddivisions)
+        this.axesHelper = new THREE.AxesHelper(5);
         this.sceneRenderer = new SceneRenderer(window.innerWidth, window.innerHeight, canvasName);
+        this.sceneRenderer.addToScene(this.gridHelper);
+        this.sceneRenderer.addToScene(this.axesHelper);
+
+        this.scene = this.sceneRenderer.getScene();
         this.settings = new Settings(configFile);
         this.options = {};
-        this.axesHelper = new THREE.AxesHelper(3);
+        
         this.gui = new dat.GUI();
-        this.gridHelper = new THREE.GridHelper(gridsize, griddivisions)
+
+        
         this.lightingManager = new LightingManager(this.sceneRenderer);
         this.boxBuilder = new BoxBuilder();
         this.cameraBuilder = new CameraBuilder();
@@ -34,10 +41,5 @@ export default class Main extends EventDrivenObject{
             console.log('Data is loaded!');
             self.dispatchEvent('configloaded');
           });
-
-        // this.settings.registerEvent('myevent');
-        // this.settings.addEventListener('myevent', function () {console.log('This is the myevent listener!');});
-        // this.settings.addEventListener('myevent', function () {console.log('This is another myevent listener!');});
-        // this.settings.dispatchEvent('myevent');
     }
 }

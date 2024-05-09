@@ -3,7 +3,7 @@ import Main from "./js/main";
 import { World } from "./js/world";
 
 import Stats from 'three/examples/jsm/libs/stats.module.js';
-import { blocks, resources } from './js/blocks';
+import UI from './js/ui';
 const stats = new Stats();
 var camera = null;
 
@@ -37,13 +37,13 @@ main.addEventListener('configloaded', function () {
     };
 
     main.lightingManager.setUpAmbientLight(true, ambientLightIntinsity);
-    main.lightingManager.setUpDirectionalLight(true, 90,75,50, directionalLightIntinsity, true);
+    main.lightingManager.setUpDirectionalLight(true, 60,75,50, directionalLightIntinsity, true);
     //main.lightingManager.setUpDirectionalLight(true, 50,50,50, directionalLightIntinsity, true);
 
     main.sceneRenderer.renderer.setAnimationLoop(animate);
     main.sceneRenderer.renderer.setClearColor(skyColor);
-    
-    createUI(world);
+    let ui = new UI(main.gui, world, camera);
+    ui.createUI();
     function animate(time){
         stats.update();
         renderObjects();
@@ -59,7 +59,9 @@ main.addEventListener('configloaded', function () {
             
             editableLight.shadow.camera.updateProjectionMatrix();
             // and now update the camera helper we're using to show the light's shadow camera
-            editableHelper.update();
+            if(editableHelper){
+                editableHelper.update();
+            }
         })
 
         main.sceneRenderer.setupShadows(options, lightsWithShadow);
@@ -73,60 +75,7 @@ main.addEventListener('configloaded', function () {
 });
 
 
-function createUI(world){
-    const gui = main.gui;
-    
-    gui.add(world.size, 'width',8 , 128, 1).name('Width').onChange(function(e){
-        world.generate();
-    });
-    gui.add(world.size, 'height',8 , 128, 1).name('Height').onChange(function(e){
-        world.generate();
-    });
-    const cameraFolder = gui.addFolder('Camera');
-    cameraFolder.add(camera.position, 'x',-599 , 500, 10).name('X').onChange(function(e){
-        
-    });
-    cameraFolder.add(camera.position, 'y',-599 , 500, 10).name('T').onChange(function(e){
-        
-    });
-    cameraFolder.add(camera.position, 'z',8 , 64, 1).name('Z').onChange(function(e){
-        
-    });
 
-
-    const terrainFolder = gui.addFolder('Terrain');
-    terrainFolder.add(world.params, 'seed', 1 , 10000).name('Seed').onChange(function(e){
-        world.generate();
-    });
-    terrainFolder.add(world.params.terrain, 'scale',10,100).name('Scale').onChange(function(e){
-        world.generate();
-    });
-    terrainFolder.add(world.params.terrain, 'magnitude',0,1).name('Magnitude').onChange(function(e){
-        world.generate();
-    });
-    terrainFolder.add(world.params.terrain, 'offset',0,1).name('Offset').onChange(function(e){
-        world.generate();
-    });
-
-    const resourcesFolder = gui.addFolder('Resources');
-
-    resources.forEach(resource => {
-        resourcesFolder.add(resource,'scarcity',0,1).name('Scarcity ' + resource.name).onChange(function(e){
-            world.generate();
-        });
-        const scaleFolder = resourcesFolder.addFolder('Scale ' + resource.name);
-        scaleFolder.add(resource.scale,'x',10,100).name('X Scale').onChange(function(e){
-            world.generate();
-        });
-        scaleFolder.add(resource.scale,'y',10,100).name('Y Scale').onChange(function(e){
-            world.generate();
-        });
-        scaleFolder.add(resource.scale,'z',10,100).name('Z Scale').onChange(function(e){
-            world.generate();
-        });        
-    });
-
-}
 
 function calculateAspect(){
     const perspectiveRatio = window.innerWidth/window.innerHeight;

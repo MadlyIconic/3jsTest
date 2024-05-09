@@ -30,7 +30,6 @@ export default class LightingManager{
     setUpAmbientLight(isSelected, intensity){
         const ambientLight = new THREE.AmbientLight(0xFFFFFF, intensity);
         let lightName = 'ambientLight';
-        let ambientLightHelper = null;
         this.sceneRenderer.addToScene(ambientLight);
         this.lights.push({name:lightName, object: ambientLight, helper:null})
         if(isSelected){
@@ -47,10 +46,11 @@ export default class LightingManager{
         directionalLight.shadow.camera.left = -70;
         directionalLight.shadow.camera.right = 50;
         directionalLight.shadow.camera.top = 50;
-        directionalLight.shadow.camera.bottom = -50;
+        directionalLight.shadow.camera.bottom = -70;
         directionalLight.shadow.camera.near = 0.1;
         directionalLight.shadow.camera.far = 140;
         directionalLight.shadow.bias = -0.0005;
+        directionalLight.shadow.mapSize = new THREE.Vector2(512,512);
 
         let directionalLightHelper = null;
         if(includeHelper){
