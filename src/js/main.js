@@ -10,6 +10,7 @@ import CameraBuilder from './cameraBuilder';
 import SphereBuilder from './sphereBuilder';
 import Settings from './settings';
 import EventDrivenObject from './eventDrivenObject';
+import { Player } from './player';
 
 export default class Main extends EventDrivenObject{
     constructor(configFile, canvasName, gridsize = 150, griddivisions = 10)
@@ -36,6 +37,7 @@ export default class Main extends EventDrivenObject{
         this.cameraBuilder = new CameraBuilder();
         this.planeBuilder = new PlaneBuilder();
         this.sphereBuilder = new SphereBuilder();
+        this.player = new Player(this.sceneRenderer)
         this.settings.addEventListener('loadconfig', function () {
             self.options = self.settings.options;
             console.log('Data is loaded!');
