@@ -9,6 +9,7 @@ export default class SceneRenderer {
         let myCanvas = document.getElementById(canvasName);
         this.renderer = new THREE.WebGLRenderer({ antialias: true, canvas: myCanvas });
         this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        this.renderer.toneMapping = THREE.ReinhardToneMapping;
         this.renderer.setSize(width, height);
         document.body.appendChild(this.renderer.domElement);
         this.scene = new THREE.Scene();

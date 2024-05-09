@@ -1,4 +1,3 @@
-import * as THREE from 'three'
 import Main from "./js/main";
 import { World } from "./js/world";
 
@@ -19,8 +18,10 @@ main.addEventListener('configloaded', function () {
     let skyColor = options.skycolor;
     const directionalLightIntinsity = options.directionalLightIntinsity;
     const ambientLightIntinsity = options.ambientLightIntinsity;
-    camera = main.cameraBuilder.build(options.fov, calculateAspect(), options.near, options.far);
-    camera.position.set(options.cameraPosition.x,options.cameraPosition.y,options.cameraPosition.z);
+    // camera = main.cameraBuilder.build(options.fov, calculateAspect(), options.near, options.far);
+    // camera.position.set(options.cameraPosition.x,options.cameraPosition.y,options.cameraPosition.z);
+    camera = main.cameraBuilder.build(75, calculateAspect(), 0.1, 2000);
+    camera.position.set(136,26,31);
     
     let world = new World(worldSize, main, options.params);
     world.generate();
@@ -28,7 +29,7 @@ main.addEventListener('configloaded', function () {
     main.sceneRenderer.setUpRenderer(camera);
 
     let controls = main.sceneRenderer.orbit;
-    controls.target.set(64,1,64);
+    controls.target.set(1,1,1);
     controls.autoRotate = false;
     controls.update();
 

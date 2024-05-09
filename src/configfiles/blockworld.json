@@ -19,13 +19,13 @@
     "params": {
         "seed": 0,
         "terrain":{
-            "scale": 28,
-            "magnitude": 0.5,
-            "offset": 0.2
+            "scale": 45,
+            "magnitude": 0.34,
+            "offset": 0.27
         }
     },
     "cameraPosition":{
-        "x":36,
+        "x":136,
         "y":25,
         "z":31
     }
