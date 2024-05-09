@@ -36,35 +36,9 @@ main.addEventListener('configloaded', function () {
         return this.split('').map(char => char.charCodeAt(0).toString(16).padStart(2, '0')).join('');
     };
 
-    //main.lightingManager.setUpAmbientLight(true, ambientLightIntinsity);
-    //main.lightingManager.setUpDirectionalLight(true, 180,100,400, directionalLightIntinsity, true);
+    main.lightingManager.setUpAmbientLight(true, ambientLightIntinsity);
+    main.lightingManager.setUpDirectionalLight(true, 90,75,50, directionalLightIntinsity, true);
     //main.lightingManager.setUpDirectionalLight(true, 50,50,50, directionalLightIntinsity, true);
-
-    const sun = new THREE.DirectionalLight();
-    sun.position.set(100,50,50);
-    sun.target.position.set( 40, 0, 40 );
-    sun.name = "directionalLight";
-    sun.castShadow = true;
-    sun.shadow.camera.left = -50;
-    sun.shadow.camera.right = 50;
-    
-    sun.shadow.camera.bottom = -50;
-    sun.shadow.camera.top = 50;
-
-    sun.shadow.camera.near = 0.1;
-    sun.shadow.camera.far = 150;
-
-    const directionalLightHelper = new THREE.DirectionalLightHelper(sun);
-    main.sceneRenderer.addToScene(directionalLightHelper);
-    const directionalLightCameraHelper = new THREE.CameraHelper(sun.shadow.camera);
-    main.sceneRenderer.addToScene(directionalLightCameraHelper);
-    main.lightingManager.lights.push({name:sun.name, object: sun, helper: directionalLightHelper})
-    main.sceneRenderer.addToScene(sun);
-
-    // update the light's shadow camera's projection matrix
-    sun.shadow.camera.updateProjectionMatrix();
-    // and now update the camera helper we're using to show the light's shadow camera
-    directionalLightCameraHelper.update();
 
     main.sceneRenderer.renderer.setAnimationLoop(animate);
     main.sceneRenderer.renderer.setClearColor(skyColor);
