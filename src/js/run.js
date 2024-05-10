@@ -23,26 +23,45 @@ export default class Run{
         const ambientLightIntinsity = options.ambientLightIntinsity;
         // camera = main.cameraBuilder.build(options.fov, calculateAspect(), options.near, options.far);
         // camera.position.set(options.cameraPosition.x,options.cameraPosition.y,options.cameraPosition.z);
-        let camera = this.cameraBuilder.build(75, calculateAspect(), 0.1, 2000);
-
-        camera.position.set(136,26,31);
+        let playerCameraWrapper = this.cameraBuilder.buildSkyCamera(75, calculateAspect(), 0.1, 2000, 'Player camera');
+        let orbitCameraWrapper = this.cameraBuilder.buildSkyCamera(75, calculateAspect(), 0.1, 2000, 'Orbit camera');
+        orbitCameraWrapper.position.set(options.cameraPosition.x,options.cameraPosition.y,options.cameraPosition.z);
         
-        sceneRenderer.setUpRenderer(camera);
-    
+        const player = new Player(this.sceneRenderer.scene, this.sceneRenderer.renderer.domElement, playerCameraWrapper);
+        //player.cameraWrapper.position.set(136,26,31);
+        
+        sceneRenderer.setUpRenderer(orbitCameraWrapper);
+        //sceneRenderer.setUpRenderer(orbitCamera);
         let controls = setupOrbitControls(sceneRenderer);
     
         this.lightingManager.setUpAmbientLight(true, ambientLightIntinsity);
         this.lightingManager.setUpDirectionalLight(true, 60,75,50, directionalLightIntinsity, true);
         //main.lightingManager.setUpDirectionalLight(true, 50,50,50, directionalLightIntinsity, true);
         let previousTime = performance.now();
+
+        
+        this.sceneRenderer.renderer.setClearColor(skyColor);
+        
+        
+        let world = new World(worldSize, this, options.params);
+        world.generate();
+        //let ui = new UI(this.gui, world, player.cameraWrapper.camera, player);
+        let ui = new UI(this.gui, world, orbitCameraWrapper.camera, player);
+        ui.createUI();
+    
         function animate (time){
             let currentTime = performance.now();
             let dt = (currentTime - previousTime)/1000;
             stats.update();
-            player.applyInputs(dt);
+            //player.applyInputs(dt);
             renderObjects(sceneRenderer);
-            //main.sceneRenderer.renderScene(camera);
-            sceneRenderer.renderScene(player.camera);
+            //let cameraWrapper = player.controls.isLocked ? player.cameraWrapper : orbitCameraWrapper;
+            let cameraWrapper = orbitCameraWrapper;
+            //sceneRenderer.setUpRenderer(cameraWrapper);
+            sceneRenderer.renderScene(cameraWrapper.camera);
+            
+            //player.cameraWrapper.renderPosition('camera-position');
+
             controls.update();
             previousTime = currentTime;
         }
@@ -50,16 +69,7 @@ export default class Run{
         this.sceneRenderer.renderer.setAnimationLoop(
             animate
         );
-        this.sceneRenderer.renderer.setClearColor(skyColor);
-        
-    
-        let world = new World(worldSize, this, options.params);
-        world.generate();
-        let ui = new UI(this.gui, world, camera);
-        ui.createUI();
-    
-        const player = new Player(this.sceneRenderer);
-    
+
         function renderObjects(sceneRenderer){
             let lightsWithShadow = lights.filter((light) => light.object.shadow);
             lightsWithShadow.filter((camera) => camera.object.isDirectionalLight == true).forEach((light) => {
@@ -77,8 +87,12 @@ export default class Run{
         }
     
         window.addEventListener('resize', () => {
-            camera.aspect = calculateAspect();
-            camera.updateProjectionMatrix();
+            //player.cameraWrapper.camera.aspect = calculateAspect();
+            //player.cameraWrapper.camera.updateProjectionMatrix();
+
+            orbitcameraWrapper.camera.aspect = calculateAspect();
+            orbitcameraWrapper.camera.updateProjectionMatrix();
+
             this.sceneRenderer.renderSetSize(window.innerWidth, window.innerHeight);
         })
     }

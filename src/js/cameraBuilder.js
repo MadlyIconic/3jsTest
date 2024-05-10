@@ -1,15 +1,17 @@
 import * as THREE from 'three';
+import SkyCamera from './skyCamera';
 
 export default class CameraBuilder{
 
     constructor(){}
     
-    build(fov,perspectiveRatio,near,far){
-        let camera = new THREE.PerspectiveCamera(
+    buildSkyCamera(fov,perspectiveRatio,near,far, name){        
+        let camera = new SkyCamera(
             fov,
             perspectiveRatio,
             near,
-            far
+            far,
+            name
         );
 
         return camera;

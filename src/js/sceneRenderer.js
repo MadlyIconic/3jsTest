@@ -11,18 +11,26 @@ export default class SceneRenderer {
         this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
         this.renderer.toneMapping = THREE.ReinhardToneMapping;
         this.renderer.setSize(width, height);
+        this.cameraWrapper = null;
         document.body.appendChild(this.renderer.domElement);
         this.scene = new THREE.Scene();
     }
         
-    setUpRenderer(camera){
+    setUpRenderer(cameraWrapper){
         let self = this;
-        self.orbit = new OrbitControls(camera,this.renderer.domElement);
+        self.cameraWrapper = cameraWrapper;
+        self.orbit = new OrbitControls(self.cameraWrapper.camera,this.renderer.domElement);
         self.orbit.update();
     }
     
+    get cameraName(){
+        return this.cameraWrapper.name;
+    }
+
     renderScene(camera){
-        this.renderer.render(this.scene,camera);
+        let self = this;
+        //self.renderer.render(self.scene,self.cameraWrapper.camera);
+        self.renderer.render(self.scene,camera);
     }
 
     renderSetSize(width, height){

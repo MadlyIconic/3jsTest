@@ -37,7 +37,7 @@ export default class Main extends EventDrivenObject{
         this.cameraBuilder = new CameraBuilder();
         this.planeBuilder = new PlaneBuilder();
         this.sphereBuilder = new SphereBuilder();
-        this.player = new Player(this.sceneRenderer)
+        //this.player = new Player(this.sceneRenderer.scene, this.sceneRenderer.renderer.domElement);
         this.settings.addEventListener('loadconfig', function () {
             self.options = self.settings.options;
             console.log('Data is loaded!');

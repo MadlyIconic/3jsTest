@@ -1,13 +1,20 @@
 import { resources } from './blocks';
 export default class UI {
-    constructor(gui, world, camera){
+    constructor(gui, world, camera, player){
         this.gui = gui;
         this.world = world;
         this.camera = camera;
+        this.player = player;
     }
 
     createUI(){
         let self = this;
+
+        if(this.player){
+            const playerFolder = self.gui.addFolder('Player');
+            playerFolder.add(this.player, 'maxSpeed', 1, 20).name('Max Speed');    
+        }
+        
         self.gui.add(self.world.size, 'width',8 , 128, 1).name('Width').onChange(function(e){
             self.world.generate();
         });
@@ -16,9 +23,9 @@ export default class UI {
         });
         const cameraFolder = self.gui.addFolder('Camera');
         cameraFolder.add(self.camera.position, 'x',-599 , 500).name('X').onChange(function(e){
-            
+            console.log('camera: ', e, self.camera.position.x, self.camera.position.y, self.camera.position.z);
         });
-        cameraFolder.add(self.camera.position, 'y',-599 , 500).name('T').onChange(function(e){
+        cameraFolder.add(self.camera.position, 'y',-599 , 500).name('Y').onChange(function(e){
             
         });
         cameraFolder.add(self.camera.position, 'z',-16 , 128, 1).name('Z').onChange(function(e){

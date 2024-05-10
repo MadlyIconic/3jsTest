@@ -1,17 +1,16 @@
 import * as THREE from 'three';
+import positionToString from './positionHelper';
 import { PointerLockControls } from 'three/examples/jsm/Addons.js';
 export class Player {
-    constructor(sceneRenderer){
+    constructor(scene, domElement, cameraWrapper){
         this.maxSpeed = 10;
         this.minSpeed = 0;
         this.input = new THREE.Vector3();
         this.velocity = new THREE.Vector3();
-        this.sceneRenderer = sceneRenderer;
-        this.camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 200);
-        this.controls = new PointerLockControls(this.camera, this.sceneRenderer.renderer.domElement);
+        this.cameraWrapper = cameraWrapper; //new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 200);
+        this.controls = new PointerLockControls(this.cameraWrapper.camera, domElement);
         this.position.set(72,16,32)
-        let scene = this.sceneRenderer.getScene();
-        scene.add(this.camera);
+        scene.add(this.cameraWrapper.camera);
 
         document.addEventListener('keydown', this.onKeyDown.bind(this));
         document.addEventListener('keyup', this.onKeyUp.bind(this));
@@ -23,6 +22,8 @@ export class Player {
             this.velocity.z = this.input.z;
             this.controls.moveRight(this.velocity.x * dt);
             this.controls.moveForward(this.velocity.z * dt);
+
+            document.getElementById('player-position').innerHTML = positionToString(this);
         }
     }
 
@@ -49,6 +50,10 @@ export class Player {
             case 'KeyD':
                 this.input.x = this.maxSpeed;
                 break;
+            case 'KeyR':
+                this.position.set(72,16,32);
+                this.velocity.set(0,0,0);
+                break;
             default:
                 break;
         }
@@ -69,7 +74,7 @@ export class Player {
             case 'KeyS':
                 this.input.z = this.minSpeed;
                 break;
-            case 'KweyD':
+            case 'KeyD':
                 this.input.x = this.minSpeed;
                 break;
             default:
@@ -82,6 +87,8 @@ export class Player {
      * @type {THREE.Vector3}
      */
     get position(){
-        return this.camera.position;
+        return this.cameraWrapper.position;
     }
+
+    
 }
