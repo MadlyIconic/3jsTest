@@ -1,14 +1,16 @@
 import Main from "./js/main";
-import { World } from "./js/world";
-
 import Stats from 'three/examples/jsm/libs/stats.module.js';
+import { World } from "./js/world";
 import UI from './js/ui';
+
 const stats = new Stats();
 var camera = null;
 
 document.body.append(stats.dom);
 const main = new Main('../configfiles/blockworld.json', 'myCanvas');
-main.addEventListener('configloaded', function () {
+main.addEventListener('configloaded', mainFunction);
+
+function mainFunction() {
     console.log('config loaded', main.options);
     let lights = main.lightingManager.lights;
     let options = main.options;
@@ -20,7 +22,7 @@ main.addEventListener('configloaded', function () {
     const ambientLightIntinsity = options.ambientLightIntinsity;
     // camera = main.cameraBuilder.build(options.fov, calculateAspect(), options.near, options.far);
     // camera.position.set(options.cameraPosition.x,options.cameraPosition.y,options.cameraPosition.z);
-    camera = main.cameraBuilder.build(75, calculateAspect(), 0.1, 2000);
+    let camera = main.cameraBuilder.build(75, calculateAspect(), 0.1, 2000);
     camera.position.set(136,26,31);
     
     let world = new World(worldSize, main, options.params);
@@ -73,7 +75,7 @@ main.addEventListener('configloaded', function () {
         camera.updateProjectionMatrix();
         main.sceneRenderer.renderSetSize(window.innerWidth, window.innerHeight);
     })
-});
+}
 
 
 
