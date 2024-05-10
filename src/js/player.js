@@ -4,7 +4,8 @@ export class Player {
     constructor(sceneRenderer){
         this.maxSpeed = 10;
         this.minSpeed = 0;
-        this.input = new THREE.Vector2();
+        this.input = new THREE.Vector3();
+        this.velocity = new THREE.Vector3();
         this.sceneRenderer = sceneRenderer;
         this.camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 200);
         this.controls = new PointerLockControls(this.camera, this.sceneRenderer.renderer.domElement);
@@ -18,7 +19,10 @@ export class Player {
 
     applyInputs(dt){
         if(this.controls.isLocked){
-            console.log('Player Update');
+            this.velocity.x = this.input.x;
+            this.velocity.z = this.input.z;
+            this.controls.moveRight(this.velocity.x * dt);
+            this.controls.moveForward(this.velocity.z * dt);
         }
     }
 
@@ -33,17 +37,17 @@ export class Player {
         }
 
         switch (event.code) {
-            case 'keyW':
+            case 'KeyW':
                 this.input.z = this.maxSpeed;
                 break;
-            case 'keyA':
+            case 'KeyA':
                 this.input.x = -this.maxSpeed;
                 break;
-            case 'keyS':
-                this.input.z = this.maxSpeed;
+            case 'KeyS':
+                this.input.z = -this.maxSpeed;
                 break;
-            case 'keyA':
-                this.input.x = -this.maxSpeed;
+            case 'KeyD':
+                this.input.x = this.maxSpeed;
                 break;
             default:
                 break;
@@ -56,17 +60,17 @@ export class Player {
      */
     onKeyUp(event){
         switch (event.code) {
-            case 'keyW':
+            case 'KeyW':
                 this.input.z = this.minSpeed;
                 break;
-            case 'keyA':
-                this.input.x = -this.minSpeed;
+            case 'KeyA':
+                this.input.x = this.minSpeed;
                 break;
-            case 'keyS':
+            case 'KeyS':
                 this.input.z = this.minSpeed;
                 break;
-            case 'keyA':
-                this.input.x = -this.minSpeed;
+            case 'KweyD':
+                this.input.x = this.minSpeed;
                 break;
             default:
                 break;
