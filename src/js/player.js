@@ -55,6 +55,7 @@ export class Player {
                 this.velocity.set(0,0,0);
                 break;
             default:
+                console.log('event code:', event.code);
                 break;
         }
     }

@@ -24,14 +24,14 @@ export default class Run{
         // camera = main.cameraBuilder.build(options.fov, calculateAspect(), options.near, options.far);
         // camera.position.set(options.cameraPosition.x,options.cameraPosition.y,options.cameraPosition.z);
         let playerCameraWrapper = this.cameraBuilder.buildSkyCamera(75, calculateAspect(), 0.1, 2000, 'Player camera');
-        let orbitCameraWrapper = this.cameraBuilder.buildSkyCamera(75, calculateAspect(), 0.1, 2000, 'Orbit camera');
+        const orbitCameraWrapper = this.cameraBuilder.buildSkyCamera(75, calculateAspect(), 0.1, 2000, 'Orbit camera');
         orbitCameraWrapper.position.set(options.cameraPosition.x,options.cameraPosition.y,options.cameraPosition.z);
         
         const player = new Player(this.sceneRenderer.scene, this.sceneRenderer.renderer.domElement, playerCameraWrapper);
-        //player.cameraWrapper.position.set(136,26,31);
+        player.cameraWrapper.position.set(136,26,31);
         
         sceneRenderer.setUpRenderer(orbitCameraWrapper);
-        //sceneRenderer.setUpRenderer(orbitCamera);
+        
         let controls = setupOrbitControls(sceneRenderer);
     
         this.lightingManager.setUpAmbientLight(true, ambientLightIntinsity);
@@ -53,14 +53,13 @@ export default class Run{
             let currentTime = performance.now();
             let dt = (currentTime - previousTime)/1000;
             stats.update();
-            //player.applyInputs(dt);
+            player.applyInputs(dt);
             renderObjects(sceneRenderer);
-            //let cameraWrapper = player.controls.isLocked ? player.cameraWrapper : orbitCameraWrapper;
-            let cameraWrapper = orbitCameraWrapper;
-            //sceneRenderer.setUpRenderer(cameraWrapper);
+            let cameraWrapper = player.controls.isLocked ? player.cameraWrapper : orbitCameraWrapper;
+            
             sceneRenderer.renderScene(cameraWrapper.camera);
             
-            //player.cameraWrapper.renderPosition('camera-position');
+            orbitCameraWrapper.renderPosition('camera-position');
 
             controls.update();
             previousTime = currentTime;
@@ -87,11 +86,11 @@ export default class Run{
         }
     
         window.addEventListener('resize', () => {
-            //player.cameraWrapper.camera.aspect = calculateAspect();
-            //player.cameraWrapper.camera.updateProjectionMatrix();
+            player.cameraWrapper.camera.aspect = calculateAspect();
+            player.cameraWrapper.camera.updateProjectionMatrix();
 
-            orbitcameraWrapper.camera.aspect = calculateAspect();
-            orbitcameraWrapper.camera.updateProjectionMatrix();
+            orbitCameraWrapper.camera.aspect = calculateAspect();
+            orbitCameraWrapper.camera.updateProjectionMatrix();
 
             this.sceneRenderer.renderSetSize(window.innerWidth, window.innerHeight);
         })
