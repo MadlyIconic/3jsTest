@@ -46,4 +46,10 @@ export class World extends THREE.Group {
             }
         }
     }
+
+    getBlock(x,y,z,size){
+        let self = this;
+        let block = self.main.boxBuilder.getBlock(x,y,z,size);
+        return block;
+    }
 }

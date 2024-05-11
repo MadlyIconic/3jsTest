@@ -12,6 +12,7 @@ export default class SkyCamera{
             far
         );
         this.cameraHelper = new THREE.CameraHelper(this.camera);
+        this.cameraHelper.visible = false;
     }
 
     get position(){

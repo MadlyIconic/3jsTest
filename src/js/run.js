@@ -3,6 +3,7 @@ import Stats from 'three/examples/jsm/libs/stats.module.js';
 import { World } from "./world";
 import UI from './ui';
 import { Player } from "./player";
+import { Physics } from './physics';
 
 const stats = new Stats();
 
@@ -31,6 +32,7 @@ export default class Run{
         const player = new Player(this.sceneRenderer.scene, this.sceneRenderer.renderer.domElement, playerCameraWrapper, options.playerConfig);
         //player.cameraWrapper.position.set(136,26,31);
         
+        const physics = new Physics();
         sceneRenderer.setUpRenderer(orbitCameraWrapper);
         
         let controls = setupOrbitControls(sceneRenderer);
@@ -46,7 +48,7 @@ export default class Run{
         
         let world = new World(worldSize, this, options.params);
         world.generate();
-        //let ui = new UI(this.gui, world, player.cameraWrapper.camera, player);
+        
         let ui = new UI(this.gui, world, orbitCameraWrapper, player, directionalLightingContainer);
         ui.createUI();
         let previousCamera = player.controls.isLocked ? 1 : 0;
@@ -55,6 +57,7 @@ export default class Run{
             let dt = (currentTime - previousTime)/1000;
             stats.update();
             player.applyInputs(dt);
+            physics.update(dt, player, world, sceneRenderer.cameraName);
             renderObjects(sceneRenderer);
             let currentCamera = player.controls.isLocked ? 1 : 0;
             if(currentCamera !== previousCamera){
@@ -62,7 +65,7 @@ export default class Run{
             }
             let cameraWrapper = player.controls.isLocked ? player.cameraWrapper : orbitCameraWrapper;
             
-            sceneRenderer.renderScene(cameraWrapper.camera);
+            sceneRenderer.renderScene(cameraWrapper);
             cameraWrapper.renderLookAt('look-at');
             orbitCameraWrapper.renderPosition('camera-position');
 

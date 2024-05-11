@@ -18,8 +18,10 @@ export default class LightingContainer{
 
         if(includeHelper){
             this.lightHelper = new THREE.DirectionalLightHelper(this.directionalLight,5, 0xFFFFFF);
+            this.lightHelper.visible = false;
             sceneRenderer.addToScene(this.lightHelper);
             this.cameraHelper = new THREE.CameraHelper(this.directionalLight.shadow.camera);
+            this.cameraHelper.visible = false;
             sceneRenderer.addToScene(this.cameraHelper);
         }
                

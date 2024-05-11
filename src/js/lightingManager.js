@@ -40,34 +40,8 @@ export default class LightingManager{
     }
     
     setUpDirectionalLight(isSelected, x, y, z, intensity, includeHelper){
-        // const directionalLight = new THREE.DirectionalLight(0xFFFFFF, intensity);
         let lightName = 'directionalLight';
-        // directionalLight.position.set(x, y, z);
         
-        // directionalLight.shadow.camera.left = -70;
-        // directionalLight.shadow.camera.right = 50;
-        // directionalLight.shadow.camera.top = 50;
-        // directionalLight.shadow.camera.bottom = -70;
-        // directionalLight.shadow.camera.near = 0.1;
-        // directionalLight.shadow.camera.far = 140;
-        // directionalLight.shadow.bias = -0.0005;
-        // directionalLight.shadow.mapSize = new THREE.Vector2(512,512);
-
-        // let directionalLightHelper = null;
-        // if(includeHelper){
-        //     directionalLightHelper = new THREE.DirectionalLightHelper(directionalLight,5, 0xFFFFFF);
-        //     this.sceneRenderer.addToScene(directionalLightHelper);
-        //     const directionalLightCameraHelper = new THREE.CameraHelper(directionalLight.shadow.camera);
-        //     this.sceneRenderer.addToScene(directionalLightCameraHelper);
-        // }
-               
-        // this.sceneRenderer.addToScene(directionalLight);
-            
-        // this.lights.push({name:lightName, object: directionalLight, helper: directionalLightHelper})
-        // if(isSelected){
-        //     this.selectedLightNames.push(lightName);
-        // }
-        // return directionalLight;
         let directionalLightContainer = new LightingContainer(this.sceneRenderer, x, y, z, intensity, includeHelper);
         this.lights.push({name:lightName, object: directionalLightContainer.directionalLight, helper: directionalLightContainer.lightHelper})
         if(isSelected){

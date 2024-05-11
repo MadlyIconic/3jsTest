@@ -27,10 +27,11 @@ export default class SceneRenderer {
         return this.cameraWrapper.name;
     }
 
-    renderScene(camera){
+    renderScene(cameraWrapper){
         let self = this;
+        this.cameraWrapper = cameraWrapper;
         //self.renderer.render(self.scene,self.cameraWrapper.camera);
-        self.renderer.render(self.scene,camera);
+        self.renderer.render(self.scene,cameraWrapper.camera);
     }
 
     renderSetSize(width, height){
