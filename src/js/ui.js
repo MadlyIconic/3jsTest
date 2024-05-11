@@ -15,12 +15,12 @@ export default class UI {
             movePlayerToCamera: function() {
                 console.log("Player position:", self.player.cameraWrapper.position);
                 console.log("Camera position:", self.cameraWrapper.position);
-                self.player.cameraWrapper.position.set(self.cameraWrapper.position.x, self.cameraWrapper.position.y, self.cameraWrapper.position.z);
+                self.player.cameraWrapper.position.copy(self.cameraWrapper.position);
             },
             moveCameraToPlayer: function() {
                 console.log("Player position:", self.player.cameraWrapper.position);
-                console.log("Camera position:", self.cameraWrapper.position);
-                self.cameraWrapper.position.set(self.player.cameraWrapper.position.x, self.player.cameraWrapper.position.y, self.player.cameraWrapper.position.z);
+                console.log("Camera position:", self.cameraWrapper.position);                
+                self.cameraWrapper.position.copy(self.player.cameraWrapper.position);
             }
         };
         

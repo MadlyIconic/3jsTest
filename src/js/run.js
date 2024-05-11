@@ -57,6 +57,7 @@ export default class Run{
             let dt = (currentTime - previousTime)/1000;
             stats.update();
             player.applyInputs(dt);
+            player.updateBoundsHelper();
             physics.update(dt, player, world, sceneRenderer.cameraName);
             renderObjects(sceneRenderer);
             let currentCamera = player.controls.isLocked ? 1 : 0;

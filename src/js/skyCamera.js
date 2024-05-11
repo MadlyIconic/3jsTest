@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import positionToString from './positionHelper';
 
 export default class SkyCamera{
-    constructor(fov,perspectiveRatio,near,far, name){
+    constructor(fov,perspectiveRatio,near,far, name, isHelperVisible){
         this.name = name;
         console.log('creating a camera: ', fov,perspectiveRatio,near,far, name);
         this.camera = new THREE.PerspectiveCamera(
@@ -12,7 +12,7 @@ export default class SkyCamera{
             far
         );
         this.cameraHelper = new THREE.CameraHelper(this.camera);
-        this.cameraHelper.visible = false;
+        //this.cameraHelper.visible = isHelperVisible;
     }
 
     get position(){

@@ -1,5 +1,6 @@
 import * as THREE from 'three'
 import { RNG } from './rng';
+import { blocks } from './blocks';
 
 
 export class World extends THREE.Group {
@@ -17,6 +18,7 @@ export class World extends THREE.Group {
         this.size = size;
         this.main = main;
         this.params = params;
+        this.uuidForMeshes = new Map();
         
     }
 
@@ -29,11 +31,21 @@ export class World extends THREE.Group {
     setupWorld(size){
         let self = this;
         const rng = new RNG(self.params.seed);
-        let allButTheBlocks = self.main.sceneRenderer.scene.children.filter((e) => e.type !== 'Mesh');
+        
+        let allButTheBlocks = self.main.sceneRenderer.scene.children
+            .filter(function(element){
+                if(!self.uuidForMeshes.has(element.uuid))   {
+                    return true;
+                }else{
+                    return false;
+                }
+            }
+                //(e) => e => !self.uuid[e.uuid]
+            );
         if(allButTheBlocks.length > 0){
             self.main.sceneRenderer.scene.children = allButTheBlocks;
         }
-
+        self.uuidForMeshes = new Map();
         self.main.boxBuilder.initialiseTerrain(size);
         self.main.boxBuilder.generateResources(size, rng);
         self.main.boxBuilder.generateTerrain(size, self.params, rng);
@@ -41,6 +53,7 @@ export class World extends THREE.Group {
         for (const mesh in meshes) {
             if (meshes.hasOwnProperty(mesh)) {
                 if(meshes[mesh].isObject3D){
+                    self.uuidForMeshes.set(meshes[mesh].uuid,true);
                     self.main.sceneRenderer.addToScene(meshes[mesh]);          
                 }
             }
