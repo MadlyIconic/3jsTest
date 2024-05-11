@@ -8,6 +8,9 @@ const collisionMaterial = new THREE.MeshBasicMaterial({
 });
 const collisionGeometry = new THREE.BoxGeometry(1.001, 1.001, 1.001);
 
+const contactMaterial = new THREE.MeshBasicMaterial({ wireframe: true, color: 0x00ff00 });
+const contactGeometry = new THREE.SphereGeometry(0.05, 6, 6);
+
 export class Physics {
     constructor(scene){
         this.cameraName = null;
@@ -26,12 +29,20 @@ export class Physics {
         const collisions = this.narrowPhase(candidates, player);
 
         if(collisions.length > 0){
-            this.resolveCollisions(collisions);
+            this.resolveCollisions(collisions, player);
         }
     }
     
-    resolveCollisions(collisions){
+    resolveCollisions(collisions, player){
+        collisions.sort((a,b) => {
+            return a.overlap < b.overlap;
+        })
 
+        for (const collision of collisions) {
+            let deltaPosition = collision.normal.clone();
+            deltaPosition.multiplyScalar(collision.overlap);
+            player.position.add(deltaPosition);
+        }
     }
 
     narrowPhase(candidates, player){
@@ -67,6 +78,8 @@ export class Physics {
                     normal,
                     overlap
                 });
+
+                this.addContactPointHelper(closestPoint);
             }
         }
 
@@ -130,6 +143,12 @@ export class Physics {
         const blockMesh = new THREE.Mesh(collisionGeometry, collisionMaterial);
         blockMesh.position.copy(block);
         this.helpers.add(blockMesh);
+    }
+
+    addContactPointHelper(p){
+        const contactMesh = new THREE.Mesh(contactGeometry, contactMaterial);
+        contactMesh.position.copy(p);
+        this.helpers.add(contactMesh);
     }
         
 }
