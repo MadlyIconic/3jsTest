@@ -12,12 +12,12 @@ export class World extends THREE.Group {
      * @param {*} size
      * @param {*} main
      */
-    constructor(size = {width:32, height:16}, main, params){
+    constructor(size = {width:32, height:16}, main){
         super();
-        console.log(params);
+        console.log(main.options.params);
         this.size = size;
         this.main = main;
-        this.params = params;
+        this.params = main.options.params;
         this.uuidForMeshes = new Map();
         
     }

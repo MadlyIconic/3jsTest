@@ -42,7 +42,7 @@ export default class LightingManager{
     setUpDirectionalLight(isSelected, x, y, z, intensity, includeHelper){
         let lightName = 'directionalLight';
         
-        let directionalLightContainer = new LightingContainer(this.sceneRenderer, x, y, z, intensity, includeHelper);
+        let directionalLightContainer = new LightingContainer(this.sceneRenderer, x, y, z, intensity, includeHelper, 0xFFFFFF);
         this.lights.push({name:lightName, object: directionalLightContainer.directionalLight, helper: directionalLightContainer.lightHelper})
         if(isSelected){
             this.selectedLightNames.push(lightName);

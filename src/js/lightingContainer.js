@@ -1,10 +1,10 @@
 import * as THREE from 'three';
 export default class LightingContainer{
-    constructor(sceneRenderer, x, y, z, intensity, includeHelper){
+    constructor(sceneRenderer, x, y, z, intensity, includeHelper, color = 0xFFFFFF){
         this.lightHelper = null;
         this.cameraHelper = null;
-        this.directionalLight = new THREE.DirectionalLight(0xFFFFFF, intensity);
-        let lightName = 'directionalLight';
+        this.directionalLight = new THREE.DirectionalLight(color, intensity);
+        this.lightName = 'directionalLight';
         this.directionalLight.position.set(x, y, z);
         
         this.directionalLight.shadow.camera.left = -70;

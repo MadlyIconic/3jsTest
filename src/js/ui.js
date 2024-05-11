@@ -90,3 +90,8 @@ export default class UI {
 
     }
 }
+
+export function setupUI(gui, world, orbitCameraWrapper, player, directionalLightingContainer){
+    let ui = new UI(gui, world, orbitCameraWrapper, player, directionalLightingContainer);
+    ui.createUI();
+}

@@ -1,9 +1,10 @@
 import * as THREE from 'three';
 import Stats from 'three/examples/jsm/libs/stats.module.js';
 import { World } from "./world";
-import UI from './ui';
+import UI, { setupUI } from './ui';
 import { Player } from "./player";
 import { Physics } from './physics';
+import { calculateAspect } from './positionHelper';
 
 const stats = new Stats();
 
@@ -14,52 +15,55 @@ export default class Run{
 
     mainFunction() {
         console.log('config loaded', this.options);
-        let worldSize = {width:this.options.worldwidth, height:this.options.worldheight};
-        document.body.append(stats.dom);
         let sceneRenderer = this.sceneRenderer;
         let lights = this.lightingManager.lights;
-        let options = this.options;
 
-        let skyColor = options.skycolor;
-        const directionalLightIntinsity = options.directionalLightIntinsity;
-        const ambientLightIntinsity = options.ambientLightIntinsity;
-        // camera = main.cameraBuilder.build(options.fov, calculateAspect(), options.near, options.far);
-        // camera.position.set(options.cameraPosition.x,options.cameraPosition.y,options.cameraPosition.z);
+        let worldSize = {width:this.options.worldwidth, height:this.options.worldheight};
+        document.body.append(stats.dom);
+                
         let playerCameraWrapper = this.cameraBuilder.buildSkyCamera(75, calculateAspect(), 0.1, 2000, 'Player camera');
-        const orbitCameraWrapper = this.cameraBuilder.buildSkyCamera(75, calculateAspect(), 0.1, 2000, 'Orbit camera');
-        orbitCameraWrapper.position.set(options.cameraPosition.x,options.cameraPosition.y,options.cameraPosition.z);
+        const orbitCameraWrapper = this.cameraBuilder.buildSkyCamera(75, calculateAspect(), 0.1, 2000, 'Orbit camera', this.options.cameraPosition);
         
-        const player = new Player(this.sceneRenderer.scene, this.sceneRenderer.renderer.domElement, playerCameraWrapper, options.playerConfig);
-        //player.cameraWrapper.position.set(136,26,31);
+        const player = new Player(this.sceneRenderer.scene, this.sceneRenderer.renderer.domElement, playerCameraWrapper, this.options.playerConfig);
         
         const physics = new Physics();
-        sceneRenderer.setUpRenderer(orbitCameraWrapper);
-        
-        let controls = setupOrbitControls(sceneRenderer);
-    
-        this.lightingManager.setUpAmbientLight(true, ambientLightIntinsity);
-        let directionalLightingContainer = this.lightingManager.setUpDirectionalLight(true, 60,75,50, directionalLightIntinsity, true);
-        //main.lightingManager.setUpDirectionalLight(true, 50,50,50, directionalLightIntinsity, true);
-        let previousTime = performance.now();
+        this.lightingManager.setUpAmbientLight(true, this.options.ambientLightIntinsity);
+        let directionalLightingContainer = this.lightingManager.setUpDirectionalLight(true, 60,75,50, this.options.directionalLightIntinsity, true);
 
+        this.sceneRenderer.setUpRenderer(orbitCameraWrapper);
         
-        this.sceneRenderer.renderer.setClearColor(skyColor);
+        let controls = setupOrbitControls(this.sceneRenderer);
+        
+        this.sceneRenderer.renderer.setClearColor(this.options.skycolor);
         
         
-        let world = new World(worldSize, this, options.params);
+        let world = new World(worldSize, this);
         world.generate();
         
-        let ui = new UI(this.gui, world, orbitCameraWrapper, player, directionalLightingContainer);
-        ui.createUI();
+        setupUI(this.gui, world, orbitCameraWrapper, player, directionalLightingContainer);
+        
         let previousCamera = player.controls.isLocked ? 1 : 0;
+        let previousTime = performance.now();
+
         function animate (time){
             let currentTime = performance.now();
             let dt = (currentTime - previousTime)/1000;
             stats.update();
-            player.applyInputs(dt);
-            player.updateBoundsHelper();
+            player.update(dt);
+            controls.update();
             physics.update(dt, player, world, sceneRenderer.cameraName);
-            renderObjects(sceneRenderer);
+            updateCameraSelection();
+            renderObjects(sceneRenderer, self.options);
+            previousTime = currentTime;
+        }
+
+        this.sceneRenderer.renderer.setAnimationLoop(
+            animate
+        );
+
+        
+
+        function updateCameraSelection(){
             let currentCamera = player.controls.isLocked ? 1 : 0;
             if(currentCamera !== previousCamera){
                 console.log('Camera changed!');
@@ -69,17 +73,10 @@ export default class Run{
             sceneRenderer.renderScene(cameraWrapper);
             cameraWrapper.renderLookAt('look-at');
             orbitCameraWrapper.renderPosition('camera-position');
-
-            controls.update();
-            previousTime = currentTime;
             previousCamera = currentCamera;
         }
 
-        this.sceneRenderer.renderer.setAnimationLoop(
-            animate
-        );
-
-        function renderObjects(sceneRenderer){
+        function renderObjects(sceneRenderer, options){
             let lightsWithShadow = lights.filter((light) => light.object.shadow);
             lightsWithShadow.filter((camera) => camera.object.isDirectionalLight == true).forEach((light) => {
                 let editableLight = light.object;
@@ -93,6 +90,7 @@ export default class Run{
             })
     
             sceneRenderer.setupShadows(options, lightsWithShadow);
+
         }
     
         window.addEventListener('resize', () => {
@@ -116,7 +114,3 @@ function setupOrbitControls(sceneRenderer){
     return controls;
 }
 
-function calculateAspect(){
-    const perspectiveRatio = window.innerWidth/window.innerHeight;
-    return perspectiveRatio;
-}

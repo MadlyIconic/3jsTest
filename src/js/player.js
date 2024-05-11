@@ -7,14 +7,15 @@ export class Player {
         this.height = 1.75;
         this.maxSpeed = 10;
         this.minSpeed = 0;
-        this.playerPosition = new THREE.Vector3(playerConfig.playerPosition.x, playerConfig.playerPosition.y, playerConfig.playerPosition.z);
+        //this.playerPosition = new THREE.Vector3(playerConfig.playerPosition.x, playerConfig.playerPosition.y, playerConfig.playerPosition.z);
         this.input = new THREE.Vector3();
         this.velocity = new THREE.Vector3();
         this.cameraWrapper = cameraWrapper;
         //this.cameraWrapper.cameraHelper.visible = false;
         this.controls = new PointerLockControls(this.cameraWrapper.camera, domElement);
         //this.position.set(this.playerPosition.x, this.playerPosition.y, this.playerPosition.z);
-        this.position.set(36,20,36);
+        //this.position.set(36,20,36);
+        this.position.set(playerConfig.playerPosition.x, playerConfig.playerPosition.y, playerConfig.playerPosition.z);
         scene.add(this.cameraWrapper.camera);
         scene.add(this.cameraWrapper.cameraHelper);
 
@@ -27,6 +28,11 @@ export class Player {
         )
         
         scene.add(this.boundsHelper);
+    }
+
+    update(dt){
+        this.applyInputs(dt);
+        this.updateBoundsHelper(dt);
     }
 
     applyInputs(dt){

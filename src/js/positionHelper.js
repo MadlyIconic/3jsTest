@@ -6,3 +6,8 @@ export default function positionToString(obj){
 
     return str;
 }
+
+export function calculateAspect(){
+    const perspectiveRatio = window.innerWidth/window.innerHeight;
+    return perspectiveRatio;
+}
