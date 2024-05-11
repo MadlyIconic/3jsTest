@@ -2,15 +2,17 @@ import * as THREE from 'three';
 import positionToString from './positionHelper';
 import { PointerLockControls } from 'three/examples/jsm/Addons.js';
 export class Player {
-    constructor(scene, domElement, cameraWrapper){
+    constructor(scene, domElement, cameraWrapper, playerConfig){
         this.maxSpeed = 10;
         this.minSpeed = 0;
+        this.playerPosition = new THREE.Vector3(playerConfig.playerPosition.x, playerConfig.playerPosition.y, playerConfig.playerPosition.z);
         this.input = new THREE.Vector3();
         this.velocity = new THREE.Vector3();
         this.cameraWrapper = cameraWrapper; //new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 200);
         this.controls = new PointerLockControls(this.cameraWrapper.camera, domElement);
-        this.position.set(72,16,32)
+        this.position.set(this.playerPosition.x, this.playerPosition.y, this.playerPosition.z);
         scene.add(this.cameraWrapper.camera);
+        scene.add(this.cameraWrapper.cameraHelper);
 
         document.addEventListener('keydown', this.onKeyDown.bind(this));
         document.addEventListener('keyup', this.onKeyUp.bind(this));

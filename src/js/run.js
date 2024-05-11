@@ -27,7 +27,7 @@ export default class Run{
         const orbitCameraWrapper = this.cameraBuilder.buildSkyCamera(75, calculateAspect(), 0.1, 2000, 'Orbit camera');
         orbitCameraWrapper.position.set(options.cameraPosition.x,options.cameraPosition.y,options.cameraPosition.z);
         
-        const player = new Player(this.sceneRenderer.scene, this.sceneRenderer.renderer.domElement, playerCameraWrapper);
+        const player = new Player(this.sceneRenderer.scene, this.sceneRenderer.renderer.domElement, playerCameraWrapper, options.playerConfig);
         player.cameraWrapper.position.set(136,26,31);
         
         sceneRenderer.setUpRenderer(orbitCameraWrapper);
@@ -35,7 +35,7 @@ export default class Run{
         let controls = setupOrbitControls(sceneRenderer);
     
         this.lightingManager.setUpAmbientLight(true, ambientLightIntinsity);
-        this.lightingManager.setUpDirectionalLight(true, 60,75,50, directionalLightIntinsity, true);
+        let directionalLightingContainer = this.lightingManager.setUpDirectionalLight(true, 60,75,50, directionalLightIntinsity, true);
         //main.lightingManager.setUpDirectionalLight(true, 50,50,50, directionalLightIntinsity, true);
         let previousTime = performance.now();
 
@@ -46,7 +46,7 @@ export default class Run{
         let world = new World(worldSize, this, options.params);
         world.generate();
         //let ui = new UI(this.gui, world, player.cameraWrapper.camera, player);
-        let ui = new UI(this.gui, world, orbitCameraWrapper.camera, player);
+        let ui = new UI(this.gui, world, orbitCameraWrapper, player, directionalLightingContainer);
         ui.createUI();
     
         function animate (time){

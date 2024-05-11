@@ -11,6 +11,7 @@ export default class SkyCamera{
             near,
             far
         );
+        this.cameraHelper = new THREE.CameraHelper(this.camera);
     }
 
     get position(){

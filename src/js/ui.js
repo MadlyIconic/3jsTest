@@ -1,39 +1,46 @@
 import { resources } from './blocks';
 export default class UI {
-    constructor(gui, world, camera, player){
+    constructor(gui, world, cameraWrapper, player, lightingContainer){
         this.gui = gui;
         this.world = world;
-        this.camera = camera;
+        this.cameraWrapper = cameraWrapper;
         this.player = player;
+        this.lightingContainer = lightingContainer;
     }
 
     createUI(){
         let self = this;
+        const worldFolder = self.gui.addFolder('World');
+        if(this.lightingContainer){
+            worldFolder.add(this.lightingContainer.cameraHelper, 'visible').name('Lighting camera visibility')    
+            worldFolder.add(this.lightingContainer.lightHelper, 'visible').name('Lighting helper visibility')    
+            
+        }
 
         if(this.player){
             const playerFolder = self.gui.addFolder('Player');
-            playerFolder.add(this.player, 'maxSpeed', 1, 20).name('Max Speed');    
+            playerFolder.add(this.player, 'maxSpeed', 1, 20).name('Max Speed');
+            playerFolder.add(this.player.cameraWrapper.cameraHelper, 'visible').name('Camera visibility')
         }
         
-        self.gui.add(self.world.size, 'width',8 , 128, 1).name('Width').onChange(function(e){
-            self.world.generate();
-        });
-        self.gui.add(self.world.size, 'height',8 , 128, 1).name('Height').onChange(function(e){
-            self.world.generate();
-        });
         const cameraFolder = self.gui.addFolder('Camera');
-        cameraFolder.add(self.camera.position, 'x',-599 , 500).name('X').onChange(function(e){
-            console.log('camera: ', e, self.camera.position.x, self.camera.position.y, self.camera.position.z);
+        cameraFolder.add(self.cameraWrapper.position, 'x',-200 , 200).name('X').onChange(function(e){
+            //console.log('camera: ', e, self.camera.position.x, self.camera.position.y, self.camera.position.z);
         });
-        cameraFolder.add(self.camera.position, 'y',-599 , 500).name('Y').onChange(function(e){
+        cameraFolder.add(self.cameraWrapper.position, 'y',-200 , 200).name('Y').onChange(function(e){
             
         });
-        cameraFolder.add(self.camera.position, 'z',-16 , 128, 1).name('Z').onChange(function(e){
+        cameraFolder.add(self.cameraWrapper.position, 'z',-16 , 128, 1).name('Z').onChange(function(e){
             
         });
-
 
         const terrainFolder = self.gui.addFolder('Terrain');
+        terrainFolder.add(self.world.size, 'width',8 , 128, 1).name('Width').onChange(function(e){
+            self.world.generate();
+        });
+        terrainFolder.add(self.world.size, 'height',8 , 128, 1).name('Height').onChange(function(e){
+            self.world.generate();
+        });
         terrainFolder.add(self.world.params, 'seed', 1 , 10000).name('Seed').onChange(function(e){
             self.world.generate();
         });
@@ -43,7 +50,7 @@ export default class UI {
         terrainFolder.add(self.world.params.terrain, 'magnitude',0,1).name('Magnitude').onChange(function(e){
             self.world.generate();
         });
-        terrainFolder.add(self.world.params.terrain, 'offset',0,1).name('Offset').onChange(function(e){
+        terrainFolder.add(self.world.params.terrain, 'offset',0,0.4).name('Offset').onChange(function(e){
             self.world.generate();
         });
 

@@ -25,8 +25,15 @@
         }
     },
     "cameraPosition":{
-        "x":136,
-        "y":25,
-        "z":31
+        "x":55,
+        "y":26,
+        "z":44
+    },
+    "playerConfig":{
+        "playerPosition":{
+            "x":55,
+            "y":26,
+            "z":44
+        }
     }
 }
