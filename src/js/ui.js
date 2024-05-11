@@ -10,11 +10,27 @@ export default class UI {
 
     createUI(){
         let self = this;
+
+        var obj = {
+            movePlayerToCamera: function() {
+                console.log("Player position:", self.player.cameraWrapper.position);
+                console.log("Camera position:", self.cameraWrapper.position);
+                self.player.cameraWrapper.position.set(self.cameraWrapper.position.x, self.cameraWrapper.position.y, self.cameraWrapper.position.z);
+            },
+            moveCameraToPlayer: function() {
+                console.log("Player position:", self.player.cameraWrapper.position);
+                console.log("Camera position:", self.cameraWrapper.position);
+                self.cameraWrapper.position.set(self.player.cameraWrapper.position.x, self.player.cameraWrapper.position.y, self.player.cameraWrapper.position.z);
+            }
+        };
+        
+
         const worldFolder = self.gui.addFolder('World');
         if(this.lightingContainer){
             worldFolder.add(this.lightingContainer.cameraHelper, 'visible').name('Lighting camera visibility')    
             worldFolder.add(this.lightingContainer.lightHelper, 'visible').name('Lighting helper visibility')    
-            
+            worldFolder.add(obj, "movePlayerToCamera").name("Move player to camera");
+            worldFolder.add(obj, "moveCameraToPlayer").name("Move camera to player");
         }
 
         if(this.player){

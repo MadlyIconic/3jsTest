@@ -10,7 +10,8 @@ export class Player {
         this.velocity = new THREE.Vector3();
         this.cameraWrapper = cameraWrapper; //new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 200);
         this.controls = new PointerLockControls(this.cameraWrapper.camera, domElement);
-        this.position.set(this.playerPosition.x, this.playerPosition.y, this.playerPosition.z);
+        //this.position.set(this.playerPosition.x, this.playerPosition.y, this.playerPosition.z);
+        this.position.set(36,20,36);
         scene.add(this.cameraWrapper.camera);
         scene.add(this.cameraWrapper.cameraHelper);
 
@@ -25,7 +26,7 @@ export class Player {
             this.controls.moveRight(this.velocity.x * dt);
             this.controls.moveForward(this.velocity.z * dt);
 
-            document.getElementById('player-position').innerHTML = positionToString(this);
+            document.getElementById('player-position').innerHTML = this.cameraWrapper.name + ":" + positionToString(this.position);
         }
     }
 

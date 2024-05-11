@@ -1,3 +1,4 @@
+import * as THREE from 'three';
 import Stats from 'three/examples/jsm/libs/stats.module.js';
 import { World } from "./world";
 import UI from './ui';
@@ -28,7 +29,7 @@ export default class Run{
         orbitCameraWrapper.position.set(options.cameraPosition.x,options.cameraPosition.y,options.cameraPosition.z);
         
         const player = new Player(this.sceneRenderer.scene, this.sceneRenderer.renderer.domElement, playerCameraWrapper, options.playerConfig);
-        player.cameraWrapper.position.set(136,26,31);
+        //player.cameraWrapper.position.set(136,26,31);
         
         sceneRenderer.setUpRenderer(orbitCameraWrapper);
         
@@ -48,21 +49,26 @@ export default class Run{
         //let ui = new UI(this.gui, world, player.cameraWrapper.camera, player);
         let ui = new UI(this.gui, world, orbitCameraWrapper, player, directionalLightingContainer);
         ui.createUI();
-    
+        let previousCamera = player.controls.isLocked ? 1 : 0;
         function animate (time){
             let currentTime = performance.now();
             let dt = (currentTime - previousTime)/1000;
             stats.update();
             player.applyInputs(dt);
             renderObjects(sceneRenderer);
+            let currentCamera = player.controls.isLocked ? 1 : 0;
+            if(currentCamera !== previousCamera){
+                console.log('Camera changed!');
+            }
             let cameraWrapper = player.controls.isLocked ? player.cameraWrapper : orbitCameraWrapper;
             
             sceneRenderer.renderScene(cameraWrapper.camera);
-            
+            cameraWrapper.renderLookAt('look-at');
             orbitCameraWrapper.renderPosition('camera-position');
 
             controls.update();
             previousTime = currentTime;
+            previousCamera = currentCamera;
         }
 
         this.sceneRenderer.renderer.setAnimationLoop(
