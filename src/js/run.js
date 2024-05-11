@@ -26,7 +26,7 @@ export default class Run{
         
         const player = new Player(this.sceneRenderer.scene, this.sceneRenderer.renderer.domElement, playerCameraWrapper, this.options.playerConfig);
         
-        const physics = new Physics();
+        const physics = new Physics(this.sceneRenderer.scene);
         this.lightingManager.setUpAmbientLight(true, this.options.ambientLightIntinsity);
         let directionalLightingContainer = this.lightingManager.setUpDirectionalLight(true, 60,75,50, this.options.directionalLightIntinsity, true);
 
@@ -39,7 +39,7 @@ export default class Run{
         
         let world = new World(worldSize, this);
         world.generate();
-        
+
         setupUI(this.gui, world, orbitCameraWrapper, player, directionalLightingContainer);
         
         let previousCamera = player.controls.isLocked ? 1 : 0;

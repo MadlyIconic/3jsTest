@@ -142,7 +142,7 @@ export default class BoxBuilder{
                     const mesh = meshes[blockId];
                     const instanceId = mesh.count;
                     if(!this.isBlockObscured(x,y,z, size)){
-                        matrix.setPosition(x+0.5,y+0.5,z+0.5);
+                        matrix.setPosition(x,y,z);
                         mesh.setMatrixAt(instanceId, matrix);
                         self.setBlockInstanceId(x,y,z,instanceId, size);
                         mesh.count++;
