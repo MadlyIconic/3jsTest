@@ -58,6 +58,7 @@ export default class Run{
         }
 
         this.sceneRenderer.renderer.setAnimationLoop(
+            // The animate function
             animate
         );
 
