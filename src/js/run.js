@@ -49,7 +49,7 @@ export default class Run{
             let currentTime = performance.now();
             let dt = (currentTime - previousTime)/1000;
             stats.update();
-            player.update(dt);
+            
             controls.update();
             physics.update(dt, player, world, sceneRenderer.cameraName);
             updateCameraSelection();

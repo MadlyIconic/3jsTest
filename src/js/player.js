@@ -2,11 +2,15 @@ import * as THREE from 'three';
 import positionToString from './positionHelper';
 import { PointerLockControls } from 'three/examples/jsm/Addons.js';
 export class Player {
-    constructor(scene, domElement, cameraWrapper, playerConfig, boundsHelper){
+    constructor(scene, domElement, cameraWrapper, playerConfig){
         this.radius = 0.5;
         this.height = 1.75;
-        this.maxSpeed = 10;
+        this.jumpSpeed = 8;
+        this.onGround = false;
+        this.maxSpeed = 2;
         this.minSpeed = 0;
+        this.localWorldVelocity = new THREE.Vector3();
+
         //this.playerPosition = new THREE.Vector3(playerConfig.playerPosition.x, playerConfig.playerPosition.y, playerConfig.playerPosition.z);
         this.input = new THREE.Vector3();
         this.velocity = new THREE.Vector3();
@@ -26,23 +30,34 @@ export class Player {
             new THREE.CylinderGeometry(this.radius, this.radius, this.height,16),
             new THREE.MeshBasicMaterial({wireframe: true})
         )
-        
-        scene.add(this.boundsHelper);
+        this.boundsHelper.visible = false;
+        scene.add(this.boundsHelper);   
     }
 
-    update(dt){
+    update(dt){        
         this.applyInputs(dt);
         this.updateBoundsHelper(dt);
+    }
+
+    get worldVelocity(){
+        this.localWorldVelocity.copy(this.velocity);
+        this.localWorldVelocity.applyEuler(new THREE.Euler(0, this.cameraWrapper.camera.rotation.y, 0));
+        return this.localWorldVelocity;
+    }
+
+    applyWorldDeltaVelocity(dv){
+        dv.applyEuler(new THREE.Euler(0, -this.cameraWrapper.camera.rotation.y, 0));
+        this.velocity.add(dv);
     }
 
     applyInputs(dt){
         if(this.controls.isLocked){
             this.velocity.x = this.input.x;
             this.velocity.z = this.input.z;
+
             this.controls.moveRight(this.velocity.x * dt);
             this.controls.moveForward(this.velocity.z * dt);
-
-            document.getElementById('player-position').innerHTML = this.cameraWrapper.name + ":" + positionToString(this.position);
+            this.position.y += this.velocity.y * dt;    
         }
     }
 
@@ -58,7 +73,7 @@ export class Player {
     onKeyDown(event){
         if(!this.controls.isLocked){
             this.controls.lock();
-            console.log('controls locked');
+            //console.log('controls locked');
         }
 
         switch (event.code) {
@@ -78,10 +93,20 @@ export class Player {
                 this.position.set(72,16,32);
                 this.velocity.set(0,0,0);
                 break;
+            case 'Space':
+                console.log('event code:', event.code, this.onGround);
+                if(this.onGround){
+                    this.velocity.y = this.jumpSpeed;
+                }
+                break;
             default:
-                console.log('event code:', event.code);
+                //console.log('event code:', event.code);
                 break;
         }
+    }
+
+    renderKeyPress(keyCode){
+        document.getElementById('keypress').innerHTML = keyCode;
     }
 
     /**

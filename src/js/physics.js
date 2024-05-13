@@ -13,18 +13,30 @@ const contactGeometry = new THREE.SphereGeometry(0.05, 6, 6);
 
 export class Physics {
     constructor(scene){
+        this.simulationRate = 300;
+        this.timeStep = 1 / this.simulationRate;
+        this.accumulator = 0;
+        this.gravity = 32;
         this.cameraName = null;
         this.helpers = new THREE.Group();
         scene.add(this.helpers);
     }
 
     update(dt, player, world, cameraName){
-        this.helpers.clear();
-        this.cameraName = cameraName;
-        this.detectCollisions(player, world);
+        this.accumulator += dt;
+
+        while (this.accumulator >= this.timeStep) {
+            this.helpers.clear();
+            player.velocity.y -= this.gravity * this.timeStep;
+            player.update(dt);
+            this.cameraName = cameraName;
+            this.detectCollisions(player, world);   
+            this.accumulator -= this.timeStep;
+        }
     }
 
     detectCollisions(player, world){
+        player.onGround = false;
         const candidates = this.broadPhase(player, world);
         const collisions = this.narrowPhase(candidates, player);
 
@@ -42,6 +54,13 @@ export class Physics {
             let deltaPosition = collision.normal.clone();
             deltaPosition.multiplyScalar(collision.overlap);
             player.position.add(deltaPosition);
+
+            // Get the magnitude of the player's velocity along the collision normal
+            let magnitude = player.worldVelocity.dot(collision.normal);
+            // Remove that part of the velocity from the player's velocity
+            let velocityAdjustment = collision.normal.clone().multiplyScalar(magnitude);
+
+            player.applyWorldDeltaVelocity(velocityAdjustment.negate());
         }
     }
 
@@ -67,6 +86,7 @@ export class Physics {
                 if(overlapY < overlapXZ){
                     normal = new THREE.Vector3(0, -Math.sign(dy), 0);
                     overlap = overlapY;
+                    player.onGround = true;
                 } else {
                     normal = new THREE.Vector3(-dx, 0, -dz).normalize();
                     overlap = overlapXZ;

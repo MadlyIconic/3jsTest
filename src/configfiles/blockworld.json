@@ -26,13 +26,13 @@
     },
     "cameraPosition":{
         "x":38,
-        "y":21,
+        "y":64,
         "z":38
     },
     "playerConfig":{
         "playerPosition":{
             "x":36,
-            "y":20,
+            "y":60,
             "z":36
         }
     }
