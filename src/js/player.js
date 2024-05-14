@@ -5,9 +5,9 @@ export class Player {
     constructor(scene, domElement, cameraWrapper, playerConfig){
         this.radius = 0.5;
         this.height = 1.75;
-        this.jumpSpeed = 8;
+        this.jumpSpeed = 10;
         this.onGround = false;
-        this.maxSpeed = 2;
+        this.maxSpeed = 10;
         this.minSpeed = 0;
         this.localWorldVelocity = new THREE.Vector3();
 
@@ -30,13 +30,13 @@ export class Player {
             new THREE.CylinderGeometry(this.radius, this.radius, this.height,16),
             new THREE.MeshBasicMaterial({wireframe: true})
         )
-        this.boundsHelper.visible = false;
+        //wthis.boundsHelper.visible = false;
         scene.add(this.boundsHelper);   
     }
 
-    update(dt){        
-        this.applyInputs(dt);
-        this.updateBoundsHelper(dt);
+    update(timeStep){        
+        this.applyInputs(timeStep);
+        this.updateBoundsHelper(timeStep);
     }
 
     get worldVelocity(){

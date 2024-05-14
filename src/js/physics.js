@@ -28,7 +28,7 @@ export class Physics {
         while (this.accumulator >= this.timeStep) {
             this.helpers.clear();
             player.velocity.y -= this.gravity * this.timeStep;
-            player.update(dt);
+            player.update(this.timeStep);
             this.cameraName = cameraName;
             this.detectCollisions(player, world);   
             this.accumulator -= this.timeStep;
@@ -51,6 +51,11 @@ export class Physics {
         })
 
         for (const collision of collisions) {
+
+            if(!this.pointInPlayerBoundingCylinder(collision.contactPoint, player)){
+                continue;
+            }
+
             let deltaPosition = collision.normal.clone();
             deltaPosition.multiplyScalar(collision.overlap);
             player.position.add(deltaPosition);
