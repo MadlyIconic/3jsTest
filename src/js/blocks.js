@@ -21,7 +21,8 @@ const textures =  {
 export const blocks = {
     empty:{
         id:0,
-        name: "empty"
+        name: "empty",
+        color: 0xe8e8e8,
     },
     grass: {
         id:1,

@@ -1,10 +1,11 @@
 import * as THREE from 'three';
 import Stats from 'three/examples/jsm/libs/stats.module.js';
-import { World } from "./world";
+import { WorldChunk } from "./worldChunk";
 import UI, { setupUI } from './ui';
 import { Player } from "./player";
 import { Physics } from './physics';
 import { calculateAspect } from './positionHelper';
+import { World } from './world';
 
 const stats = new Stats();
 
@@ -18,7 +19,7 @@ export default class Run{
         let sceneRenderer = this.sceneRenderer;
         let lights = this.lightingManager.lights;
 
-        let worldSize = {width:this.options.worldwidth, height:this.options.worldheight};
+        //let worldSize = {width:this.options.worldwidth, height:this.options.worldheight};
         document.body.append(stats.dom);
                 
         let playerCameraWrapper = this.cameraBuilder.buildSkyCamera(75, calculateAspect(), 0.1, 2000, 'Player camera');
@@ -36,8 +37,8 @@ export default class Run{
         
         this.sceneRenderer.renderer.setClearColor(this.options.skycolor);
         
-        
-        let world = new World(worldSize, this);
+        let world = new World(this);
+        //let worldChunk = new WorldChunk(worldSize, this);
         world.generate();
 
         setupUI(this.gui, world, orbitCameraWrapper, player, directionalLightingContainer);

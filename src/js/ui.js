@@ -52,10 +52,10 @@ export default class UI {
         });
 
         const terrainFolder = self.gui.addFolder('Terrain');
-        terrainFolder.add(self.world.size, 'width',8 , 128, 1).name('Width').onChange(function(e){
+        terrainFolder.add(self.world.chunkSize, 'width',8 , 128, 1).name('Width').onChange(function(e){
             self.world.generate();
         });
-        terrainFolder.add(self.world.size, 'height',8 , 128, 1).name('Height').onChange(function(e){
+        terrainFolder.add(self.world.chunkSize, 'height',8 , 128, 1).name('Height').onChange(function(e){
             self.world.generate();
         });
         terrainFolder.add(self.world.params, 'seed', 1 , 10000).name('Seed').onChange(function(e){

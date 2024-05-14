@@ -1,6 +1,4 @@
 {
-    "worldwidth": 64,
-    "worldheight": 32,
     "skycolor":"#80a0e0",
     "testValue": 5,
     "sphereColor": "#ff00ff",
@@ -16,6 +14,11 @@
     "directionalLightIntinsity":2,
     "ambientLightIntinsity": 0.3,
     "spotLightIntensity": 0.6,
+    
+    "chunkSize":{
+        "width": 32,
+        "height": 32
+    },
     "params": {
         "seed": 0,
         "terrain":{
@@ -25,15 +28,15 @@
         }
     },
     "cameraPosition":{
-        "x":38,
+        "x":16,
         "y":64,
-        "z":38
+        "z":16
     },
     "playerConfig":{
         "playerPosition":{
-            "x":36,
+            "x":16,
             "y":60,
-            "z":36
+            "z":16
         }
     }
 }

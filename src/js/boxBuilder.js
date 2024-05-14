@@ -119,6 +119,17 @@ export default class BoxBuilder{
         const boxGeometry = new THREE.BoxGeometry();
         const meshes = {};
         Object.values(blocks)
+            .filter(blockType => blockType.id === blocks.empty.id)
+            .forEach(blockType => {
+                let mesh = new THREE.InstancedMesh(boxGeometry);
+                mesh.name = blockType.name;
+                mesh.count = 0;
+                mesh.color =  blockType.color;
+                mesh.castShadow = false;
+                mesh.receiveShadow = false;
+                meshes[blockType.id] = mesh;
+            })
+        Object.values(blocks)
             .filter(blockType => blockType.id !== blocks.empty.id)
             .forEach(blockType => {
                 let mesh = new THREE.InstancedMesh(boxGeometry, blockType.material, maxCount);

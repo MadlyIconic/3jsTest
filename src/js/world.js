@@ -1,68 +1,52 @@
 import * as THREE from 'three'
-import { RNG } from './rng';
-import { blocks } from './blocks';
-
+import { WorldChunk } from './worldChunk';
 
 export class World extends THREE.Group {
-    /**
-     * @type {{
-     *  id: number,
-     * instanceId: number
-     * }[][][]}
-     * @param {*} size
-     * @param {*} main
-     */
-    constructor(size = {width:32, height:16}, main){
+    constructor(main){
         super();
-        console.log(main.options.params);
-        this.size = size;
-        this.main = main;
-        this.params = main.options.params;
-        this.uuidForMeshes = new Map();
-        
+        let self = this;
+        self.main = main;
+        self.chunkSize = main.options.chunkSize;
+        self.seed = main.options.params.seed;
+        self.params = main.options.params;
     }
 
     generate(){
         let self = this;
-        self.main.sceneRenderer.scene.children = self.main.sceneRenderer.scene.children.filter((e) => e.name != "TheBlocks");
-        self.setupWorld(self.size);
-    }
+        // self.chunk = new WorldChunk(self.params.size,self.main);
+        // self.chunk.generate();
 
-    setupWorld(size){
-        let self = this;
-        const rng = new RNG(self.params.seed);
-        
-        let allButTheBlocks = self.main.sceneRenderer.scene.children
-            .filter(function(element){
-                if(!self.uuidForMeshes.has(element.uuid))   {
-                    return true;
-                }else{
-                    return false;
-                }
-            }
-                //(e) => e => !self.uuid[e.uuid]
-            );
-        if(allButTheBlocks.length > 0){
-            self.main.sceneRenderer.scene.children = allButTheBlocks;
+        // this.add(self.chunk);
+        this.disposeChunks();
+        let iCountBottom = -1;
+        let iCountTop = 1;
+        for (let x = iCountBottom; x <= iCountTop; x++) {
+            for (let z = iCountBottom; z <= iCountTop; z++) {
+                const chunk = new WorldChunk(self.chunkSize, self.main);
+                chunk.position.set(x * this.chunkSize.width, 0, z * this.chunkSize.width);
+                chunk.userData = {x,z};
+                chunk.generate();
+                this.add(chunk);
+                console.log('Added chunk', chunk.userData);
+            }    
         }
-        self.uuidForMeshes = new Map();
-        self.main.boxBuilder.initialiseTerrain(size);
-        self.main.boxBuilder.generateResources(size, rng);
-        self.main.boxBuilder.generateTerrain(size, self.params, rng);
-        let meshes = self.main.boxBuilder.generateMeshes(this.size);
-        for (const mesh in meshes) {
-            if (meshes.hasOwnProperty(mesh)) {
-                if(meshes[mesh].isObject3D){
-                    self.uuidForMeshes.set(meshes[mesh].uuid,true);
-                    self.main.sceneRenderer.addToScene(meshes[mesh]);          
-                }
-            }
-        }
+
+        self.children.forEach(element => {
+            console.log("User data: ", element.userData, " Position: ", element.position);
+        });
     }
 
     getBlock(x,y,z,size){
         let self = this;
-        let block = self.main.boxBuilder.getBlock(x,y,z,size);
-        return block;
+        
+        return null; //self.chunk.get(x,y,z,size);
+    }
+
+    disposeChunks(){
+        this.traverse((chunk) => {
+            if(chunk.disposeInstances){
+                chunk.disposeInstances();
+            }
+        })
     }
 }

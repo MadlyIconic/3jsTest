@@ -13,7 +13,7 @@ import EventDrivenObject from './eventDrivenObject';
 import { Player } from './player';
 
 export default class Main extends EventDrivenObject{
-    constructor(configFile, canvasName, gridsize = 150, griddivisions = 10)
+    constructor(configFile, canvasName, gridsize = 256, griddivisions = 16)
     {
         super();
         this.events = {};

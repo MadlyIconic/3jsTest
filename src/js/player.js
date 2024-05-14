@@ -90,8 +90,8 @@ export class Player {
                 this.input.x = this.maxSpeed;
                 break;
             case 'KeyR':
-                this.position.set(72,16,32);
-                this.velocity.set(0,0,0);
+                //this.position.set(72,16,32);
+                //this.velocity.set(0,0,0);
                 break;
             case 'Space':
                 console.log('event code:', event.code, this.onGround);
