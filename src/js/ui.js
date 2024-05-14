@@ -36,7 +36,8 @@ export default class UI {
         if(this.player){
             const playerFolder = self.gui.addFolder('Player');
             playerFolder.add(this.player, 'maxSpeed', 1, 20).name('Max Speed');
-            playerFolder.add(this.player.cameraWrapper.cameraHelper, 'visible').name('Camera visibility')
+            playerFolder.add(this.player.cameraWrapper.cameraHelper, 'visible').name('Camera visibility');
+            playerFolder.add(this.player.boundsHelper, 'visible').name('Player visibility');
         }
         
         const cameraFolder = self.gui.addFolder('Camera');

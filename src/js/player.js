@@ -99,6 +99,9 @@ export class Player {
                     this.velocity.y = this.jumpSpeed;
                 }
                 break;
+            case "KeyV":
+                this.boundsHelper.visible = !this.boundsHelper.visible;
+                break;
             default:
                 //console.log('event code:', event.code);
                 break;
