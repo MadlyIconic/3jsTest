@@ -16,14 +16,14 @@
     "spotLightIntensity": 0.6,
     
     "chunkSize":{
-        "width": 8,
+        "width": 32,
         "height": 32
     },
     "params": {
         "seed": 0,
         "terrain":{
             "scale": 45,
-            "magnitude": 0.34,
+            "magnitude": 0.64,
             "offset": 0.27
         }
     },

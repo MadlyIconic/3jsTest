@@ -22,12 +22,13 @@ export const blocks = {
     empty:{
         id:0,
         name: "empty",
-        color: 0xe8e8e8,
+        color: 0xe8e8e8
     },
     grass: {
         id:1,
         name: "grass",
         color: 0x559020,
+        useTestMaterial: false,
         material: [
             new THREE.MeshLambertMaterial({map: textures.grassSide}), //right
             new THREE.MeshLambertMaterial({map: textures.grassSide}), //left
@@ -35,13 +36,16 @@ export const blocks = {
             new THREE.MeshLambertMaterial({map: textures.dirt}), //bottom
             new THREE.MeshLambertMaterial({map: textures.grassSide}), //front
             new THREE.MeshLambertMaterial({map: textures.grassSide}) //back
-        ]
+        ],
+        testMaterial: new THREE.MeshBasicMaterial({color: new THREE.Color(0xffff00), wireframe: true})
     },
     dirt: {
         id:2,
         name: "dirt",
         color: 0x807020,
-        material: new THREE.MeshLambertMaterial({map: textures.dirt})
+        useTestMaterial: false,
+        material: new THREE.MeshLambertMaterial({map: textures.dirt}),
+        testMaterial: new THREE.MeshBasicMaterial({color: new THREE.Color(0x00ff00), wireframe: true})
     },
     stone: {
         id:3,
