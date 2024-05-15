@@ -4,7 +4,7 @@ import { blocks } from './blocks';
 const collisionMaterial = new THREE.MeshBasicMaterial({
     color: 0xff0000,
     transparent: true,
-    opacity: 0.2
+    opacity: 0.1
 });
 const collisionGeometry = new THREE.BoxGeometry(1.001, 1.001, 1.001);
 
@@ -143,7 +143,7 @@ export class Physics {
         for (let x = extents.x.min; x <= extents.x.max; x++) {
             for (let y = extents.y.min; y <= extents.y.max; y++) {
                 for (let z = extents.z.min; z <= extents.z.max; z++) {
-                    const block = world.getBlock(x,y,z,world.size);
+                    const block = world.getBlock(x,y,z,world.chunkSize);
                     if(block && block.id !== blocks.empty.id){
                         const blockPosition = {x,y,z}
                         candidates.push(blockPosition);

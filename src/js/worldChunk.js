@@ -23,12 +23,6 @@ export class WorldChunk extends THREE.Group {
         
     }
 
-    generate2(uuidcollection, startVector){
-        let self = this;
-        self.uuidForMeshes = uuidcollection;
-        //self.setupWorld(self.size, startVector);
-    }
-
     generate(uuidcollection, startVector){
         let self = this;
         self.uuidForMeshes = uuidcollection;
@@ -132,9 +126,9 @@ export class WorldChunk extends THREE.Group {
                 for (let z = 0; z < size.width ; z++) {
     
                     const value = simplex.noise3d(
-                        x / resource.scale.x,
-                        y / resource.scale.y,
-                        z / resource.scale.z
+                       (this.position.x + x) / resource.scale.x,
+                       (this.position.y + y) / resource.scale.y,
+                       (this.position.z + z) / resource.scale.z
                     );
 
                     if(value > resource.scarcity){
@@ -150,8 +144,8 @@ export class WorldChunk extends THREE.Group {
         for (let x = 0; x < size.width; x++) {
             for (let z = 0; z < size.width; z++) {
                 const value = simplex.noise(
-                    x / params.terrain.scale,
-                    z / params.terrain.scale
+                    (this.position.x + x) / params.terrain.scale,
+                    (this.position.z + z) / params.terrain.scale
                 );
                 
                 const scaledNoise = params.terrain.offset + params.terrain.magnitude * value;

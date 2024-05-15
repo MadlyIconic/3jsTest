@@ -14,16 +14,15 @@
     "directionalLightIntinsity":2,
     "ambientLightIntinsity": 0.3,
     "spotLightIntensity": 0.6,
-    
     "chunkSize":{
-        "width": 32,
+        "width": 16,
         "height": 32
     },
     "params": {
-        "seed": 0,
+        "seed": 1000,
         "terrain":{
             "scale": 45,
-            "magnitude": 0.64,
+            "magnitude": 0.34,
             "offset": 0.27
         }
     },
