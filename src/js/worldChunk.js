@@ -1,6 +1,7 @@
 import * as THREE from 'three'
 import { RNG } from './rng';
 import { blocks } from './blocks';
+import { uuidv4 } from './positionHelper';
 
 
 export class WorldChunk extends THREE.Group {
@@ -18,12 +19,13 @@ export class WorldChunk extends THREE.Group {
         this.size = size;
         this.main = main;
         this.params = main.options.params;
-        this.uuidForMeshes = new Map();
+        this.uuidForMeshes = null;
         
     }
 
-    generate(){
+    generate(uuidcollection){
         let self = this;
+        self.uuidForMeshes = uuidcollection;
         //self.main.sceneRenderer.scene.children = self.main.sceneRenderer.scene.children.filter((e) => e.name != "TheBlocks");
         self.setupWorld(self.size);
     }
@@ -34,7 +36,7 @@ export class WorldChunk extends THREE.Group {
         
         let allButTheBlocks = self.main.sceneRenderer.scene.children
             .filter(function(element){
-                if(!self.uuidForMeshes.has(element.uuid))   {
+                if(!self.uuidForMeshes.uuids.has(element.uuid))   {
                     return true;
                 }else{
                     return false;
@@ -44,15 +46,16 @@ export class WorldChunk extends THREE.Group {
         if(allButTheBlocks.length > 0){
             self.main.sceneRenderer.scene.children = allButTheBlocks;
         }
-        self.uuidForMeshes = new Map();
+        
         self.main.boxBuilder.initialiseTerrain(size);
         self.main.boxBuilder.generateResources(size, rng);
         self.main.boxBuilder.generateTerrain(size, self.params, rng);
         let meshes = self.main.boxBuilder.generateMeshes(this.size);
+        self.uuidForMeshes = {id:self.uuidForMeshes.id, uuids : new Map()};
         for (const mesh in meshes) {
             if (meshes.hasOwnProperty(mesh)) {
                 if(meshes[mesh].isObject3D){
-                    self.uuidForMeshes.set(meshes[mesh].uuid,true);
+                    self.uuidForMeshes.uuids.set(meshes[mesh].uuid,true);
                     self.main.sceneRenderer.addToScene(meshes[mesh]);          
                 }
             }

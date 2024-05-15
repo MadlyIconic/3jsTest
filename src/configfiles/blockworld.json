@@ -16,7 +16,7 @@
     "spotLightIntensity": 0.6,
     
     "chunkSize":{
-        "width": 32,
+        "width": 8,
         "height": 32
     },
     "params": {
@@ -34,9 +34,9 @@
     },
     "playerConfig":{
         "playerPosition":{
-            "x":16,
-            "y":60,
-            "z":16
+            "x":1,
+            "y":14,
+            "z":1
         }
     }
 }

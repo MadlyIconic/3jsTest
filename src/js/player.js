@@ -20,6 +20,7 @@ export class Player {
         //this.position.set(this.playerPosition.x, this.playerPosition.y, this.playerPosition.z);
         //this.position.set(36,20,36);
         this.position.set(playerConfig.playerPosition.x, playerConfig.playerPosition.y, playerConfig.playerPosition.z);
+        this.cameraWrapper.camera.lookAt(new THREE.Vector3(8,16,8));
         scene.add(this.cameraWrapper.camera);
         scene.add(this.cameraWrapper.cameraHelper);
 
