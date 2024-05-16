@@ -6,6 +6,7 @@ export class World extends THREE.Group {
     constructor(main){
         super();
         let self = this;
+        self.drawDistance = 1;
         self.main = main;
         self.chunkSize = main.options.chunkSize;
         self.seed = main.options.params.seed;
@@ -14,6 +15,144 @@ export class World extends THREE.Group {
             id: uuidv4(),
             uuids: new Map()
         }; 
+    }
+
+    /**
+     * 
+     * @param {Player} player 
+     */
+    update(player){
+        let visibleChunks = this.getVisibleChunks(player)
+        const chunksToAdd = this.getChunksToAdd(visibleChunks);
+        this.removeUnusedChunks(visibleChunks);
+        //console.log(chunks.length);
+        if(player.reportVisibleChunks){
+            console.log('Visible Chunks')
+            visibleChunks.forEach(chunk => {
+                console.log(chunk);
+            });    
+
+            console.log('Chunks to add')
+            chunksToAdd.forEach(chunk => {
+                console.log(chunk);
+            });
+        }
+    }
+    
+    /**
+     * Returns an array of coordinates of chunks 
+     * that are not yet loaded and need to be adde to the scene
+     * @param {{x:number, z:number}[]} visibleChunks 
+     * @returns {{x:number, z:number}[]}
+     */
+    getChunksToAdd(visibleChunks){
+        const filteredChunks = visibleChunks.filter((chunk) => {
+            const chunkExists = this.children
+                .map((obj) => obj.userData)
+                .find(({x,z}) => 
+                    chunk.x === x && chunk.z === z
+                );
+
+            return !chunkExists;
+        })
+
+        return filteredChunks;
+    }
+
+        /**
+     * Returns an array of coordinates of chunks 
+     * that are not yet loaded and need to be adde to the scene
+     * @param {{x:number, z:number}[]} visibleChunks 
+     * @returns {{x:number, z:number}[]}
+     */
+        getChunksToAdd(visibleChunks){
+            const filteredChunks = visibleChunks.filter((chunk) => {
+                const chunkExists = this.children
+                    .map((obj) => obj.userData)
+                    .find(({x,z}) => 
+                        chunk.x === x && chunk.z === z
+                    );
+    
+                return !chunkExists;
+            })
+    
+            return filteredChunks;
+        }
+
+    /**
+     * Removes current loaded chunks that are no longer visible due to draw distance
+     * @param {{x:number, z:number}[]} visibleChunks 
+     */
+    removeUnusedChunks(visibleChunks){
+        const chunksToRemove = this.children.filter((chunk) => {
+            const {x,z} = chunk.userData;
+            const chunkExists = visibleChunks
+                .find((visibleChunk) => 
+                    visibleChunk.x === x && visibleChunk.z === z
+                );
+
+            return !chunkExists;
+        })
+
+        let userDataForChunks = chunksToRemove.map((chunk) => {return chunk.userData});
+
+        for (const chunk of chunksToRemove) {
+            chunk.disposeInstances();
+            console.log(`Removing chunk at X: ${chunk.userData.x}, Z: ${chunk.userData.z}`);
+            this.remove(chunk);
+            this.removeNonVisibleChunk(chunk);
+        }
+    }
+
+    removeNonVisibleChunk(chunk){
+        if(chunk){
+            console.log("userDataForChunk", chunk);
+            this.removeObject3D(chunk);
+        }
+        
+    }
+
+    removeObject3D(object3D) {
+        if (!(object3D instanceof THREE.Object3D)) return false;
+    
+        // for better memory management and performance
+        if (object3D.geometry) object3D.geometry.dispose();
+    
+         if (object3D.material) {
+        //     if (object3D.material instanceof Array) {
+        //         // for better memory management and performance
+        //         object3D.material.forEach(material => material.dispose());
+        //     } else {
+        //         // for better memory management and performance
+        //         object3D.material.dispose();
+        //     }
+        }
+        console.log('Removing:', object3D);
+        this.disposeChunk(object3D);
+        //object3D.removeFromParent(); // the parent might be the scene or another Object3D, but it is sure to be removed this way
+        return true;
+    }
+
+
+    /**
+     * Returns an array of chunks that are visible to the player
+     * @param {Player} player 
+     * @returns {{x:number, z:number}[]}
+     */
+    getVisibleChunks(player){
+        const visibleChunks = [];
+        const coords = this.worldToChunkCoords(player.position.x,player.position.y, player.position.z);
+
+        const chunkX = coords.chunk.x;
+        const chunkZ = coords.chunk.z;
+
+        for (let x = (chunkX - this.drawDistance); x <= (chunkX + this.drawDistance); x++) {
+            for (let z = (chunkZ - this.drawDistance); z <= (chunkZ + this.drawDistance); z++) {
+                visibleChunks.push({x,z});
+            }
+        }
+
+        return visibleChunks;
     }
 
     clearuuids(){
@@ -108,6 +247,17 @@ export class World extends THREE.Group {
         let chunk = this.children.find(findChunk)
 
         return chunk;
+    }
+
+    disposeChunk(chunk){
+        let uuids = this.uuidForMeshes;
+        if(chunk.disposeInstances){
+            chunk.disposeInstances();
+        }
+
+        let allButTheBlocks = this.main.sceneRenderer.scene.children
+            .filter(e => e.userData.x !== chunk.userData.x && e.userData.z !== chunk.userData.z )
+            ;
     }
 
     disposeChunks(){

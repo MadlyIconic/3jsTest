@@ -10,7 +10,7 @@ export class Player {
         this.maxSpeed = 10;
         this.minSpeed = 0;
         this.localWorldVelocity = new THREE.Vector3();
-
+        this.reportVisibleChunks = false;
         //this.playerPosition = new THREE.Vector3(playerConfig.playerPosition.x, playerConfig.playerPosition.y, playerConfig.playerPosition.z);
         this.input = new THREE.Vector3();
         this.velocity = new THREE.Vector3();
@@ -31,7 +31,7 @@ export class Player {
             new THREE.CylinderGeometry(this.radius, this.radius, this.height,16),
             new THREE.MeshBasicMaterial({wireframe: true})
         )
-        this.boundsHelper.visible = false;
+        this.boundsHelper.visible = true;
         scene.add(this.boundsHelper);   
     }
 
@@ -91,8 +91,7 @@ export class Player {
                 this.input.x = this.maxSpeed;
                 break;
             case 'KeyR':
-                //this.position.set(72,16,32);
-                //this.velocity.set(0,0,0);
+                this.reportVisibleChunks = true;
                 break;
             case 'Space':
                 //console.log('event code:', event.code, this.onGround);

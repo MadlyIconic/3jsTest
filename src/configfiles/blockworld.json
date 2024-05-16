@@ -33,9 +33,9 @@
     },
     "playerConfig":{
         "playerPosition":{
-            "x":1,
-            "y":14,
-            "z":1
+            "x":8,
+            "y":18,
+            "z":8
         }
     }
 }

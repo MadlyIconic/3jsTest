@@ -21,13 +21,11 @@ export class WorldChunk extends THREE.Group {
         this.uuidForMeshes = null;        
     }
 
-    generate(uuidcollection, startVector, runBefore){
+    generate(uuidcollection, startVector){
         let self = this;
         self.disposeInstances();
         self.uuidForMeshes = uuidcollection;
-        if(runBefore !== true){
-            self.setupWorld(self.size, startVector);
-        }
+        self.setupWorld(self.size, startVector);
     }
 
     setupWorld(size, startVector){

@@ -53,6 +53,9 @@ export default class Run{
             
             controls.update();
             physics.update(dt, player, world, sceneRenderer.cameraName);
+            world.update(player);
+            player.reportVisibleChunks = false;
+            
             updateCameraSelection();
             renderObjects(sceneRenderer, self.options);
             previousTime = currentTime;
