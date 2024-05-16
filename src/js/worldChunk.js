@@ -25,7 +25,7 @@ export class WorldChunk extends THREE.Group {
         let self = this;
         self.disposeInstances();
         self.uuidForMeshes = uuidcollection;
-        self.setupWorld(self.size, startVector);
+        return self.setupWorld(self.size, startVector);
     }
 
     setupWorld(size, startVector){
@@ -59,6 +59,8 @@ export class WorldChunk extends THREE.Group {
                 }
             }
         }
+
+        return meshes;
     }
 
     getBlock(x,y,z, size, startVector){

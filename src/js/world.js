@@ -1,6 +1,7 @@
 import * as THREE from 'three'
 import { WorldChunk } from './worldChunk';
 import { uuidv4 } from './positionHelper';
+import { blocks } from './blocks';
 
 export class World extends THREE.Group {
     constructor(main){
@@ -14,23 +15,28 @@ export class World extends THREE.Group {
         self.uuidForMeshes = {
             id: uuidv4(),
             uuids: new Map()
-        }; 
+        };
     }
 
     /**
-     * 
-     * @param {Player} player 
+     *
+     * @param {Player} player
      */
     update(player){
         let visibleChunks = this.getVisibleChunks(player)
         const chunksToAdd = this.getChunksToAdd(visibleChunks);
         this.removeUnusedChunks(visibleChunks);
+
+        for (const chunk of chunksToAdd) {
+            this.generateChunk(chunk.x, chunk.z);
+        }
+
         //console.log(chunks.length);
         if(player.reportVisibleChunks){
             console.log('Visible Chunks')
             visibleChunks.forEach(chunk => {
                 console.log(chunk);
-            });    
+            });
 
             console.log('Chunks to add')
             chunksToAdd.forEach(chunk => {
@@ -38,18 +44,18 @@ export class World extends THREE.Group {
             });
         }
     }
-    
+
     /**
-     * Returns an array of coordinates of chunks 
+     * Returns an array of coordinates of chunks
      * that are not yet loaded and need to be adde to the scene
-     * @param {{x:number, z:number}[]} visibleChunks 
+     * @param {{x:number, z:number}[]} visibleChunks
      * @returns {{x:number, z:number}[]}
      */
     getChunksToAdd(visibleChunks){
         const filteredChunks = visibleChunks.filter((chunk) => {
             const chunkExists = this.children
                 .map((obj) => obj.userData)
-                .find(({x,z}) => 
+                .find(({x,z}) =>
                     chunk.x === x && chunk.z === z
                 );
 
@@ -60,83 +66,80 @@ export class World extends THREE.Group {
     }
 
         /**
-     * Returns an array of coordinates of chunks 
+     * Returns an array of coordinates of chunks
      * that are not yet loaded and need to be adde to the scene
-     * @param {{x:number, z:number}[]} visibleChunks 
+     * @param {{x:number, z:number}[]} visibleChunks
      * @returns {{x:number, z:number}[]}
      */
         getChunksToAdd(visibleChunks){
             const filteredChunks = visibleChunks.filter((chunk) => {
                 const chunkExists = this.children
                     .map((obj) => obj.userData)
-                    .find(({x,z}) => 
+                    .find(({x,z}) =>
                         chunk.x === x && chunk.z === z
                     );
-    
+
                 return !chunkExists;
             })
-    
+
             return filteredChunks;
         }
 
     /**
      * Removes current loaded chunks that are no longer visible due to draw distance
-     * @param {{x:number, z:number}[]} visibleChunks 
+     * @param {{x:number, z:number}[]} visibleChunks
      */
     removeUnusedChunks(visibleChunks){
         const chunksToRemove = this.children.filter((chunk) => {
             const {x,z} = chunk.userData;
             const chunkExists = visibleChunks
-                .find((visibleChunk) => 
+                .find((visibleChunk) =>
                     visibleChunk.x === x && visibleChunk.z === z
                 );
 
             return !chunkExists;
         })
 
-        let userDataForChunks = chunksToRemove.map((chunk) => {return chunk.userData});
-
         for (const chunk of chunksToRemove) {
             chunk.disposeInstances();
             console.log(`Removing chunk at X: ${chunk.userData.x}, Z: ${chunk.userData.z}`);
+            
+            this.disposeChunk(chunk);
             this.remove(chunk);
-            this.removeNonVisibleChunk(chunk);
         }
     }
 
-    removeNonVisibleChunk(chunk){
-        if(chunk){
-            console.log("userDataForChunk", chunk);
-            this.removeObject3D(chunk);
-        }
+    disposeChunk(chunk){
+        // console.log("This doesn't work!  We need to match a worldchunk to the InstanceMesh and then remove it from the scene")
         
-    }
-
-    removeObject3D(object3D) {
-        if (!(object3D instanceof THREE.Object3D)) return false;
-    
-        // for better memory management and performance
-        if (object3D.geometry) object3D.geometry.dispose();
-    
-         if (object3D.material) {
-        //     if (object3D.material instanceof Array) {
-        //         // for better memory management and performance
-        //         object3D.material.forEach(material => material.dispose());
-        //     } else {
-        //         // for better memory management and performance
-        //         object3D.material.dispose();
-        //     }
+        let meshesUuids = [];
+        for (let x = 0; x < Object.keys(chunk.meshes).length; x++) {
+            console.log(chunk.meshes[x].name);
+            meshesUuids.push(this.main.sceneRenderer.scene.children.find(e => e.uuid == chunk.meshes[x].uuid).uuid);
         }
-        console.log('Removing:', object3D);
-        this.disposeChunk(object3D);
-        //object3D.removeFromParent(); // the parent might be the scene or another Object3D, but it is sure to be removed this way
-        return true;
+        let scene = this.main.sceneRenderer.scene;
+        meshesUuids.forEach(uuid => {
+            let mesh = scene.getObjectByProperty( 'uuid', uuid ).geometry;
+            mesh.geometry?.dispose( );
+            mesh.material?.dispose( );
+            console.log(scene.remove( mesh ));
+        });
+        
+        let allButTheBlocks = this.main.sceneRenderer.scene.children
+            .filter(e => !meshesUuids.includes(e.uuid))
+            ;
+        if(allButTheBlocks.length > 0){
+            this.main.sceneRenderer.scene.children = allButTheBlocks;
+        }
+        console.log(allButTheBlocks);
+        if(chunk.disposeInstances){
+            chunk.disposeInstances();
+       }
     }
-
 
     /**
      * Returns an array of chunks that are visible to the player
-     * @param {Player} player 
+     * @param {Player} player
      * @returns {{x:number, z:number}[]}
      */
     getVisibleChunks(player){
@@ -171,17 +174,32 @@ export class World extends THREE.Group {
         for (let x = iCountBottom; x <= iCountTop; x++) {
             for (let z = iCountBottom; z <= iCountTop; z++) {
 
-                let chunk = new WorldChunk(this.chunkSize,self.main);
-                chunk.position.set(x * this.chunkSize.width, 0, z * this.chunkSize.width);
-                let startVector2 = chunk.position;
-                chunk.userData = {x,z};
-                chunk.generate(self.uuidForMeshes, startVector2);
-                self.uuidForMeshes = chunk.uuidForMeshes;
-                self.add(chunk);
-        
+                    self.generateChunk(x,z)
+                
                 self.clearuuids();
-            }    
+            }
         }
+    }
+
+    /**
+     * Generate a chunk at the (x, z) coordinates
+     * @param {number} x 
+     * @param {number} z 
+     */
+    generateChunk(x,z){
+        let self = this;
+        let chunk = null;
+        chunk = new WorldChunk(self.chunkSize,self.main);
+        let xpos = x * self.chunkSize.width;
+        let zpos = z * self.chunkSize.width;
+        chunk.position.set(xpos, 0, zpos);
+        let startVector2 = chunk.position;
+        chunk.userData = {x,z};
+        let meshes = chunk.generate(self.uuidForMeshes, startVector2);
+        self.uuidForMeshes = chunk.uuidForMeshes;
+        chunk.meshes = meshes;
+        self.add(chunk);
+        console.log(`Adding chunk at X: ${x} Z: ${z}`);
     }
 
     getBlock(x,y,z,size){
@@ -201,9 +219,9 @@ export class World extends THREE.Group {
     }
 
     /**
-     * @param {*} x 
-     * @param {*} y 
-     * @param {*} z 
+     * @param {*} x
+     * @param {*} y
+     * @param {*} z
      * @returns {{
      *      chunk: {x: number, z: number},
      *      block: {x: number, y: number, z: number}
@@ -228,8 +246,8 @@ export class World extends THREE.Group {
     }
 
     /**
-     * @param {*} chunkX 
-     * @param {*} chunkZ 
+     * @param {*} chunkX
+     * @param {*} chunkZ
      * @returns {WorldChunk | null}
      */
     getChunk(chunkX, chunkZ){
@@ -247,17 +265,6 @@ export class World extends THREE.Group {
         let chunk = this.children.find(findChunk)
 
         return chunk;
-    }
-
-    disposeChunk(chunk){
-        let uuids = this.uuidForMeshes;
-        if(chunk.disposeInstances){
-            chunk.disposeInstances();
-        }
-
-        let allButTheBlocks = this.main.sceneRenderer.scene.children
-            .filter(e => e.userData.x !== chunk.userData.x && e.userData.z !== chunk.userData.z )
-            ;
     }
 
     disposeChunks(){

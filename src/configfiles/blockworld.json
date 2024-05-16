@@ -21,8 +21,8 @@
     "params": {
         "seed": 1000,
         "terrain":{
-            "scale": 45,
-            "magnitude": 0.34,
+            "scale": 90,
+            "magnitude": 0.2,
             "offset": 0.27
         }
     },
