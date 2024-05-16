@@ -2,7 +2,6 @@ import * as THREE from 'three'
 import { RNG } from './rng';
 import {SimplexNoise} from 'three/examples/jsm/math/SimplexNoise.js'
 import { blocks, resources } from './blocks';
-import { uuidv4 } from './positionHelper';
 
 
 export class WorldChunk extends THREE.Group {
@@ -19,32 +18,34 @@ export class WorldChunk extends THREE.Group {
         this.size = size;
         this.main = main;
         this.params = main.options.params;
-        this.uuidForMeshes = null;
-        
+        this.uuidForMeshes = null;        
     }
 
-    generate(uuidcollection, startVector){
+    generate(uuidcollection, startVector, runBefore){
         let self = this;
+        self.disposeInstances();
         self.uuidForMeshes = uuidcollection;
-        self.setupWorld(self.size, startVector);
+        if(runBefore !== true){
+            self.setupWorld(self.size, startVector);
+        }
     }
 
     setupWorld(size, startVector){
         let self = this;
         const rng = new RNG(self.params.seed);
         
-        let allButTheBlocks = self.main.sceneRenderer.scene.children
-            .filter(function(element){
-                if(!self.uuidForMeshes.uuids.has(element.uuid))   {
-                    return true;
-                }else{
-                    return false;
-                }
-            })
-            ;
-        if(allButTheBlocks.length > 0){
-            self.main.sceneRenderer.scene.children = allButTheBlocks;
-        }
+        // let allButTheBlocks = self.main.sceneRenderer.scene.children
+        //     .filter(function(element){
+        //         if(!self.uuidForMeshes.uuids.has(element.uuid))   {
+        //             return true;
+        //         }else{
+        //             return false;
+        //         }
+        //     })
+        //     ;
+        // if(allButTheBlocks.length > 0){
+        //     self.main.sceneRenderer.scene.children = allButTheBlocks;
+        // }
         
         self.initialiseTerrain(size, startVector);
         self.generateResources(size, rng, startVector);
@@ -54,6 +55,7 @@ export class WorldChunk extends THREE.Group {
         for (const mesh in meshes) {
             if (meshes.hasOwnProperty(mesh)) {
                 if(meshes[mesh].isObject3D){
+                    meshes[mesh].userData = 'TerrainMesh';
                     self.uuidForMeshes.uuids.set(meshes[mesh].uuid,true);
                     self.main.sceneRenderer.addToScene(meshes[mesh]);          
                 }
@@ -269,12 +271,10 @@ export class WorldChunk extends THREE.Group {
     }
 
     disposeInstances(){
-        this.traverse((obj) => {
-            if(obj.dispose){
-                obj.dispose();
-            }
-        });
-
-        this.clear();
+        let self = this;
+        self.traverse(obj => obj.dispose?.())
+        self.data = [];
+        self.uuidForMeshes = null
+        self.clear();
     }
 }

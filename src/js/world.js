@@ -117,6 +117,16 @@ export class World extends THREE.Group {
                 chunk.disposeInstances();
             }
         })
+        self.uuidForMeshes = {
+            id: uuidv4(),
+            uuids: new Map()
+        };
+        let allButTheBlocks = self.main.sceneRenderer.scene.children
+            .filter(e => e.userData !== "TerrainMesh")
+            ;
+        if(allButTheBlocks.length > 0){
+            self.main.sceneRenderer.scene.children = allButTheBlocks;
+        }
         this.clear();
     }
 }

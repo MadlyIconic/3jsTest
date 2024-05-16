@@ -16,7 +16,7 @@ export class Physics {
         this.simulationRate = 300;
         this.timeStep = 1 / this.simulationRate;
         this.accumulator = 0;
-        this.gravity = 32;
+        this.gravity = 48;
         this.cameraName = null;
         this.helpers = new THREE.Group();
         scene.add(this.helpers);

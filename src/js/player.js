@@ -15,7 +15,7 @@ export class Player {
         this.input = new THREE.Vector3();
         this.velocity = new THREE.Vector3();
         this.cameraWrapper = cameraWrapper;
-        //this.cameraWrapper.cameraHelper.visible = false;
+        this.cameraWrapper.cameraHelper.visible = false;
         this.controls = new PointerLockControls(this.cameraWrapper.camera, domElement);
         //this.position.set(this.playerPosition.x, this.playerPosition.y, this.playerPosition.z);
         //this.position.set(36,20,36);
@@ -31,7 +31,7 @@ export class Player {
             new THREE.CylinderGeometry(this.radius, this.radius, this.height,16),
             new THREE.MeshBasicMaterial({wireframe: true})
         )
-        //wthis.boundsHelper.visible = false;
+        this.boundsHelper.visible = false;
         scene.add(this.boundsHelper);   
     }
 
@@ -95,13 +95,14 @@ export class Player {
                 //this.velocity.set(0,0,0);
                 break;
             case 'Space':
-                console.log('event code:', event.code, this.onGround);
+                //console.log('event code:', event.code, this.onGround);
                 if(this.onGround){
                     this.velocity.y = this.jumpSpeed;
                 }
                 break;
             case "KeyV":
                 this.boundsHelper.visible = !this.boundsHelper.visible;
+                this.cameraWrapper.cameraHelper.visible = !this.cameraWrapper.cameraHelper.visible;
                 break;
             default:
                 //console.log('event code:', event.code);
