@@ -2,13 +2,23 @@ import * as THREE from 'three'
 import { WorldChunk } from './worldChunk';
 import { uuidv4 } from './positionHelper';
 import { blocks } from './blocks';
+import { disposeNode } from './disposal';
 
 export class World extends THREE.Group {
+
+    /**
+     * Whether or not we want the chunks to load asynchronously
+     */
+    asyncLoading = true;
+
     constructor(main){
         super();
         let self = this;
-        self.drawDistance = 2;
+        self.numberOfCallsToGenerate = 0;
+        self.initialWorldLoaded = false;
+        self.drawDistance = 1;
         self.main = main;
+        self.loaded - false;
         self.chunkSize = main.options.chunkSize;
         self.seed = main.options.params.seed;
         self.params = main.options.params;
@@ -23,25 +33,33 @@ export class World extends THREE.Group {
      * @param {Player} player
      */
     update(player){
-        let visibleChunks = this.getVisibleChunks(player)
-        const chunksToAdd = this.getChunksToAdd(visibleChunks);
-        this.removeUnusedChunks(visibleChunks);
-
-        for (const chunk of chunksToAdd) {
-            this.generateChunk(chunk.x, chunk.z);
-        }
-
-        //console.log(chunks.length);
-        if(player.reportVisibleChunks){
-            console.log('Visible Chunks')
-            visibleChunks.forEach(chunk => {
-                console.log(chunk);
-            });
-
-            console.log('Chunks to add')
-            chunksToAdd.forEach(chunk => {
-                console.log(chunk);
-            });
+        let self = this;
+        if(this.initialWorldLoaded){
+            this.initialWorldLoaded = false;
+            let visibleChunks = this.getVisibleChunks(player)
+            const chunksToAdd = this.getChunksToAdd(visibleChunks);
+            this.removeUnusedChunks(visibleChunks);
+            
+            requestIdleCallback(function(){
+                for (const chunk of chunksToAdd) {
+                    self.generateChunk(chunk.x, chunk.z);
+                }
+                self.initialWorldLoaded = true;
+            }, {timeout:2000})
+            
+    
+            //console.log(chunks.length);
+            if(player.reportVisibleChunks){
+                console.log('Visible Chunks')
+                visibleChunks.forEach(chunk => {
+                    console.log(chunk);
+                });
+    
+                console.log('Chunks to add')
+                chunksToAdd.forEach(chunk => {
+                    console.log(chunk);
+                });
+            }
         }
     }
 
@@ -109,8 +127,12 @@ export class World extends THREE.Group {
         }
     }
 
+    /**
+     * Finds all MeshInstances by uuid and removes them from the scene
+     * Then calls disposeInstances on the WorldChunk 
+     * @param {WorldChunk} chunk 
+     */
     disposeChunk(chunk){
-        // console.log("This doesn't work!  We need to match a worldchunk to the InstanceMesh and then remove it from the scene")
         
         let meshesUuids = [];
         for (let x = 0; x < Object.keys(chunk.meshes).length; x++) {
@@ -132,6 +154,8 @@ export class World extends THREE.Group {
             this.main.sceneRenderer.scene.children = allButTheBlocks;
         }
         console.log(allButTheBlocks);
+        // Use to remove objects from memory.  Not sure if it is needed or works..?
+        //disposeNode(chunk, scene, this.main.sceneRenderer.renderer);
         if(chunk.disposeInstances){
             chunk.disposeInstances();
        }
@@ -173,12 +197,13 @@ export class World extends THREE.Group {
         let iCountTop = self.drawDistance;
         for (let x = iCountBottom; x <= iCountTop; x++) {
             for (let z = iCountBottom; z <= iCountTop; z++) {
-
-                    self.generateChunk(x,z)
-                
+                console.log("*", self.numberOfCallsToGenerate++);
+                self.generateChunk(x,z);
                 self.clearuuids();
             }
         }
+
+        self.initialWorldLoaded = true;
     }
 
     /**
@@ -195,11 +220,25 @@ export class World extends THREE.Group {
         chunk.position.set(xpos, 0, zpos);
         let startVector2 = chunk.position;
         chunk.userData = {x,z};
-        let meshes = chunk.generate(self.uuidForMeshes, startVector2);
-        self.uuidForMeshes = chunk.uuidForMeshes;
-        chunk.meshes = meshes;
-        self.add(chunk);
-        console.log(`Adding chunk at X: ${x} Z: ${z}`);
+        if(self.asyncLoading){
+            requestIdleCallback(function(){
+            console.log('Going async!');
+            let meshes = chunk.generate(self.uuidForMeshes, startVector2);
+            self.uuidForMeshes = chunk.uuidForMeshes;
+            chunk.meshes = meshes;
+            self.loaded = true;
+            self.add(chunk);
+        })
+        }else{
+            let meshes = chunk.generate(self.uuidForMeshes, startVector2);
+            self.uuidForMeshes = chunk.uuidForMeshes;
+            chunk.meshes = meshes;
+            self.loaded = true;
+            self.add(chunk);
+        }
+        
+        //console.log(`Adding chunk at X: ${x} Z: ${z}`);
+        //console.log(self.numberOfCallsToGenerate++);
     }
 
     getBlock(x,y,z,size){
@@ -207,7 +246,7 @@ export class World extends THREE.Group {
         const coords = self.worldToChunkCoords(x,y,z)
         const chunk = self.getChunk(coords.chunk.x, coords.chunk.z);
         let block = null;
-        if(chunk){
+        if(chunk && self.loaded){
             block = chunk.getBlock(
                 coords.block.x,
                 coords.block.y,

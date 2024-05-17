@@ -52,6 +52,9 @@ export default class UI {
         });
 
         const terrainFolder = self.gui.addFolder('Terrain');
+        terrainFolder.add(self.world, 'asyncLoading',0 , 5, 1).name('Draw Async').onChange(function(e){
+            self.world.generate();
+        });
         terrainFolder.add(self.world, 'drawDistance',0 , 5, 1).name('Draw Distance').onChange(function(e){
             self.world.generate();
         });

@@ -22,6 +22,7 @@ export class WorldChunk extends THREE.Group {
     }
 
     generate(uuidcollection, startVector){
+        
         let self = this;
         self.disposeInstances();
         self.uuidForMeshes = uuidcollection;
@@ -29,6 +30,7 @@ export class WorldChunk extends THREE.Group {
     }
 
     setupWorld(size, startVector){
+        const start = performance.now();
         let self = this;
         const rng = new RNG(self.params.seed);
         
@@ -59,7 +61,7 @@ export class WorldChunk extends THREE.Group {
                 }
             }
         }
-
+        console.log(`Loaded chunk in ${Math.round(performance.now() - start)}ms`);
         return meshes;
     }
 

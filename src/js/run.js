@@ -1,6 +1,4 @@
-import * as THREE from 'three';
 import Stats from 'three/examples/jsm/libs/stats.module.js';
-import { WorldChunk } from "./worldChunk";
 import UI, { setupUI } from './ui';
 import { Player } from "./player";
 import { Physics } from './physics';
@@ -53,7 +51,10 @@ export default class Run{
             
             controls.update();
             physics.update(dt, player, world, sceneRenderer.cameraName);
-            world.update(player);
+            if(world.initialWorldLoaded){
+                world.update(player);
+            }
+            
             player.reportVisibleChunks = false;
             
             updateCameraSelection();
