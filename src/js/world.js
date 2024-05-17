@@ -7,7 +7,7 @@ export class World extends THREE.Group {
     constructor(main){
         super();
         let self = this;
-        self.drawDistance = 1;
+        self.drawDistance = 2;
         self.main = main;
         self.chunkSize = main.options.chunkSize;
         self.seed = main.options.params.seed;
@@ -169,8 +169,8 @@ export class World extends THREE.Group {
     generate(){
         let self = this;
         self.disposeChunks();
-        let iCountBottom = -1;
-        let iCountTop = 1;
+        let iCountBottom = -self.drawDistance;
+        let iCountTop = self.drawDistance;
         for (let x = iCountBottom; x <= iCountTop; x++) {
             for (let z = iCountBottom; z <= iCountTop; z++) {
 

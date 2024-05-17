@@ -31,7 +31,7 @@ export class Player {
             new THREE.CylinderGeometry(this.radius, this.radius, this.height,16),
             new THREE.MeshBasicMaterial({wireframe: true})
         )
-        this.boundsHelper.visible = true;
+        this.boundsHelper.visible = false;
         scene.add(this.boundsHelper);   
     }
 
