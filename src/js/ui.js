@@ -24,6 +24,9 @@ export default class UI {
             }
         };
         
+        const sceneFolder = self.gui.addFolder('Scene');
+        sceneFolder.add(self.world.scene.fog, 'near', 1, 200, 1).name('Fog Near');
+        sceneFolder.add(self.world.scene.fog, 'far', 1, 200, 1).name('Fog Far');
 
         const worldFolder = self.gui.addFolder('World');
         if(this.lightingContainer){

@@ -38,6 +38,7 @@ export class Player {
     update(timeStep){        
         this.applyInputs(timeStep);
         this.updateBoundsHelper(timeStep);
+        document.getElementById('player-position').innerHTML = `Player position: ${positionToString(this.position)}`;
     }
 
     get worldVelocity(){
@@ -103,8 +104,18 @@ export class Player {
                 this.boundsHelper.visible = !this.boundsHelper.visible;
                 this.cameraWrapper.cameraHelper.visible = !this.cameraWrapper.cameraHelper.visible;
                 break;
+            case "KeyQ":
+                console.log();
+                let display = document.getElementById('info').style.display;
+                if(display === 'none'){
+                    document.getElementById('info').style.display = 'block';
+                }else{
+                    document.getElementById('info').style.display = 'none';    
+                }
+                
+                break;
             default:
-                //console.log('event code:', event.code);
+                console.log('event code:', event.code);
                 break;
         }
     }

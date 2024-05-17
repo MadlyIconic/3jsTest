@@ -7,14 +7,7 @@ export default class LightingContainer{
         this.lightName = 'directionalLight';
         this.directionalLight.position.set(x, y, z);
         
-        this.directionalLight.shadow.camera.left = -70;
-        this.directionalLight.shadow.camera.right = 50;
-        this.directionalLight.shadow.camera.top = 50;
-        this.directionalLight.shadow.camera.bottom = -70;
-        this.directionalLight.shadow.camera.near = 0.1;
-        this.directionalLight.shadow.camera.far = 140;
-        this.directionalLight.shadow.bias = -0.0005;
-        this.directionalLight.shadow.mapSize = new THREE.Vector2(512,512);
+        this.setUpShadows();
 
         if(includeHelper){
             this.lightHelper = new THREE.DirectionalLightHelper(this.directionalLight,5, 0xFFFFFF);
@@ -26,5 +19,20 @@ export default class LightingContainer{
         }
                
         sceneRenderer.addToScene(this.directionalLight);        
+    }
+
+    setUpShadows(){
+        this.directionalLight.shadow.camera.left = -100;
+        this.directionalLight.shadow.camera.right = 100;
+        this.directionalLight.shadow.camera.top = 100;
+        this.directionalLight.shadow.camera.bottom = -100;
+        this.directionalLight.shadow.camera.near = 0.1;
+        this.directionalLight.shadow.camera.far = 200;
+        this.directionalLight.shadow.bias = -0.0001;
+        this.directionalLight.shadow.mapSize = new THREE.Vector2(2048,2048);
+    }
+
+    get position(){
+        return this.camera.position;
     }
 }

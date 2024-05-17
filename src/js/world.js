@@ -16,8 +16,9 @@ export class World extends THREE.Group {
         let self = this;
         self.numberOfCallsToGenerate = 0;
         self.initialWorldLoaded = false;
-        self.drawDistance = 1;
+        self.drawDistance = 2;
         self.main = main;
+        self.scene = main.sceneRenderer.scene;
         self.loaded - false;
         self.chunkSize = main.options.chunkSize;
         self.seed = main.options.params.seed;
@@ -26,6 +27,9 @@ export class World extends THREE.Group {
             id: uuidv4(),
             uuids: new Map()
         };
+        main.lightingManager.setUpAmbientLight(true, main.options.ambientLightIntinsity);
+        self.directionalLightingContainer = main.lightingManager.setUpDirectionalLight(true, 60,75,50, main.options.directionalLightIntinsity, true);
+        self.scene.fog = new THREE.Fog( new THREE.Color(main.options.skycolor), 35, 68);
     }
 
     /**
@@ -61,6 +65,12 @@ export class World extends THREE.Group {
                 });
             }
         }
+
+        const sun = self.directionalLightingContainer.directionalLight;
+        sun.position.copy(player.position);
+        sun.position.sub(new THREE.Vector3(-50,-50,-50));
+        sun.target.position.copy(player.position);
+        self.main.sceneRenderer.scene.add(sun.target);
     }
 
     /**
@@ -197,7 +207,6 @@ export class World extends THREE.Group {
         let iCountTop = self.drawDistance;
         for (let x = iCountBottom; x <= iCountTop; x++) {
             for (let z = iCountBottom; z <= iCountTop; z++) {
-                console.log("*", self.numberOfCallsToGenerate++);
                 self.generateChunk(x,z);
                 self.clearuuids();
             }
@@ -222,13 +231,12 @@ export class World extends THREE.Group {
         chunk.userData = {x,z};
         if(self.asyncLoading){
             requestIdleCallback(function(){
-            console.log('Going async!');
-            let meshes = chunk.generate(self.uuidForMeshes, startVector2);
-            self.uuidForMeshes = chunk.uuidForMeshes;
-            chunk.meshes = meshes;
-            self.loaded = true;
-            self.add(chunk);
-        })
+                let meshes = chunk.generate(self.uuidForMeshes, startVector2);
+                self.uuidForMeshes = chunk.uuidForMeshes;
+                chunk.meshes = meshes;
+                self.loaded = true;
+                self.add(chunk);
+            })
         }else{
             let meshes = chunk.generate(self.uuidForMeshes, startVector2);
             self.uuidForMeshes = chunk.uuidForMeshes;
