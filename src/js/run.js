@@ -4,6 +4,7 @@ import { Player } from "./player";
 import { Physics } from './physics';
 import { calculateAspect } from './positionHelper';
 import { World } from './world';
+import RayCasterContainer from './raycasterContainer';
 
 const stats = new Stats();
 
@@ -19,14 +20,11 @@ export default class Run{
 
         //let worldSize = {width:this.options.worldwidth, height:this.options.worldheight};
         document.body.append(stats.dom);
-                
+        
         let playerCameraWrapper = this.cameraBuilder.buildSkyCamera(75, calculateAspect(), 0.1, 2000, 'Player camera');
         const orbitCameraWrapper = this.cameraBuilder.buildSkyCamera(75, calculateAspect(), 0.1, 2000, 'Orbit camera', this.options.cameraPosition);
         
-        const player = new Player(this.sceneRenderer.scene, this.sceneRenderer.renderer.domElement, playerCameraWrapper, this.options.playerConfig);
-        
         const physics = new Physics(this.sceneRenderer.scene);
-        
 
         this.sceneRenderer.setUpRenderer(orbitCameraWrapper);
         
@@ -36,7 +34,10 @@ export default class Run{
         
         let world = new World(this);
         //let worldChunk = new WorldChunk(worldSize, this);
+        let raycasterContainer = new RayCasterContainer(playerCameraWrapper, world);
         world.generate();
+        const player = new Player(world, this.sceneRenderer.renderer.domElement, playerCameraWrapper, this.options.playerConfig, raycasterContainer);
+        
 
         setupUI(this.gui, world, orbitCameraWrapper, player, world.directionalLightingContainer);
         
@@ -49,6 +50,7 @@ export default class Run{
             stats.update();
             
             controls.update();
+            player.update(physics.timeStep);
             physics.update(dt, player, world, sceneRenderer.cameraName);
             if(world.initialWorldLoaded){
                 world.update(player);

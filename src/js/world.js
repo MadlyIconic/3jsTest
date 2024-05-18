@@ -1,8 +1,6 @@
 import * as THREE from 'three'
 import { WorldChunk } from './worldChunk';
 import { uuidv4 } from './positionHelper';
-import { blocks } from './blocks';
-import { disposeNode } from './disposal';
 
 export class World extends THREE.Group {
 
@@ -29,7 +27,7 @@ export class World extends THREE.Group {
         };
         main.lightingManager.setUpAmbientLight(true, main.options.ambientLightIntinsity);
         self.directionalLightingContainer = main.lightingManager.setUpDirectionalLight(true, 60,75,50, main.options.directionalLightIntinsity, true);
-        self.scene.fog = new THREE.Fog( new THREE.Color(main.options.skycolor), 35, 68);
+        self.scene.fog = new THREE.Fog( new THREE.Color(main.options.skycolor), 25, 48);
     }
 
     /**
@@ -130,7 +128,7 @@ export class World extends THREE.Group {
 
         for (const chunk of chunksToRemove) {
             chunk.disposeInstances();
-            console.log(`Removing chunk at X: ${chunk.userData.x}, Z: ${chunk.userData.z}`);
+            //console.log(`Removing chunk at X: ${chunk.userData.x}, Z: ${chunk.userData.z}`);
             
             this.disposeChunk(chunk);
             this.remove(chunk);
@@ -146,7 +144,6 @@ export class World extends THREE.Group {
         
         let meshesUuids = [];
         for (let x = 0; x < Object.keys(chunk.meshes).length; x++) {
-            console.log(chunk.meshes[x].name);
             meshesUuids.push(this.main.sceneRenderer.scene.children.find(e => e.uuid == chunk.meshes[x].uuid).uuid);
         }
         let scene = this.main.sceneRenderer.scene;
@@ -154,7 +151,6 @@ export class World extends THREE.Group {
             let mesh = scene.getObjectByProperty( 'uuid', uuid ).geometry;
             mesh.geometry?.dispose( );
             mesh.material?.dispose( );
-            console.log(scene.remove( mesh ));
         });
         
         let allButTheBlocks = this.main.sceneRenderer.scene.children
@@ -163,7 +159,6 @@ export class World extends THREE.Group {
         if(allButTheBlocks.length > 0){
             this.main.sceneRenderer.scene.children = allButTheBlocks;
         }
-        console.log(allButTheBlocks);
         // Use to remove objects from memory.  Not sure if it is needed or works..?
         //disposeNode(chunk, scene, this.main.sceneRenderer.renderer);
         if(chunk.disposeInstances){

@@ -1,8 +1,10 @@
 import * as THREE from 'three';
 import positionToString from './positionHelper';
 import { PointerLockControls } from 'three/examples/jsm/Addons.js';
+
 export class Player {
-    constructor(scene, domElement, cameraWrapper, playerConfig){
+    
+    constructor(world, domElement, cameraWrapper, playerConfig, raycasterContainer){
         this.radius = 0.5;
         this.height = 1.75;
         this.jumpSpeed = 10;
@@ -11,18 +13,18 @@ export class Player {
         this.minSpeed = 0;
         this.localWorldVelocity = new THREE.Vector3();
         this.reportVisibleChunks = false;
-        //this.playerPosition = new THREE.Vector3(playerConfig.playerPosition.x, playerConfig.playerPosition.y, playerConfig.playerPosition.z);
+        
         this.input = new THREE.Vector3();
         this.velocity = new THREE.Vector3();
         this.cameraWrapper = cameraWrapper;
         this.cameraWrapper.cameraHelper.visible = false;
         this.controls = new PointerLockControls(this.cameraWrapper.camera, domElement);
-        //this.position.set(this.playerPosition.x, this.playerPosition.y, this.playerPosition.z);
-        //this.position.set(36,20,36);
+        this.world = world;
+        this.raycasterContainer = raycasterContainer;
         this.position.set(playerConfig.playerPosition.x, playerConfig.playerPosition.y, playerConfig.playerPosition.z);
         this.cameraWrapper.camera.lookAt(new THREE.Vector3(8,16,8));
-        scene.add(this.cameraWrapper.camera);
-        scene.add(this.cameraWrapper.cameraHelper);
+        this.world.scene.add(this.cameraWrapper.camera);
+        this.world.scene.add(this.cameraWrapper.cameraHelper);
 
         document.addEventListener('keydown', this.onKeyDown.bind(this));
         document.addEventListener('keyup', this.onKeyUp.bind(this));
@@ -32,15 +34,20 @@ export class Player {
             new THREE.MeshBasicMaterial({wireframe: true})
         )
         this.boundsHelper.visible = false;
-        scene.add(this.boundsHelper);   
+        this.world.scene.add(this.boundsHelper);  
+        
     }
+
+    
 
     update(timeStep){        
         this.applyInputs(timeStep);
         this.updateBoundsHelper(timeStep);
+        this.raycasterContainer.updateRaycaster();
         document.getElementById('player-position').innerHTML = `Player position: ${positionToString(this.position)}`;
     }
 
+    
     get worldVelocity(){
         this.localWorldVelocity.copy(this.velocity);
         this.localWorldVelocity.applyEuler(new THREE.Euler(0, this.cameraWrapper.camera.rotation.y, 0));
