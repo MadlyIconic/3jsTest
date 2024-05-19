@@ -9,8 +9,12 @@ export default function positionToString(obj){
     return str;
 }
 
-export function renderPosition(position, domElement){
-    document.getElementById(domElement).innerHTML = positionToString(position);
+export function renderPosition(position, domElement, prefix){
+    document.getElementById(domElement).innerHTML = prefix + ' ' + positionToString(position);
+}
+
+export function renderText(position, domElement, prefix){
+    document.getElementById(domElement).innerHTML = prefix + ' ' + position;
 }
 
 export function calculateAspect(){

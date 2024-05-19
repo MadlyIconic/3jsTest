@@ -1,4 +1,5 @@
 import * as THREE from 'three'
+import { renderPosition } from './positionHelper';
 
 export default class RayCasterContainer{
     constructor(cameraWrapper,world){
@@ -25,7 +26,7 @@ export default class RayCasterContainer{
                 }
             }
             
-            if(intersections.length > 0){
+            if(intersections && intersections.length > 0){
                 const intersection = intersections[0];
 
                 const chunk = intersection.object.parent;
@@ -40,7 +41,6 @@ export default class RayCasterContainer{
                 this.selectionHelper.position.copy(this.selectedCoords);
         
                 this.selectionHelper.visible = true;
-                //console.log(this.selectedCoords );
             }else{
                 this.selectedCoords = null;
                 //console.log('Nothing found');

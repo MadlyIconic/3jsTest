@@ -1,6 +1,6 @@
 import * as THREE from 'three'
 import { WorldChunk } from './worldChunk';
-import { uuidv4 } from './positionHelper';
+import { renderPosition, renderText, uuidv4 } from './positionHelper';
 import { blocks } from './blocks';
 
 export class World extends THREE.Group {
@@ -15,7 +15,7 @@ export class World extends THREE.Group {
         let self = this;
         self.numberOfCallsToGenerate = 0;
         self.initialWorldLoaded = false;
-        self.drawDistance = 2;
+        self.drawDistance = 1;
         self.main = main;
         self.scene = main.sceneRenderer.scene;
         self.loaded - false;
@@ -216,7 +216,7 @@ export class World extends THREE.Group {
      * @param {number} x 
      * @param {number} z 
      */
-    generateChunk(x,z){
+    generateChunk(x,z, icount){
         let self = this;
         let chunk = null;
         chunk = new WorldChunk(self.chunkSize,self.main);
@@ -227,14 +227,14 @@ export class World extends THREE.Group {
         chunk.userData = {x,z};
         if(self.asyncLoading){
             requestIdleCallback(function(){
-                let meshes = chunk.generate(self.uuidForMeshes, startVector2);
+                let meshes = chunk.generate(self.uuidForMeshes, startVector2, icount);
                 self.uuidForMeshes = chunk.uuidForMeshes;
                 chunk.meshes = meshes;
                 self.loaded = true;
                 self.add(chunk);
             })
         }else{
-            let meshes = chunk.generate(self.uuidForMeshes, startVector2);
+            let meshes = chunk.generate(self.uuidForMeshes, startVector2,);
             self.uuidForMeshes = chunk.uuidForMeshes;
             chunk.meshes = meshes;
             self.loaded = true;
@@ -272,7 +272,9 @@ export class World extends THREE.Group {
             x: Math.floor(x / this.chunkSize.width),
             z: Math.floor(z / this.chunkSize.width),
         }
-
+        if(x < -16){
+            debugger;
+        }
         const blockCoords = {
             x: x - this.chunkSize.width * chunkCoords.x,
             y: y,
@@ -334,9 +336,11 @@ export class World extends THREE.Group {
      * @param {number} z 
      */
     removeBlock(x,y,z){
+        debugger;
         const coords = this.worldToChunkCoords(x,y,z);
         const chunk = this.getChunk(coords.chunk.x,coords.chunk.z);
-        
+        renderText(coords.chunk.x + "," + coords.chunk.z, 'chunk', 'Chunk position');
+        renderPosition(coords.block, 'block', 'Chunk position');
         if(chunk){
             const block = coords.block;
             chunk.removeBlock(

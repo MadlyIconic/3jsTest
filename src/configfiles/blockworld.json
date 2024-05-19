@@ -22,7 +22,7 @@
         "seed": 1000,
         "terrain":{
             "scale": 90,
-            "magnitude": 0.2,
+            "magnitude": 0,
             "offset": 0.27
         }
     },

@@ -21,15 +21,15 @@ export class WorldChunk extends THREE.Group {
         this.uuidForMeshes = null;        
     }
 
-    generate(uuidcollection, startVector){
+    generate(uuidcollection, startVector, icount){
         
         let self = this;
         self.disposeInstances();
         self.uuidForMeshes = uuidcollection;
-        return self.setupWorld(self.size, startVector);
+        return self.setupWorld(self.size, startVector, icount);
     }
 
-    setupWorld(size, startVector){
+    setupWorld(size, startVector, icount){
         //const start = performance.now();
         let self = this;
         const rng = new RNG(self.params.seed);
@@ -165,6 +165,7 @@ export class WorldChunk extends THREE.Group {
     setBlockId(x,y,z,id, size){
         let self = this;
         if(self.inBounds(x,y,z, size)){
+            //console.log('setting block');
             self.data[x][y][z].id = id;
         }
     }
@@ -312,7 +313,7 @@ export class WorldChunk extends THREE.Group {
                     //     debugger;
                     // }
                     const instanceId = mesh.count;
-                    if(!this.isBlockObscured(x,y,z, size, startVector)){
+                    if(!this.isBlockObscured(x,y,z, size, startVector)){                        
                         matrix.setPosition(x + startVector.x,y,z + startVector.z);
                         mesh.setMatrixAt(instanceId, matrix);
                         mesh.instanceMatrix.needsUpdate = true;
