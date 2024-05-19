@@ -65,23 +65,54 @@ export class WorldChunk extends THREE.Group {
         return meshes;
     }
 
-    getBlock(x,y,z, size, startVector){
+    getBlock(x,y,z, size){
         let self = this;
-        if(self.inBounds(x,y,z, size, startVector)){
+        if(self.inBounds(x,y,z, size)){
             return self.data[x][y][z];
         }else{
             return null;
         }
     }
 
-    setBlockId(x,y,z,id, size, startVector){
+
+    /**
+     * Removes the block at (x,y,z)
+     * @param {number} x 
+     * @param {number} y 
+     * @param {number} z 
+     */
+    removeBlock(x,y,z){
+        const block = this.getBlock(x,y,z, this.size);
+        if(block && block.id !== blocks.empty.id){
+            this.deleteBlockInstance(x,y,z);
+        }
+    }
+
+/**
+     * Deletes the block from the instance (x,y,z)
+     * @param {number} x 
+     * @param {number} y 
+     * @param {number} z 
+     */
+    deleteBlockInstance(x,y,z){
+        const block = this.getBlock(x,y,z, this.size);
+
+        if(block.instanceId === null){
+            return;
+        }
+
+        const mesh = this.children.find((instanceMesh) => instanceMesh.name === block.id);
+        const instanceId = block.instanceId;
+    }   
+
+    setBlockId(x,y,z,id, size){
         let self = this;
-        if(self.inBounds(x,y,z, size, startVector)){
+        if(self.inBounds(x,y,z, size)){
             self.data[x][y][z].id = id;
         }
     }
 
-    inBounds(x,y,z, size, startVector){
+    inBounds(x,y,z, size){
         if(x >= 0 && x < size.width &&
             y >= 0 && y < size.height &&
             z >= 0 && z < size.width){
@@ -91,14 +122,14 @@ export class WorldChunk extends THREE.Group {
         }
     }
 
-    setBlockInstanceId(x,y,z,instanceId, size, startVector){
+    setBlockInstanceId(x,y,z,instanceId, size){
         let self = this;
-        if(self.inBounds(x,y,z, size, startVector)){
+        if(self.inBounds(x,y,z, size)){
             self.data[x][y][z].instanceId = instanceId;
         }
     }
 
-    initialiseTerrain(size,startVector){
+    initialiseTerrain(size){
         let self = this;
         self.data = [];
         for (let x = 0; x < size.width; x++) {
@@ -116,15 +147,15 @@ export class WorldChunk extends THREE.Group {
             self.data.push(slice);
         }   
     }
-    generateResources(size, rng, startVector){        
+    generateResources(size, rng){        
         const simplex = new SimplexNoise(rng);
         resources.forEach(resource => {
-            this.generateResourceType(resource, size, simplex, startVector);
+            this.generateResourceType(resource, size, simplex);
         });
         
     }
 
-    generateResourceType(resource, size, simplex, startVector){
+    generateResourceType(resource, size, simplex){
         for (let x = 0; x < size.width; x++) {
             for (let y = 0; y < size.height; y++) {
                 for (let z = 0; z < size.width ; z++) {
@@ -136,7 +167,7 @@ export class WorldChunk extends THREE.Group {
                     );
 
                     if(value > resource.scarcity){
-                        this.setBlockId(x,y,z,resource.id,size, startVector);
+                        this.setBlockId(x,y,z,resource.id,size);
                     }
                 }   
             }
@@ -159,11 +190,11 @@ export class WorldChunk extends THREE.Group {
                 for (let y = 0; y < size.height; y++) {
                                     
                     if(y < height && this.getBlock(x,y,z,size, startVector).id === blocks.empty.id){
-                        this.setBlockId(x,y,z,blocks.dirt.id,size, startVector);                    
+                        this.setBlockId(x,y,z,blocks.dirt.id,size);                    
                     }else if(y === height){
-                        this.setBlockId(x,y,z,blocks.grass.id,size, startVector);                    
+                        this.setBlockId(x,y,z,blocks.grass.id,size);                    
                     } else if(y > height){
-                        this.setBlockId(x,y,z,blocks.empty.id,size, startVector);                    
+                        this.setBlockId(x,y,z,blocks.empty.id,size);                    
                     }
                 }
             }            
@@ -179,7 +210,9 @@ export class WorldChunk extends THREE.Group {
             .filter(blockType => blockType.id === blocks.empty.id)
             .forEach(blockType => {
                 let mesh = new THREE.InstancedMesh(boxGeometry);
-                mesh.name = blockType.name;
+                //mesh.name = blockType.name;
+                // Changed for delete block purposes.  Hopefully the name is not used anywhere?
+                mesh.name = blockType.id;
                 mesh.count = 0;
                 mesh.color =  blockType.color;
                 mesh.castShadow = false;
@@ -197,7 +230,9 @@ export class WorldChunk extends THREE.Group {
                     mesh = new THREE.InstancedMesh(boxGeometry, blockType.material, maxCount);
                 }
                 
-                mesh.name = blockType.name;
+                //mesh.name = blockType.name;
+                // Changed for delete block purposes.  Hopefully the name is not used anywhere?
+                mesh.name = blockType.id;
                 mesh.count = 0;
                 mesh.castShadow = true;
                 mesh.receiveShadow = true;

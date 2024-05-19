@@ -1,6 +1,7 @@
 import * as THREE from 'three'
 import { WorldChunk } from './worldChunk';
 import { uuidv4 } from './positionHelper';
+import { blocks } from './blocks';
 
 export class World extends THREE.Group {
 
@@ -327,5 +328,25 @@ export class World extends THREE.Group {
             self.main.sceneRenderer.scene.children = allButTheBlocks;
         }
         this.clear();
+    }
+
+    /**
+     * Removes the block at (x,y,z) and sets it to empty
+     * @param {number} x 
+     * @param {number} y 
+     * @param {number} z 
+     */
+    removeBlock(x,y,z){
+        const coords = this.worldToChunkCoords(x,y,z);
+        const chunk = this.getChunk(coords.chunk.x,coords.chunk.z);
+
+        if(chunk){
+            const block = coords.block;
+            chunk.removeBlock(
+                block.x, 
+                block.y,
+                block.z
+            )
+        }
     }
 }

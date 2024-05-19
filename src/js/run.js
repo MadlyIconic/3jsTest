@@ -21,8 +21,7 @@ export default class Run{
 
         //let worldSize = {width:this.options.worldwidth, height:this.options.worldheight};
         document.body.append(stats.dom);
-        let inputmanager = new InputManager();
-
+        
         let playerCameraWrapper = this.cameraBuilder.buildSkyCamera(75, calculateAspect(), 0.1, 2000, 'Player camera');
         const orbitCameraWrapper = this.cameraBuilder.buildSkyCamera(75, calculateAspect(), 0.1, 2000, 'Orbit camera', this.options.cameraPosition);
         
@@ -39,7 +38,7 @@ export default class Run{
         let raycasterContainer = new RayCasterContainer(playerCameraWrapper, world);
         world.generate();
         const player = new Player(world, this.sceneRenderer.renderer.domElement, playerCameraWrapper, this.options.playerConfig, raycasterContainer);
-        
+        let inputmanager = new InputManager(player, world);
 
         setupUI(this.gui, world, orbitCameraWrapper, player, world.directionalLightingContainer);
         
