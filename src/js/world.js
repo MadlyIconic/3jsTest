@@ -240,9 +240,6 @@ export class World extends THREE.Group {
             self.loaded = true;
             self.add(chunk);
         }
-        
-        //console.log(`Adding chunk at X: ${x} Z: ${z}`);
-        //console.log(self.numberOfCallsToGenerate++);
     }
 
     getBlock(x,y,z,size){
@@ -339,7 +336,7 @@ export class World extends THREE.Group {
     removeBlock(x,y,z){
         const coords = this.worldToChunkCoords(x,y,z);
         const chunk = this.getChunk(coords.chunk.x,coords.chunk.z);
-
+        
         if(chunk){
             const block = coords.block;
             chunk.removeBlock(
@@ -348,12 +345,12 @@ export class World extends THREE.Group {
                 block.z
             )
             // Reveal adjecent neighbours if they were hidden by the leaving block
-            this.revealBlock(x-1,y,z);
-            this.revealBlock(x+1,y,z);
-            this.revealBlock(x,y-1,z);
-            this.revealBlock(x,y-+1,z);
-            this.revealBlock(x,y,z-1);
-            this.revealBlock(x,y,z+1);
+            // this.revealBlock(x-1,y,z);
+            // this.revealBlock(x+1,y,z);
+            // this.revealBlock(x,y-1,z);
+            // this.revealBlock(x,y-+1,z);
+            // this.revealBlock(x,y,z-1);
+            // this.revealBlock(x,y,z+1);
         }
     }
 

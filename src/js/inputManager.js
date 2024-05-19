@@ -8,8 +8,6 @@ export default class InputManager{
     onMouseDown(event){
         let self = this;
         if(self.player.controls.isLocked && this.player.raycasterContainer.selectedCoords){
-            console.log('mouse down, player is locked and  selected coords');
-            const position = this.player.position;
             this.world.removeBlock(
                 this.player.raycasterContainer.selectedCoords.x,
                 this.player.raycasterContainer.selectedCoords.y,

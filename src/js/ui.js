@@ -13,13 +13,11 @@ export default class UI {
 
         var obj = {
             movePlayerToCamera: function() {
-                console.log("Player position:", self.player.cameraWrapper.position);
-                console.log("Camera position:", self.cameraWrapper.position);
+                
                 self.player.cameraWrapper.position.copy(self.cameraWrapper.position);
             },
             moveCameraToPlayer: function() {
-                console.log("Player position:", self.player.cameraWrapper.position);
-                console.log("Camera position:", self.cameraWrapper.position);                
+                
                 self.cameraWrapper.position.copy(self.player.cameraWrapper.position);
             }
         };

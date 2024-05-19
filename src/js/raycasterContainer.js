@@ -35,6 +35,7 @@ export default class RayCasterContainer{
                 intersection.object.getMatrixAt(intersection.instanceId, blockMatrix);
         
                 this.selectedCoords = chunk.position.clone();
+                
                 this.selectedCoords.applyMatrix4(blockMatrix);
                 this.selectionHelper.position.copy(this.selectedCoords);
         

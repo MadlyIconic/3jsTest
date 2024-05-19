@@ -81,7 +81,7 @@ export default class Run{
             let cameraWrapper = player.controls.isLocked ? player.cameraWrapper : orbitCameraWrapper;
             
             sceneRenderer.renderScene(cameraWrapper);
-            cameraWrapper.renderLookAt('look-at');
+            
             orbitCameraWrapper.renderPosition('camera-position');
             previousCamera = currentCamera;
         }

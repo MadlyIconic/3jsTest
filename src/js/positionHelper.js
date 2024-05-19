@@ -9,6 +9,10 @@ export default function positionToString(obj){
     return str;
 }
 
+export function renderPosition(position, domElement){
+    document.getElementById(domElement).innerHTML = positionToString(position);
+}
+
 export function calculateAspect(){
     const perspectiveRatio = window.innerWidth/window.innerHeight;
     return perspectiveRatio;

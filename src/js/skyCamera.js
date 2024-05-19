@@ -23,12 +23,13 @@ export default class SkyCamera{
         document.getElementById(domElement).innerHTML =  this.name + ":" + positionToString(this.position);
     }
 
-    renderLookAt(domElement){
-        var vector = new THREE.Vector3( 0, 0, - 1 );
-        vector.applyQuaternion( this.camera.quaternion );
-        let lookat = document.getElementById(domElement);
-        if(lookat){
-            lookat.innerHTML = "Looking at:" + positionToString(vector);
-        }
-    }
+    // Not sure this is working...
+    // renderLookAt(domElement){
+    //     var vector = new THREE.Vector3( 0, 0, - 1 );
+    //     vector.applyQuaternion( this.camera.quaternion );
+    //     let lookat = document.getElementById(domElement);
+    //     if(lookat){
+    //         lookat.innerHTML = "Looking at:" + positionToString(vector);
+    //     }
+    // }
 }

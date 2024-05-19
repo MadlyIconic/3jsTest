@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import positionToString from './positionHelper';
+import positionToString, { renderPosition } from './positionHelper';
 import { PointerLockControls } from 'three/examples/jsm/Addons.js';
 
 export class Player {
@@ -43,7 +43,11 @@ export class Player {
     update(timeStep){        
         this.applyInputs(timeStep);
         this.updateBoundsHelper(timeStep);
+        
         this.raycasterContainer.updateRaycaster();
+        if(this.raycasterContainer.selectedCoords){
+            renderPosition(this.raycasterContainer.selectedCoords, 'look-at');
+        }
         document.getElementById('player-position').innerHTML = `Player position: ${positionToString(this.position)}`;
     }
 
@@ -112,7 +116,6 @@ export class Player {
                 this.cameraWrapper.cameraHelper.visible = !this.cameraWrapper.cameraHelper.visible;
                 break;
             case "KeyQ":
-                console.log();
                 let display = document.getElementById('info').style.display;
                 if(display === 'none'){
                     document.getElementById('info').style.display = 'block';
@@ -122,7 +125,6 @@ export class Player {
                 
                 break;
             default:
-                console.log('event code:', event.code);
                 break;
         }
     }

@@ -83,6 +83,7 @@ export class WorldChunk extends THREE.Group {
      */
     removeBlock(x,y,z){
         const block = this.getBlock(x,y,z, this.size);
+        //console.log(`Block is not empty: ${block.id !== blocks.empty.id}`)
         if(block && block.id !== blocks.empty.id){
             this.deleteBlockInstance(x,y,z);
         }
@@ -109,7 +110,6 @@ export class WorldChunk extends THREE.Group {
      */
     deleteBlockInstance(x,y,z){
         const block = this.getBlock(x,y,z, this.size);
-
         if(block.instanceId === null){
             return;
         }
@@ -130,9 +130,9 @@ export class WorldChunk extends THREE.Group {
         mesh.count--;
 
         this.setMeshToUpdateAsEditsHappened(mesh);
-
+        
         this.setBlockInstanceId(x,y,z,null,this.size);
-        this.setBlockId(x,y,z,blocks.empty.id, this.size);''
+        this.setBlockId(x,y,z,blocks.empty.id, this.size);
     }   
 
 /**
