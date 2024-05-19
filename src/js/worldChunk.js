@@ -88,7 +88,20 @@ export class WorldChunk extends THREE.Group {
         }
     }
 
-/**
+    getMeshesForWorldChunk(){
+        const meshes = Object.values(this.parent.children.find((e) => e.uuid === this.uuid).meshes);
+        return meshes;
+    }
+
+    getMeshContainingBlock(block){
+        
+        const meshes = this.getMeshesForWorldChunk();
+        const mesh = meshes.find((instanceMesh) => instanceMesh.name === block.id);
+
+        return mesh;
+    }
+
+    /**
      * Deletes the block from the instance (x,y,z)
      * @param {number} x 
      * @param {number} y 
@@ -101,8 +114,26 @@ export class WorldChunk extends THREE.Group {
             return;
         }
 
-        const mesh = this.children.find((instanceMesh) => instanceMesh.name === block.id);
+        const mesh = this.getMeshContainingBlock(block);
+
         const instanceId = block.instanceId;
+
+        const lastMatrix = new THREE.Matrix4();
+        mesh.getMatrixAt(mesh.count -1, lastMatrix);
+
+        const v = new THREE.Vector3();
+        v.applyMatrix4(lastMatrix);
+
+        this.setBlockInstanceId(v.x,v.y, v.z,instanceId,this.size);
+
+        mesh.setMatrixAt(instanceId, lastMatrix);
+        mesh.count--;
+
+        mesh.instanceMatrix.needsUpdate = true;
+        mesh.computeBoundingSphere();
+
+        this.setBlockInstanceId(x,y,z,null,this.size);
+        this.setBlockId(x,y,z,blocks.empty.id, this.size);''
     }   
 
     setBlockId(x,y,z,id, size){
