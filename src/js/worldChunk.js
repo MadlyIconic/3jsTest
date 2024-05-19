@@ -129,12 +129,38 @@ export class WorldChunk extends THREE.Group {
         mesh.setMatrixAt(instanceId, lastMatrix);
         mesh.count--;
 
-        mesh.instanceMatrix.needsUpdate = true;
-        mesh.computeBoundingSphere();
+        this.setMeshToUpdateAsEditsHappened(mesh);
 
         this.setBlockInstanceId(x,y,z,null,this.size);
         this.setBlockId(x,y,z,blocks.empty.id, this.size);''
     }   
+
+/**
+     * Create a new instance for the block at (x,y,z)
+     * @param {number} x 
+     * @param {number} y 
+     * @param {number} z 
+     */
+    addBlockInstance(x,y,z){
+        const block = this.getBlock(x,y,z, this.size);
+
+        if(block && block.id !== blocks.empty.id && block.instanceId === null){
+            const mesh = this.getMeshContainingBlock(block);
+            const instanceId = mesh.count++;
+            this.setBlockInstanceId(x,y,z,instanceId,this.size);
+
+            const matrix = new THREE.Matrix4();
+            matrix.setPosition(x,y,z);
+            mesh.setMatrixAt(instanceId, matrix);
+
+            this.setMeshToUpdateAsEditsHappened(mesh);
+        }
+    }
+
+    setMeshToUpdateAsEditsHappened(mesh){
+        mesh.instanceMatrix.needsUpdate = true;
+        mesh.computeBoundingSphere();
+    }
 
     setBlockId(x,y,z,id, size){
         let self = this;

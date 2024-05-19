@@ -347,6 +347,33 @@ export class World extends THREE.Group {
                 block.y,
                 block.z
             )
+            // Reveal adjecent neighbours if they were hidden by the leaving block
+            this.revealBlock(x-1,y,z);
+            this.revealBlock(x+1,y,z);
+            this.revealBlock(x,y-1,z);
+            this.revealBlock(x,y-+1,z);
+            this.revealBlock(x,y,z-1);
+            this.revealBlock(x,y,z+1);
+        }
+    }
+
+    /**
+     * Reveals the block at (x,y,z) by adding a new mesh instance
+     * @param {number} x 
+     * @param {number} y 
+     * @param {number} z 
+     */
+    revealBlock(x,y,z){
+        const coords = this.worldToChunkCoords(x,y,z);
+        const chunk = this.getChunk(coords.chunk.x,coords.chunk.z);
+
+        if(chunk){
+            const block = coords.block;
+            chunk.addBlockInstance(
+                block.x, 
+                block.y,
+                block.z
+            )
         }
     }
 }
