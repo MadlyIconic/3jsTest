@@ -18,14 +18,12 @@ export class WorldChunk extends THREE.Group {
         //console.log('World chunk being created');
         this.size = size;
         this.main = main;
-        this.params = main.options.params;
-        this.uuidForMeshes = null;        
+        this.params = main.options.params;    
     }
 
-    generate(uuidcollection){        
+    generate(){        
         let self = this;
         self.disposeInstances();
-        self.uuidForMeshes = uuidcollection;
         return self.setupWorld();
     }
 
@@ -36,17 +34,16 @@ export class WorldChunk extends THREE.Group {
         self.initialiseTerrain();
         self.generateResources(rng);
         self.generateTerrain(rng);
-        let meshes = self.generateMeshes();
-        self.uuidForMeshes = {id:self.uuidForMeshes.id, uuids : new Map()};
+        let meshes = self.generateMeshes();        
         for (const mesh in meshes) {
-            if (meshes.hasOwnProperty(mesh)) {
-                if(meshes[mesh].isObject3D){
-                    meshes[mesh].userData = 'TerrainMesh';
-                    self.uuidForMeshes.uuids.set(meshes[mesh].uuid,true);
-                    self.main.sceneRenderer.addToScene(meshes[mesh]);          
-                }
-            }
-        }
+        //     if (meshes.hasOwnProperty(mesh)) {
+        //         if(meshes[mesh].isObject3D){
+        //             meshes[mesh].userData = 'TerrainMesh';
+        //             self.uuidForMeshes.uuids.set(meshes[mesh].uuid,true);
+                     self.main.sceneRenderer.addToScene(meshes[mesh]);          
+        //         }
+             }
+        // }
     }
 
     getBlock(x,y,z){
