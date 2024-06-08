@@ -15,42 +15,28 @@ export class WorldChunk extends THREE.Group {
      */
     constructor(size = {width:32, height:16}, main){
         super();
+        //console.log('World chunk being created');
         this.size = size;
         this.main = main;
         this.params = main.options.params;
         this.uuidForMeshes = null;        
     }
 
-    generate(uuidcollection, startVector, icount){
-        
+    generate(uuidcollection){        
         let self = this;
         self.disposeInstances();
         self.uuidForMeshes = uuidcollection;
-        return self.setupWorld(self.size, startVector, icount);
+        return self.setupWorld();
     }
 
-    setupWorld(size, startVector, icount){
-        //const start = performance.now();
+    setupWorld(){
         let self = this;
         const rng = new RNG(self.params.seed);
         
-        // let allButTheBlocks = self.main.sceneRenderer.scene.children
-        //     .filter(function(element){
-        //         if(!self.uuidForMeshes.uuids.has(element.uuid))   {
-        //             return true;
-        //         }else{
-        //             return false;
-        //         }
-        //     })
-        //     ;
-        // if(allButTheBlocks.length > 0){
-        //     self.main.sceneRenderer.scene.children = allButTheBlocks;
-        // }
-        
-        self.initialiseTerrain(size, startVector);
-        self.generateResources(size, rng, startVector);
-        self.generateTerrain(size, self.params, rng, startVector);
-        let meshes = self.generateMeshes(this.size, startVector);
+        self.initialiseTerrain();
+        self.generateResources(rng);
+        self.generateTerrain(rng);
+        let meshes = self.generateMeshes();
         self.uuidForMeshes = {id:self.uuidForMeshes.id, uuids : new Map()};
         for (const mesh in meshes) {
             if (meshes.hasOwnProperty(mesh)) {
@@ -61,13 +47,11 @@ export class WorldChunk extends THREE.Group {
                 }
             }
         }
-        //console.log(`Loaded chunk in ${Math.round(performance.now() - start)}ms`);
-        return meshes;
     }
 
-    getBlock(x,y,z, size){
+    getBlock(x,y,z){
         let self = this;
-        if(self.inBounds(x,y,z, size)){
+        if(self.inBounds(x,y,z)){
             return self.data[x][y][z];
         }else{
             return null;
@@ -162,39 +146,40 @@ export class WorldChunk extends THREE.Group {
         mesh.computeBoundingSphere();
     }
 
-    setBlockId(x,y,z,id, size){
+    setBlockId(x,y,z,id){
         let self = this;
-        if(self.inBounds(x,y,z, size)){
+        if(self.inBounds(x,y,z)){
             //console.log('setting block');
             self.data[x][y][z].id = id;
         }
     }
 
-    inBounds(x,y,z, size){
-        if(x >= 0 && x < size.width &&
-            y >= 0 && y < size.height &&
-            z >= 0 && z < size.width){
+    inBounds(x,y,z){
+        let self = this;
+        if(x >= 0 && x < self.size.width &&
+            y >= 0 && y < self.size.height &&
+            z >= 0 && z < self.size.width){
             return true;
         }else{
             return false;
         }
     }
 
-    setBlockInstanceId(x,y,z,instanceId, size){
+    setBlockInstanceId(x,y,z,instanceId){
         let self = this;
-        if(self.inBounds(x,y,z, size)){
+        if(self.inBounds(x,y,z)){
             self.data[x][y][z].instanceId = instanceId;
         }
     }
 
-    initialiseTerrain(size){
+    initialiseTerrain(){
         let self = this;
         self.data = [];
-        for (let x = 0; x < size.width; x++) {
+        for (let x = 0; x < self.size.width; x++) {
             const slice = [];
-            for (let y = 0; y < size.height; y++) {
+            for (let y = 0; y < self.size.height; y++) {
                 const row = [];
-                for (let z = 0; z < size.width; z++) {
+                for (let z = 0; z < self.size.width; z++) {
                     row.push({
                         id: blocks.empty.id,
                         instanceId: null
@@ -205,18 +190,21 @@ export class WorldChunk extends THREE.Group {
             self.data.push(slice);
         }   
     }
-    generateResources(size, rng){        
+    generateResources(rng){
+        let self = this;        
         const simplex = new SimplexNoise(rng);
         resources.forEach(resource => {
-            this.generateResourceType(resource, size, simplex);
+            //console.log("generate", resource);
+            this.generateResourceType(resource, simplex);
         });
         
     }
 
-    generateResourceType(resource, size, simplex){
-        for (let x = 0; x < size.width; x++) {
-            for (let y = 0; y < size.height; y++) {
-                for (let z = 0; z < size.width ; z++) {
+    generateResourceType(resource,simplex){
+        let self = this;
+        for (let x = 0; x < self.size.width; x++) {
+            for (let y = 0; y < self.size.height; y++) {
+                for (let z = 0; z < self.size.width ; z++) {
     
                     const value = simplex.noise3d(
                        (this.position.x + x) / resource.scale.x,
@@ -225,43 +213,44 @@ export class WorldChunk extends THREE.Group {
                     );
 
                     if(value > resource.scarcity){
-                        this.setBlockId(x,y,z,resource.id,size);
+                        self.setBlockId(x,y,z,resource.id);
                     }
                 }   
             }
         }
     }
 
-    generateTerrain(size, params, rng, startVector){        
+    generateTerrain(rng){        
+        let self = this;
         const simplex = new SimplexNoise(rng);
-        for (let x = 0; x < size.width; x++) {
-            for (let z = 0; z < size.width; z++) {
+        for (let x = 0; x < self.size.width; x++) {
+            for (let z = 0; z < self.size.width; z++) {
                 const value = simplex.noise(
-                    (this.position.x + x) / params.terrain.scale,
-                    (this.position.z + z) / params.terrain.scale
+                    (this.position.x + x) / self.params.terrain.scale,
+                    (this.position.z + z) / self.params.terrain.scale
                 );
                 
-                const scaledNoise = params.terrain.offset + params.terrain.magnitude * value;
-                let height = Math.floor(size.height * scaledNoise);
-                height = Math.max(0, Math.min(height, size.height));
+                const scaledNoise = self.params.terrain.offset + self.params.terrain.magnitude * value;
+                let height = Math.floor(self.size.height * scaledNoise);
+                height = Math.max(0, Math.min(height, self.size.height));
 
-                for (let y = 0; y < size.height; y++) {
+                for (let y = 0; y < self.size.height; y++) {
                                     
-                    if(y < height && this.getBlock(x,y,z,size, startVector).id === blocks.empty.id){
-                        this.setBlockId(x,y,z,blocks.dirt.id,size);                    
+                    if(y < height && this.getBlock(x,y,z).id === blocks.empty.id){
+                        this.setBlockId(x,y,z,blocks.dirt.id);                    
                     }else if(y === height){
-                        this.setBlockId(x,y,z,blocks.grass.id,size);                    
+                        this.setBlockId(x,y,z,blocks.grass.id);                    
                     } else if(y > height){
-                        this.setBlockId(x,y,z,blocks.empty.id,size);                    
+                        this.setBlockId(x,y,z,blocks.empty.id);                    
                     }
                 }
             }            
         }
     }
 
-    generateMeshes = function(size, startVector){
+    generateMeshes = function(){
         let self =this;
-        let maxCount = size.width * size.width * size.height;
+        let maxCount = self.size.width * self.size.width * self.size.height;
         const boxGeometry = new THREE.BoxGeometry();
         const meshes = {};
         Object.values(blocks)
@@ -300,10 +289,10 @@ export class WorldChunk extends THREE.Group {
         
         const matrix  = new THREE.Matrix4();
 
-        for (let x = 0; x < size.width; x++) {
-            for (let y = 0; y < size.height; y++) {
-                for (let z = 0; z < size.width; z++) {
-                    const blockId = this.getBlock(x,y,z, size, startVector)?.id;
+        for (let x = 0; x < self.size.width; x++) {
+            for (let y = 0; y < self.size.height; y++) {
+                for (let z = 0; z < self.size.width; z++) {
+                    const blockId = this.getBlock(x,y,z)?.id;
                     if(!blockId || blockId === blocks.empty.id){
                         continue;
                     }
@@ -313,11 +302,11 @@ export class WorldChunk extends THREE.Group {
                     //     debugger;
                     // }
                     const instanceId = mesh.count;
-                    if(!this.isBlockObscured(x,y,z, size, startVector)){                        
-                        matrix.setPosition(x + startVector.x,y,z + startVector.z);
+                    if(!self.isBlockObscured(x,y,z)){                        
+                        matrix.setPosition(x,y,z);
                         mesh.setMatrixAt(instanceId, matrix);
                         mesh.instanceMatrix.needsUpdate = true;
-                        self.setBlockInstanceId(x,y,z,instanceId, size, startVector);
+                        self.setBlockInstanceId(x,y,z,instanceId);
                         mesh.count++;
                     }
                     
@@ -328,13 +317,13 @@ export class WorldChunk extends THREE.Group {
         return meshes;
     }
 
-    isBlockObscured(x,y,z, size, startVector){
-        const up = this.getBlock(x,y+1,z, size, startVector)?.id ?? blocks.empty.id;
-        const down = this.getBlock(x,y-1,z, size, startVector)?.id ?? blocks.empty.id;
-        const left = this.getBlock(x+1,y,z, size, startVector)?.id ?? blocks.empty.id;
-        const right = this.getBlock(x-1,y,z, size, startVector)?.id ?? blocks.empty.id;
-        const forward = this.getBlock(x,y,z+1, size, startVector)?.id ?? blocks.empty.id;
-        const back = this.getBlock(x,y,z-1, size, startVector)?.id ?? blocks.empty.id;
+    isBlockObscured(x,y,z){
+        const up = this.getBlock(x,y+1,z)?.id ?? blocks.empty.id;
+        const down = this.getBlock(x,y-1,z)?.id ?? blocks.empty.id;
+        const left = this.getBlock(x+1,y,z)?.id ?? blocks.empty.id;
+        const right = this.getBlock(x-1,y,z)?.id ?? blocks.empty.id;
+        const forward = this.getBlock(x,y,z+1)?.id ?? blocks.empty.id;
+        const back = this.getBlock(x,y,z-1)?.id ?? blocks.empty.id;
 
         if( up === blocks.empty.id ||
             down === blocks.empty.id ||

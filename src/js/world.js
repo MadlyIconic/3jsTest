@@ -1,7 +1,6 @@
 import * as THREE from 'three'
 import { WorldChunk } from './worldChunk';
 import { renderPosition, renderText, uuidv4 } from './positionHelper';
-import { blocks } from './blocks';
 
 export class World extends THREE.Group {
 
@@ -20,6 +19,7 @@ export class World extends THREE.Group {
         self.scene = main.sceneRenderer.scene;
         self.loaded - false;
         self.chunkSize = main.options.chunkSize;
+        console.log('self.chunkSize', self.chunkSize);
         self.seed = main.options.params.seed;
         self.params = main.options.params;
         self.uuidForMeshes = {
@@ -28,7 +28,48 @@ export class World extends THREE.Group {
         };
         main.lightingManager.setUpAmbientLight(true, main.options.ambientLightIntinsity);
         self.directionalLightingContainer = main.lightingManager.setUpDirectionalLight(true, 60,75,50, main.options.directionalLightIntinsity, true);
-        self.scene.fog = new THREE.Fog( new THREE.Color(main.options.skycolor), 25, 48);
+        self.scene.fog = new THREE.Fog( new THREE.Color(main.options.skycolor), 200, 400);
+    }
+
+    generate(){
+        let self = this;
+        self.disposeChunks();
+        let iLowestNumber = -self.drawDistance;
+        let iBigestNumber = self.drawDistance;
+        for (let x = iLowestNumber; x <= iBigestNumber; x++) {
+            for (let z = iLowestNumber; z <= iBigestNumber; z++) {
+                console.log('Generate chunk:', x, z);
+                self.generateChunk(x,z);
+                //self.clearuuids();
+            }
+        }
+
+        self.initialWorldLoaded = true;
+    }
+
+    /**
+     * Generate a chunk at the (x, z) coordinates
+     * @param {number} x 
+     * @param {number} z 
+     */
+    generateChunk(x,z,){
+        let self = this;
+        let chunk = null;
+        chunk = new WorldChunk(self.chunkSize,self.main);
+        chunk.position.set(x * self.chunkSize.width,0,z * self.chunkSize.width);
+        chunk.userData = {x,z};
+        if(self.asyncLoading){
+            requestIdleCallback(function(){
+                chunk.generate(self.uuidForMeshes);
+                self.loaded = true;
+                self.add(chunk);
+                console.log(self.children); 
+            })
+        }else{
+            chunk.generate(self.uuidForMeshes);
+            self.loaded = true;
+            self.add(chunk);
+        }
     }
 
     /**
@@ -49,16 +90,14 @@ export class World extends THREE.Group {
                 }
                 self.initialWorldLoaded = true;
             }, {timeout:2000})
-            
     
-            //console.log(chunks.length);
             if(player.reportVisibleChunks){
-                console.log('Visible Chunks')
+                //console.log('Visible Chunks')
                 visibleChunks.forEach(chunk => {
                     console.log(chunk);
                 });
     
-                console.log('Chunks to add')
+                //console.log('Chunks to add')
                 chunksToAdd.forEach(chunk => {
                     console.log(chunk);
                 });
@@ -129,7 +168,6 @@ export class World extends THREE.Group {
 
         for (const chunk of chunksToRemove) {
             chunk.disposeInstances();
-            //console.log(`Removing chunk at X: ${chunk.userData.x}, Z: ${chunk.userData.z}`);
             
             this.disposeChunk(chunk);
             this.remove(chunk);
@@ -142,24 +180,6 @@ export class World extends THREE.Group {
      * @param {WorldChunk} chunk 
      */
     disposeChunk(chunk){
-        
-        let meshesUuids = [];
-        for (let x = 0; x < Object.keys(chunk.meshes).length; x++) {
-            meshesUuids.push(this.main.sceneRenderer.scene.children.find(e => e.uuid == chunk.meshes[x].uuid).uuid);
-        }
-        let scene = this.main.sceneRenderer.scene;
-        meshesUuids.forEach(uuid => {
-            let mesh = scene.getObjectByProperty( 'uuid', uuid ).geometry;
-            mesh.geometry?.dispose( );
-            mesh.material?.dispose( );
-        });
-        
-        let allButTheBlocks = this.main.sceneRenderer.scene.children
-            .filter(e => !meshesUuids.includes(e.uuid))
-            ;
-        if(allButTheBlocks.length > 0){
-            this.main.sceneRenderer.scene.children = allButTheBlocks;
-        }
         // Use to remove objects from memory.  Not sure if it is needed or works..?
         //disposeNode(chunk, scene, this.main.sceneRenderer.renderer);
         if(chunk.disposeInstances){
@@ -181,68 +201,16 @@ export class World extends THREE.Group {
 
         for (let x = (chunkX - this.drawDistance); x <= (chunkX + this.drawDistance); x++) {
             for (let z = (chunkZ - this.drawDistance); z <= (chunkZ + this.drawDistance); z++) {
-                visibleChunks.push({x,z});
+                let coords = {x,z};
+                //console.log(coords)
+                visibleChunks.push(coords);
             }
         }
 
         return visibleChunks;
     }
 
-    clearuuids(){
-        let self = this;
-        self.uuidForMeshes = {
-            id: uuidv4(),
-            uuids: new Map()
-        };
-    }
-
-    generate(){
-        let self = this;
-        self.disposeChunks();
-        let iCountBottom = -self.drawDistance;
-        let iCountTop = self.drawDistance;
-        for (let x = iCountBottom; x <= iCountTop; x++) {
-            for (let z = iCountBottom; z <= iCountTop; z++) {
-                self.generateChunk(x,z);
-                self.clearuuids();
-            }
-        }
-
-        self.initialWorldLoaded = true;
-    }
-
-    /**
-     * Generate a chunk at the (x, z) coordinates
-     * @param {number} x 
-     * @param {number} z 
-     */
-    generateChunk(x,z, icount){
-        let self = this;
-        let chunk = null;
-        chunk = new WorldChunk(self.chunkSize,self.main);
-        let xpos = x * self.chunkSize.width;
-        let zpos = z * self.chunkSize.width;
-        chunk.position.set(xpos, 0, zpos);
-        let startVector2 = chunk.position;
-        chunk.userData = {x,z};
-        if(self.asyncLoading){
-            requestIdleCallback(function(){
-                let meshes = chunk.generate(self.uuidForMeshes, startVector2, icount);
-                self.uuidForMeshes = chunk.uuidForMeshes;
-                chunk.meshes = meshes;
-                self.loaded = true;
-                self.add(chunk);
-            })
-        }else{
-            let meshes = chunk.generate(self.uuidForMeshes, startVector2,);
-            self.uuidForMeshes = chunk.uuidForMeshes;
-            chunk.meshes = meshes;
-            self.loaded = true;
-            self.add(chunk);
-        }
-    }
-
-    getBlock(x,y,z,size){
+    getBlock(x,y,z){
         let self = this;
         const coords = self.worldToChunkCoords(x,y,z)
         const chunk = self.getChunk(coords.chunk.x, coords.chunk.z);
@@ -251,11 +219,10 @@ export class World extends THREE.Group {
             block = chunk.getBlock(
                 coords.block.x,
                 coords.block.y,
-                coords.block.z,
-                size
+                coords.block.z
             )
         }
-        return block; //self.chunk.get(x,y,z,size);
+        return block;
     }
 
     /**
@@ -316,16 +283,7 @@ export class World extends THREE.Group {
                 chunk.disposeInstances();
             }
         })
-        self.uuidForMeshes = {
-            id: uuidv4(),
-            uuids: new Map()
-        };
-        let allButTheBlocks = self.main.sceneRenderer.scene.children
-            .filter(e => e.userData !== "TerrainMesh")
-            ;
-        if(allButTheBlocks.length > 0){
-            self.main.sceneRenderer.scene.children = allButTheBlocks;
-        }
+        
         this.clear();
     }
 
@@ -336,7 +294,6 @@ export class World extends THREE.Group {
      * @param {number} z 
      */
     removeBlock(x,y,z){
-        debugger;
         const coords = this.worldToChunkCoords(x,y,z);
         const chunk = this.getChunk(coords.chunk.x,coords.chunk.z);
         renderText(coords.chunk.x + "," + coords.chunk.z, 'chunk', 'Chunk position');
