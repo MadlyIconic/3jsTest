@@ -41,16 +41,16 @@ export default class UI {
             playerFolder.add(this.player.boundsHelper, 'visible').name('Player visibility');
         }
         
-        const cameraFolder = self.gui.addFolder('Camera');
-        cameraFolder.add(self.cameraWrapper.position, 'x',-200 , 200).name('X').onChange(function(e){
-            //console.log('camera: ', e, self.camera.position.x, self.camera.position.y, self.camera.position.z);
-        });
-        cameraFolder.add(self.cameraWrapper.position, 'y',-200 , 200).name('Y').onChange(function(e){
+        // const cameraFolder = self.gui.addFolder('Camera');
+        // cameraFolder.add(self.cameraWrapper.position, 'x',-200 , 200).name('X').onChange(function(e){
+        //     //console.log('camera: ', e, self.camera.position.x, self.camera.position.y, self.camera.position.z);
+        // });
+        // cameraFolder.add(self.cameraWrapper.position, 'y',-200 , 200).name('Y').onChange(function(e){
             
-        });
-        cameraFolder.add(self.cameraWrapper.position, 'z',-16 , 128, 1).name('Z').onChange(function(e){
+        // });
+        // cameraFolder.add(self.cameraWrapper.position, 'z',-16 , 128, 1).name('Z').onChange(function(e){
             
-        });
+        // });
 
         const terrainFolder = self.gui.addFolder('Terrain');
         terrainFolder.add(self.world, 'asyncLoading',0 , 5, 1).name('Draw Async').onChange(function(e){
