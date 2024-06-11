@@ -21,15 +21,15 @@ export class WorldChunk extends THREE.Group {
         this.uuidForMeshes = null;        
     }
 
-    generate(uuidcollection, startVector, icount){
+    generate(uuidcollection, startVector){
         
         let self = this;
         self.disposeInstances();
         self.uuidForMeshes = uuidcollection;
-        return self.setupWorld(self.size, startVector, icount);
+        return self.setupWorld(self.size, startVector);
     }
 
-    setupWorld(size, startVector, icount){
+    setupWorld(size, startVector){
         //const start = performance.now();
         let self = this;
         const rng = new RNG(self.params.seed);
@@ -55,13 +55,14 @@ export class WorldChunk extends THREE.Group {
         for (const mesh in meshes) {
             if (meshes.hasOwnProperty(mesh)) {
                 if(meshes[mesh].isObject3D){
-                    meshes[mesh].userData = 'TerrainMesh';
+                    meshes[mesh].userData = `TerrainMesh` ;
                     self.uuidForMeshes.uuids.set(meshes[mesh].uuid,true);
                     self.main.sceneRenderer.addToScene(meshes[mesh]);          
                 }
             }
         }
         //console.log(`Loaded chunk in ${Math.round(performance.now() - start)}ms`);
+        this.meshes = meshes;
         return meshes;
     }
 
@@ -91,14 +92,18 @@ export class WorldChunk extends THREE.Group {
 
     getMeshesForWorldChunk(){
         const meshes = Object.values(this.parent.children.find((e) => e.uuid === this.uuid).meshes);
+        console.log(meshes);
         return meshes;
     }
 
     getMeshContainingBlock(block){
         
         const meshes = this.getMeshesForWorldChunk();
-        const mesh = meshes.find((instanceMesh) => instanceMesh.name === block.id);
-
+        const mesh = meshes.find((instanceMesh) => {
+            //console.log(`Instance mesh name: ${instanceMesh.name}.  Desired name: ${block.id}`)
+            return instanceMesh.name === block.id;
+        });
+        //console.log(`Mesh being returned: ${mesh.name}`);
         return mesh;
     }
 
@@ -111,13 +116,15 @@ export class WorldChunk extends THREE.Group {
     deleteBlockInstance(x,y,z){
         const block = this.getBlock(x,y,z, this.size);
         if(block.instanceId === null){
+            console.log('Nothing to remove');
             return;
         }
-
+        //console.log(`Looking for mesh with name: ${block.id}`);
         const mesh = this.getMeshContainingBlock(block);
+        //console.log(`Found mesh with name: ${mesh.name}`);
 
         const instanceId = block.instanceId;
-
+        //console.log(`Deleting block ${block.id} ${instanceId}`);
         const lastMatrix = new THREE.Matrix4();
         mesh.getMatrixAt(mesh.count -1, lastMatrix);
 
@@ -125,14 +132,15 @@ export class WorldChunk extends THREE.Group {
         v.applyMatrix4(lastMatrix);
 
         this.setBlockInstanceId(v.x,v.y, v.z,instanceId,this.size);
-
-        mesh.setMatrixAt(instanceId, lastMatrix);
-        mesh.count--;
-
-        this.setMeshToUpdateAsEditsHappened(mesh);
+        //console.log(`Deleting block ${v.x} ${v.y} ${v.z} ${instanceId}`);
         
+        mesh.setMatrixAt(instanceId, lastMatrix);
+
+        mesh.count--;
         this.setBlockInstanceId(x,y,z,null,this.size);
         this.setBlockId(x,y,z,blocks.empty.id, this.size);
+
+        this.setMeshToUpdateAsEditsHappened(mesh);
     }   
 
 /**
@@ -160,6 +168,7 @@ export class WorldChunk extends THREE.Group {
     setMeshToUpdateAsEditsHappened(mesh){
         mesh.instanceMatrix.needsUpdate = true;
         mesh.computeBoundingSphere();
+        //console.log('Set mesh to update');
     }
 
     setBlockId(x,y,z,id, size){

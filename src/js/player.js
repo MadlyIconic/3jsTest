@@ -22,7 +22,7 @@ export class Player {
         this.world = world;
         this.raycasterContainer = raycasterContainer;
         this.position.set(playerConfig.playerPosition.x, playerConfig.playerPosition.y, playerConfig.playerPosition.z);
-        this.cameraWrapper.camera.lookAt(new THREE.Vector3(8,16,8));
+        this.cameraWrapper.camera.lookAt(new THREE.Vector3(8,10,8));
         this.world.scene.add(this.cameraWrapper.camera);
         this.world.scene.add(this.cameraWrapper.cameraHelper);
 
@@ -46,9 +46,10 @@ export class Player {
         
         this.raycasterContainer.updateRaycaster();
         if(this.raycasterContainer.selectedCoords){
-            renderPosition(this.raycasterContainer.selectedCoords, 'look-at');
+            renderPosition(this.raycasterContainer.selectedCoords, 'look-at', 'Look:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;');
+            //this.world.reportChunkDetails(this.raycasterContainer.selectedCoords);
         }
-        document.getElementById('player-position').innerHTML = `Player position: ${positionToString(this.position)}`;
+        //document.getElementById('player-position').innerHTML = `Player position: ${positionToString(this.position)}`;
     }
 
     

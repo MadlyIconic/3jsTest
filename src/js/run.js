@@ -82,7 +82,6 @@ export default class Run{
             
             sceneRenderer.renderScene(cameraWrapper);
             
-            orbitCameraWrapper.renderPosition('camera-position');
             previousCamera = currentCamera;
         }
 

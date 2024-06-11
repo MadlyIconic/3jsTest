@@ -17,20 +17,23 @@ export default class RayCasterContainer{
         this.raycaster.setFromCamera(this.CENTER_SCREEN, this.cameraWrapper.camera);
         if(this.world.loaded){
             const meshes = this.world.scene.children.filter((e) => e.type === 'Mesh' && e.name !== '');
-            let intersections = null;
+            
+            let newIntersections = null;
+            let intersections = [];
 
             for (let x = 0; x < meshes.length; x++) {
-                intersections = this.raycaster.intersectObject(meshes[x], true);
-                if(intersections.length >0){
+                newIntersections = this.raycaster.intersectObject(meshes[x], true);
+                if(newIntersections.length >0){
+                    intersections.push(newIntersections);
                     break;
                 }
             }
-            
+            //console.log('intersections:', intersections);
             if(intersections && intersections.length > 0){
-                const intersection = intersections[0];
+                const intersection = intersections[0][0];
 
                 const chunk = intersection.object.parent;
-
+                
                 // gets transformation matrix of the intersected block
                 const blockMatrix = new THREE.Matrix4();
                 intersection.object.getMatrixAt(intersection.instanceId, blockMatrix);
@@ -40,6 +43,9 @@ export default class RayCasterContainer{
                 this.selectedCoords.applyMatrix4(blockMatrix);
                 this.selectionHelper.position.copy(this.selectedCoords);
         
+                const coords = this.world.worldToChunkCoords(this.selectedCoords.x,this.selectedCoords.y,this.selectedCoords.z);
+                const newChunk = this.world.getChunk(coords.chunk.x,coords.chunk.z);
+
                 this.selectionHelper.visible = true;
             }else{
                 this.selectedCoords = null;

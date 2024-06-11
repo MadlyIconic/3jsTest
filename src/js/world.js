@@ -336,7 +336,6 @@ export class World extends THREE.Group {
      * @param {number} z 
      */
     removeBlock(x,y,z){
-        debugger;
         const coords = this.worldToChunkCoords(x,y,z);
         const chunk = this.getChunk(coords.chunk.x,coords.chunk.z);
         renderText(coords.chunk.x + "," + coords.chunk.z, 'chunk', 'Chunk position');
