@@ -38,7 +38,7 @@ export default class RayCasterContainer{
                 this.selectionHelper.visible = true;
             }else{
                 this.selectedCoords = null;
-                //console.log('Nothing found');
+                console.log('Nothing found');
                 this.selectionHelper.visible = false;
             }
         }

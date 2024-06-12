@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 const textureLoader = new THREE.TextureLoader();
-
+// Comment
 function loadTexture(path){
     const texture = textureLoader.load(path);
     texture.minFilter = THREE.NearestFilter;

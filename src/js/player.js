@@ -85,7 +85,7 @@ export class Player {
     onKeyDown(event){
         if(!this.controls.isLocked){
             this.controls.lock();
-            //console.log('controls locked');
+            console.log('controls locked');
         }
 
         switch (event.code) {

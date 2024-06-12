@@ -24,7 +24,7 @@ export class Physics {
 
     update(dt, player, world, cameraName){
         this.accumulator += dt;
-
+        // Comment
         while (this.accumulator >= this.timeStep) {
             this.helpers.clear();
             player.velocity.y -= this.gravity * this.timeStep;

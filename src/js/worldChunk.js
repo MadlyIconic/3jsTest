@@ -15,7 +15,7 @@ export class WorldChunk extends THREE.Group {
      */
     constructor(size = {width:32, height:16}, main){
         super();
-        //console.log('World chunk being created');
+        console.log('World chunk being created');
         this.size = size;
         this.main = main;
         this.params = main.options.params;       

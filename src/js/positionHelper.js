@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 
 export default function positionToString(obj){
+    // Comment
     let str = '';
     str += `X: ${obj.x?.toFixed(1)} `;
     if(obj.y){
