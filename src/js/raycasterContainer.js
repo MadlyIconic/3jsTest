@@ -1,5 +1,5 @@
 import * as THREE from 'three'
-import { renderPosition } from './positionHelper';
+import { renderPosition, renderText } from './positionHelper';
 
 export default class RayCasterContainer{
     constructor(cameraWrapper,world){
@@ -18,23 +18,13 @@ export default class RayCasterContainer{
         this.raycaster.setFromCamera(this.CENTER_SCREEN, this.cameraWrapper.camera);
         if(this.world.loaded){
             const meshes = this.world.scene.children.filter((e) => e.type === 'Mesh' && e.name !== '');
-            
-            let newIntersections = null;
-            let intersections = [];
-
-            for (let x = 0; x < meshes.length; x++) {
-                newIntersections = this.raycaster.intersectObject(meshes[x], true);
-                if(newIntersections.length >0){
-                    intersections.push(newIntersections);
-                    break;
-                }
-            }
-            //console.log('intersections:', intersections);
+            const intersections = this.raycaster.intersectObjects(meshes);            
             if(intersections && intersections.length > 0){
-                const intersection = intersections[0][0];
+                const intersection = intersections[0];
 
-                const chunk = intersection.object.parent;
-                
+                // Get the position of the chunk that the block is contained in
+                const chunk = intersection.object;
+                renderText(chunk.uuid, 'chunk', 'chunk:');
                 // gets transformation matrix of the intersected block
                 const blockMatrix = new THREE.Matrix4();
                 intersection.object.getMatrixAt(intersection.instanceId, blockMatrix);
@@ -45,10 +35,6 @@ export default class RayCasterContainer{
                 this.selectedCoords.applyMatrix4(blockMatrix);
                 this.selectionHelper.position.copy(this.selectedCoords);
         
-                const coords = this.world.worldToChunkCoords(this.selectedCoords.x,this.selectedCoords.y,this.selectedCoords.z);
-                this.userData = coords.chunk;
-                const newChunk = this.world.getChunk(coords.chunk.x,coords.chunk.z);
-
                 this.selectionHelper.visible = true;
             }else{
                 this.selectedCoords = null;

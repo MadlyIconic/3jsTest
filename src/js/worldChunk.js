@@ -75,9 +75,13 @@ export class WorldChunk extends THREE.Group {
     }
 
     getMeshesForWorldChunk(){
-        const objWithMmeshes = Object.values(this.parent.children.find((e) => e.uuid === this.uuid));
-        //console.log(objWithMmeshes);
-        return objWithMmeshes;
+        const objWithMeshes = Object.values(this.parent.children.find((e) => e.uuid === this.uuid));
+        // Hard coded index is not good!?!
+        const meshes = Object.keys(objWithMeshes[31]).map(
+            function(k){
+                return objWithMeshes[31][k]
+            });
+        return meshes;
     }
 
     getMeshContainingBlock(block){
