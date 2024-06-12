@@ -21,10 +21,10 @@ export class WorldChunk extends THREE.Group {
         this.params = main.options.params;    
     }
 
-    generate(){        
+    generate(x,z, newPositionX, newPositionZ){
         let self = this;
         self.disposeInstances();
-        return self.setupWorld();
+        self.setupWorld(x,z, newPositionX, newPositionZ);
     }
 
     setupWorld(x,z, newPositionX, newPositionZ){
@@ -33,16 +33,21 @@ export class WorldChunk extends THREE.Group {
         self.initialiseTerrain();
         self.generateResources(rng);
         self.generateTerrain(rng);
-        let meshes = self.generateMeshes();        
+        self.meshes = self.generateMeshes();
+        self.addMeshesToScene(self.meshes,x,z, newPositionX, newPositionZ);
+    }
+
+    addMeshesToScene(meshes,x,z, newPositionX, newPositionZ){
+        let self = this;
         for (const mesh in meshes) {
-        //     if (meshes.hasOwnProperty(mesh)) {
-        //         if(meshes[mesh].isObject3D){
-        //             meshes[mesh].userData = 'TerrainMesh';
-        //             self.uuidForMeshes.uuids.set(meshes[mesh].uuid,true);
-                     self.main.sceneRenderer.addToScene(meshes[mesh]);          
-        //         }
-             }
-        // }
+            if (meshes.hasOwnProperty(mesh)) {
+                if(meshes[mesh].isObject3D){
+                    meshes[mesh].position.set(newPositionX,0,newPositionZ);
+                    meshes[mesh].userData = {x,z};
+                    self.main.sceneRenderer.addToScene(meshes[mesh]);
+                }
+            }
+        }
     }
 
     getBlock(x,y,z){
