@@ -47,9 +47,7 @@ export class Player {
         this.raycasterContainer.updateRaycaster();
         if(this.raycasterContainer.selectedCoords){
             renderPosition(this.raycasterContainer.selectedCoords, 'look-at', 'Look:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;');
-            //this.world.reportChunkDetails(this.raycasterContainer.selectedCoords);
         }
-        //document.getElementById('player-position').innerHTML = `Player position: ${positionToString(this.position)}`;
     }
 
     

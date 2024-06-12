@@ -58,7 +58,6 @@ export default class Run{
                     world.update(player);
                 }
             }
-            player.reportVisibleChunks = false;
             
             updateCameraSelection();
             renderObjects(sceneRenderer, self.options);

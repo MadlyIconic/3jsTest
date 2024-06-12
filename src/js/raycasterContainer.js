@@ -9,6 +9,7 @@ export default class RayCasterContainer{
         this.raycaster = new THREE.Raycaster(new THREE.Vector3(),new THREE.Vector3(), 0, 3);
         
         this.selectedCoords = null;
+        this.userData = null;
         this.addSelectionHelper();
     }
 
@@ -40,10 +41,12 @@ export default class RayCasterContainer{
         
                 this.selectedCoords = chunk.position.clone();
                 
+                
                 this.selectedCoords.applyMatrix4(blockMatrix);
                 this.selectionHelper.position.copy(this.selectedCoords);
         
                 const coords = this.world.worldToChunkCoords(this.selectedCoords.x,this.selectedCoords.y,this.selectedCoords.z);
+                this.userData = coords.chunk;
                 const newChunk = this.world.getChunk(coords.chunk.x,coords.chunk.z);
 
                 this.selectionHelper.visible = true;

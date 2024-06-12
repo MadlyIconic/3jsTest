@@ -18,40 +18,36 @@ export class WorldChunk extends THREE.Group {
         //console.log('World chunk being created');
         this.size = size;
         this.main = main;
-        this.params = main.options.params;
-        this.uuidForMeshes = null;        
+        this.params = main.options.params;       
     }
 
-    generate(uuidcollection, startVector){
-        
+    generate(x,z, newPositionX, newPositionZ){
         let self = this;
         self.disposeInstances();
-        self.uuidForMeshes = uuidcollection;
-        return self.setupWorld(self.size, startVector);
+        self.setupWorld(x,z, newPositionX, newPositionZ);
     }
 
-    setupWorld(size, startVector){
-        //const start = performance.now();
+    setupWorld(x,z, newPositionX, newPositionZ){
         let self = this;
         const rng = new RNG(self.params.seed);
-        
         self.initialiseTerrain();
         self.generateResources(rng);
         self.generateTerrain(rng);
-        let meshes = self.generateMeshes();
-        self.uuidForMeshes = {id:self.uuidForMeshes.id, uuids : new Map()};
+        self.meshes = self.generateMeshes();
+        self.addMeshesToScene(self.meshes,x,z, newPositionX, newPositionZ);
+    }
+
+    addMeshesToScene(meshes,x,z, newPositionX, newPositionZ){
+        let self = this;
         for (const mesh in meshes) {
             if (meshes.hasOwnProperty(mesh)) {
                 if(meshes[mesh].isObject3D){
-                    meshes[mesh].userData = `TerrainMesh` ;
-                    self.uuidForMeshes.uuids.set(meshes[mesh].uuid,true);
-                    self.main.sceneRenderer.addToScene(meshes[mesh]);          
+                    meshes[mesh].position.set(newPositionX,0,newPositionZ);
+                    meshes[mesh].userData = {x,z};
+                    self.main.sceneRenderer.addToScene(meshes[mesh]);
                 }
             }
         }
-        //console.log(`Loaded chunk in ${Math.round(performance.now() - start)}ms`);
-        this.meshes = meshes;
-        return meshes;
     }
 
     getBlock(x,y,z){
@@ -79,9 +75,9 @@ export class WorldChunk extends THREE.Group {
     }
 
     getMeshesForWorldChunk(){
-        const meshes = Object.values(this.parent.children.find((e) => e.uuid === this.uuid).meshes);
-        console.log(meshes);
-        return meshes;
+        const objWithMmeshes = Object.values(this.parent.children.find((e) => e.uuid === this.uuid));
+        //console.log(objWithMmeshes);
+        return objWithMmeshes;
     }
 
     getMeshContainingBlock(block){
@@ -270,8 +266,6 @@ export class WorldChunk extends THREE.Group {
             .filter(blockType => blockType.id === blocks.empty.id)
             .forEach(blockType => {
                 let mesh = new THREE.InstancedMesh(boxGeometry);
-                //mesh.name = blockType.name;
-                // Changed for delete block purposes.  Hopefully the name is not used anywhere?
                 mesh.name = blockType.id;
                 mesh.count = 0;
                 mesh.color =  blockType.color;
@@ -370,8 +364,6 @@ export class WorldChunk extends THREE.Group {
     disposeInstances(){
         let self = this;
         self.traverse(obj => obj.dispose?.())
-        self.data = [];
-        self.uuidForMeshes = null
         self.clear();
     }
 }
