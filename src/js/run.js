@@ -58,7 +58,6 @@ export default class Run{
                     world.update(player);
                 }
             }
-            player.reportVisibleChunks = false;
             
             updateCameraSelection();
             renderObjects(sceneRenderer, self.options);
@@ -82,7 +81,6 @@ export default class Run{
             
             sceneRenderer.renderScene(cameraWrapper);
             
-            orbitCameraWrapper.renderPosition('camera-position');
             previousCamera = currentCamera;
         }
 

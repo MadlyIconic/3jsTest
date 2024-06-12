@@ -21,7 +21,7 @@
     "params": {
         "seed": 1000,
         "terrain":{
-            "scale": 90,
+            "scale": 30,
             "magnitude": 0,
             "offset": 0.27
         }
@@ -34,7 +34,7 @@
     "playerConfig":{
         "playerPosition":{
             "x":8,
-            "y":64,
+            "y":14,
             "z":8
         }
     }

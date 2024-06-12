@@ -27,10 +27,9 @@ export class WorldChunk extends THREE.Group {
         return self.setupWorld();
     }
 
-    setupWorld(){
+    setupWorld(x,z, newPositionX, newPositionZ){
         let self = this;
         const rng = new RNG(self.params.seed);
-        
         self.initialiseTerrain();
         self.generateResources(rng);
         self.generateTerrain(rng);
@@ -71,15 +70,23 @@ export class WorldChunk extends THREE.Group {
     }
 
     getMeshesForWorldChunk(){
-        const meshes = Object.values(this.parent.children.find((e) => e.uuid === this.uuid).meshes);
+        const objWithMeshes = Object.values(this.parent.children.find((e) => e.uuid === this.uuid));
+        // Hard coded index is not good!?!
+        const meshes = Object.keys(objWithMeshes[31]).map(
+            function(k){
+                return objWithMeshes[31][k]
+            });
         return meshes;
     }
 
     getMeshContainingBlock(block){
         
         const meshes = this.getMeshesForWorldChunk();
-        const mesh = meshes.find((instanceMesh) => instanceMesh.name === block.id);
-
+        const mesh = meshes.find((instanceMesh) => {
+            //console.log(`Instance mesh name: ${instanceMesh.name}.  Desired name: ${block.id}`)
+            return instanceMesh.name === block.id;
+        });
+        //console.log(`Mesh being returned: ${mesh.name}`);
         return mesh;
     }
 
@@ -92,13 +99,15 @@ export class WorldChunk extends THREE.Group {
     deleteBlockInstance(x,y,z){
         const block = this.getBlock(x,y,z, this.size);
         if(block.instanceId === null){
+            console.log('Nothing to remove');
             return;
         }
-
+        //console.log(`Looking for mesh with name: ${block.id}`);
         const mesh = this.getMeshContainingBlock(block);
+        //console.log(`Found mesh with name: ${mesh.name}`);
 
         const instanceId = block.instanceId;
-
+        //console.log(`Deleting block ${block.id} ${instanceId}`);
         const lastMatrix = new THREE.Matrix4();
         mesh.getMatrixAt(mesh.count -1, lastMatrix);
 
@@ -106,14 +115,15 @@ export class WorldChunk extends THREE.Group {
         v.applyMatrix4(lastMatrix);
 
         this.setBlockInstanceId(v.x,v.y, v.z,instanceId,this.size);
-
-        mesh.setMatrixAt(instanceId, lastMatrix);
-        mesh.count--;
-
-        this.setMeshToUpdateAsEditsHappened(mesh);
+        //console.log(`Deleting block ${v.x} ${v.y} ${v.z} ${instanceId}`);
         
+        mesh.setMatrixAt(instanceId, lastMatrix);
+
+        mesh.count--;
         this.setBlockInstanceId(x,y,z,null,this.size);
         this.setBlockId(x,y,z,blocks.empty.id, this.size);
+
+        this.setMeshToUpdateAsEditsHappened(mesh);
     }   
 
 /**
@@ -141,6 +151,7 @@ export class WorldChunk extends THREE.Group {
     setMeshToUpdateAsEditsHappened(mesh){
         mesh.instanceMatrix.needsUpdate = true;
         mesh.computeBoundingSphere();
+        //console.log('Set mesh to update');
     }
 
     setBlockId(x,y,z,id){
@@ -254,8 +265,6 @@ export class WorldChunk extends THREE.Group {
             .filter(blockType => blockType.id === blocks.empty.id)
             .forEach(blockType => {
                 let mesh = new THREE.InstancedMesh(boxGeometry);
-                //mesh.name = blockType.name;
-                // Changed for delete block purposes.  Hopefully the name is not used anywhere?
                 mesh.name = blockType.id;
                 mesh.count = 0;
                 mesh.color =  blockType.color;
@@ -354,8 +363,6 @@ export class WorldChunk extends THREE.Group {
     disposeInstances(){
         let self = this;
         self.traverse(obj => obj.dispose?.())
-        self.data = [];
-        self.uuidForMeshes = null
         self.clear();
     }
 }

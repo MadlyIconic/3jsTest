@@ -1,5 +1,5 @@
 import * as THREE from 'three'
-import { renderPosition } from './positionHelper';
+import { renderPosition, renderText } from './positionHelper';
 
 export default class RayCasterContainer{
     constructor(cameraWrapper,world){
@@ -9,6 +9,7 @@ export default class RayCasterContainer{
         this.raycaster = new THREE.Raycaster(new THREE.Vector3(),new THREE.Vector3(), 0, 3);
         
         this.selectedCoords = null;
+        this.userData = null;
         this.addSelectionHelper();
     }
 
@@ -17,25 +18,19 @@ export default class RayCasterContainer{
         this.raycaster.setFromCamera(this.CENTER_SCREEN, this.cameraWrapper.camera);
         if(this.world.loaded){
             const meshes = this.world.scene.children.filter((e) => e.type === 'Mesh' && e.name !== '');
-            let intersections = null;
-
-            for (let x = 0; x < meshes.length; x++) {
-                intersections = this.raycaster.intersectObject(meshes[x], true);
-                if(intersections.length >0){
-                    break;
-                }
-            }
-            
+            const intersections = this.raycaster.intersectObjects(meshes);            
             if(intersections && intersections.length > 0){
                 const intersection = intersections[0];
 
-                const chunk = intersection.object.parent;
-
+                // Get the position of the chunk that the block is contained in
+                const chunk = intersection.object;
+                renderText(chunk.uuid, 'chunk', 'chunk:');
                 // gets transformation matrix of the intersected block
                 const blockMatrix = new THREE.Matrix4();
                 intersection.object.getMatrixAt(intersection.instanceId, blockMatrix);
         
                 this.selectedCoords = chunk.position.clone();
+                
                 
                 this.selectedCoords.applyMatrix4(blockMatrix);
                 this.selectionHelper.position.copy(this.selectedCoords);

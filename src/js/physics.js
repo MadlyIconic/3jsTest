@@ -108,7 +108,7 @@ export class Physics {
             }
         }
 
-        document.getElementById('collisions2').innerHTML = `Narrowphase collisions: ${collisions.length}`;
+        //document.getElementById('collisions2').innerHTML = `Narrowphase collisions: ${collisions.length}`;
 
         return collisions;
     }
@@ -154,11 +154,11 @@ export class Physics {
         }
         
         if(this.cameraName.includes('Player')){
-            let collisionsMessage = `Camera name: ${this.cameraName}, Broadphase candidates: ${candidates.length}`;
-            document.getElementById('collisions').innerHTML = collisionsMessage;
+            //let collisionsMessage = `Camera name: ${this.cameraName}, Broadphase candidates: ${candidates.length}`;
+            //document.getElementById('collisions').innerHTML = collisionsMessage;
         }else{
-            let collisionsMessage = `Camera name: ${this.cameraName}`;
-            document.getElementById('collisions').innerHTML = collisionsMessage;
+            //let collisionsMessage = `Camera name: ${this.cameraName}`;
+            //document.getElementById('collisions').innerHTML = collisionsMessage;
         }
 
         return candidates;

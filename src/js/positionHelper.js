@@ -2,9 +2,11 @@ import * as THREE from 'three';
 
 export default function positionToString(obj){
     let str = '';
-    str += `X: ${obj.x.toFixed(3)} `;
-    str += `Y: ${obj.y.toFixed(3)} `;
-    str += `Z: ${obj.z.toFixed(3)} `;
+    str += `X: ${obj.x?.toFixed(1)} `;
+    if(obj.y){
+        str += `Y: ${obj.y?.toFixed(1)} `;
+    }
+    str += `Z: ${obj.z?.toFixed(1)} `;
 
     return str;
 }
