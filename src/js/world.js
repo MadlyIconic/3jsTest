@@ -2,6 +2,69 @@ import * as THREE from 'three'
 import { WorldChunk } from './worldChunk';
 import { renderPosition, renderText, uuidv4 } from './positionHelper';
 
+class SpatialHash {
+    constructor(cellSize = 1) {
+        this.cellSize = cellSize;
+        this.hash = new Map();
+    }
+
+    getKey(x, y, z) {
+        const cx = Math.floor(x / this.cellSize);
+        const cy = Math.floor(y / this.cellSize);
+        const cz = Math.floor(z / this.cellSize);
+        return `${cx},${cy},${cz}`;
+    }
+
+    insert(x, y, z, data) {
+        const key = this.getKey(x, y, z);
+        if (!this.hash.has(key)) {
+            this.hash.set(key, []);
+        }
+        this.hash.get(key).push({ x, y, z, data });
+    }
+
+    remove(x, y, z) {
+        const key = this.getKey(x, y, z);
+        const cell = this.hash.get(key);
+        if (cell) {
+            const index = cell.findIndex(item => item.x === x && item.y === y && item.z === z);
+            if (index !== -1) {
+                cell.splice(index, 1);
+                if (cell.length === 0) {
+                    this.hash.delete(key);
+                }
+            }
+        }
+    }
+
+    query(minX, minY, minZ, maxX, maxY, maxZ) {
+        const results = [];
+        const minCx = Math.floor(minX / this.cellSize);
+        const minCy = Math.floor(minY / this.cellSize);
+        const minCz = Math.floor(minZ / this.cellSize);
+        const maxCx = Math.floor(maxX / this.cellSize);
+        const maxCy = Math.floor(maxY / this.cellSize);
+        const maxCz = Math.floor(maxZ / this.cellSize);
+
+        for (let cx = minCx; cx <= maxCx; cx++) {
+            for (let cy = minCy; cy <= maxCy; cy++) {
+                for (let cz = minCz; cz <= maxCz; cz++) {
+                    const key = `${cx},${cy},${cz}`;
+                    const cell = this.hash.get(key);
+                    if (cell) {
+                        results.push(...cell);
+                    }
+                }
+            }
+        }
+        return results;
+    }
+
+    clear() {
+        this.hash.clear();
+    }
+}
+
 export class World extends THREE.Group {
 
     /**
@@ -28,6 +91,7 @@ export class World extends THREE.Group {
         main.lightingManager.setUpAmbientLight(true, main.options.ambientLightIntinsity);
         self.directionalLightingContainer = main.lightingManager.setUpDirectionalLight(true, 60,75,50, main.options.directionalLightIntinsity, true);
         self.scene.fog = new THREE.Fog( new THREE.Color(main.options.skycolor), 200, 400);
+        self.spatialHash = new SpatialHash();
     }
 
     generate(){
@@ -54,7 +118,7 @@ export class World extends THREE.Group {
         //console.log('generating a chunk at x, z:', x,z);
         let self = this;
         let chunk = null;
-        chunk = new WorldChunk(self.chunkSize,self.main);
+        chunk = new WorldChunk(self.chunkSize,self);
         chunk.position.set(x * self.chunkSize.width,0,z * self.chunkSize.width);
         chunk.userData = {x,z};
         if(self.asyncLoading){

@@ -2,6 +2,7 @@ import * as THREE from 'three'
 import { RNG } from './rng';
 import {SimplexNoise} from 'three/examples/jsm/math/SimplexNoise.js'
 import { blocks, resources } from './blocks';
+import { TerrainGenerator } from './terrainGenerator';
 
 
 export class WorldChunk extends THREE.Group {
@@ -13,12 +14,13 @@ export class WorldChunk extends THREE.Group {
      * @param {*} size
      * @param {*} main
      */
-    constructor(size = {width:32, height:16}, main){
+    constructor(size = {width:32, height:16}, world){
         super();
         console.log('World chunk being created');
         this.size = size;
-        this.main = main;
-        this.params = main.options.params;    
+        this.world = world;
+        this.main = world.main;
+        this.params = this.main.options.params;    
     }
 
     generate(x,z, newPositionX, newPositionZ){
@@ -32,7 +34,23 @@ export class WorldChunk extends THREE.Group {
         const rng = new RNG(self.params.seed);
         self.initialiseTerrain();
         self.generateResources(rng);
-        self.generateTerrain(rng);
+        const terrainGen = new TerrainGenerator(self.params, self.size);
+        terrainGen.generate(rng, self.data, x, z);
+
+        // Populate spatial hash with solid blocks
+        for (let ix = 0; ix < self.size.width; ix++) {
+            for (let iz = 0; iz < self.size.width; iz++) {
+                for (let iy = 0; iy < self.size.height; iy++) {
+                    const block = self.data[ix][iy][iz];
+                    if (block.id !== blocks.empty.id) {
+                        const worldX = ix + x * self.size.width;
+                        const worldZ = iz + z * self.size.width;
+                        self.world.spatialHash.insert(worldX, iy, worldZ, block);
+                    }
+                }
+            }
+        }
+
         self.meshes = self.generateMeshes();
         self.addMeshesToScene(self.meshes,x,z, newPositionX, newPositionZ);
     }
@@ -75,13 +93,7 @@ export class WorldChunk extends THREE.Group {
     }
 
     getMeshesForWorldChunk(){
-        const objWithMeshes = Object.values(this.parent.children.find((e) => e.uuid === this.uuid));
-        // Hard coded index is not good!?!
-        const meshes = Object.keys(objWithMeshes[31]).map(
-            function(k){
-                return objWithMeshes[31][k]
-            });
-        return meshes;
+        return Object.values(this.meshes);
     }
 
     getMeshContainingBlock(block){
@@ -127,6 +139,11 @@ export class WorldChunk extends THREE.Group {
         mesh.count--;
         this.setBlockInstanceId(x,y,z,null,this.size);
         this.setBlockId(x,y,z,blocks.empty.id, this.size);
+
+        // Remove from spatial hash
+        const worldX = x + this.chunkX * this.size.width;
+        const worldZ = z + this.chunkZ * this.size.width;
+        this.world.spatialHash.remove(worldX, y, worldZ);
 
         this.setMeshToUpdateAsEditsHappened(mesh);
     }   
@@ -230,34 +247,6 @@ export class WorldChunk extends THREE.Group {
                     }
                 }   
             }
-        }
-    }
-
-    generateTerrain(rng){        
-        let self = this;
-        const simplex = new SimplexNoise(rng);
-        for (let x = 0; x < self.size.width; x++) {
-            for (let z = 0; z < self.size.width; z++) {
-                const value = simplex.noise(
-                    (this.position.x + x) / self.params.terrain.scale,
-                    (this.position.z + z) / self.params.terrain.scale
-                );
-                
-                const scaledNoise = self.params.terrain.offset + self.params.terrain.magnitude * value;
-                let height = Math.floor(self.size.height * scaledNoise);
-                height = Math.max(0, Math.min(height, self.size.height));
-
-                for (let y = 0; y < self.size.height; y++) {
-                                    
-                    if(y < height && this.getBlock(x,y,z).id === blocks.empty.id){
-                        this.setBlockId(x,y,z,blocks.dirt.id);                    
-                    }else if(y === height){
-                        this.setBlockId(x,y,z,blocks.grass.id);                    
-                    } else if(y > height){
-                        this.setBlockId(x,y,z,blocks.empty.id);                    
-                    }
-                }
-            }            
         }
     }
 

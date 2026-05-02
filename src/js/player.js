@@ -26,12 +26,6 @@ export class Player {
         this.world.scene.add(this.cameraWrapper.camera);
         this.world.scene.add(this.cameraWrapper.cameraHelper);
 
-        this.onKeyDownBound = this.onKeyDown.bind(this);
-        this.onKeyUpBound = this.onKeyUp.bind(this);
-
-        document.addEventListener('keydown', this.onKeyDownBound);
-        document.addEventListener('keyup', this.onKeyUpBound);
-
         this.boundsHelper = new THREE.Mesh(
             new THREE.CylinderGeometry(this.radius, this.radius, this.height,16),
             new THREE.MeshBasicMaterial({wireframe: true})
@@ -131,33 +125,6 @@ export class Player {
         }
     }
 
-    renderKeyPress(keyCode){
-        document.getElementById('keypress').innerHTML = keyCode;
-    }
-
-    /**
-     * Event handler for 'keyup' event
-     * @param {KeyboardEvent} event
-     */
-    onKeyUp(event){
-        switch (event.code) {
-            case 'KeyW':
-                this.input.z = this.minSpeed;
-                break;
-            case 'KeyA':
-                this.input.x = this.minSpeed;
-                break;
-            case 'KeyS':
-                this.input.z = this.minSpeed;
-                break;
-            case 'KeyD':
-                this.input.x = this.minSpeed;
-                break;
-            default:
-                break;
-        }
-    }
-
     /**
      * Returns the current world position of the player
      * @type {THREE.Vector3}
@@ -167,8 +134,7 @@ export class Player {
     }
 
     cleanup() {
-        document.removeEventListener('keydown', this.onKeyDownBound);
-        document.removeEventListener('keyup', this.onKeyUpBound);
+        // No listeners to remove, handled by InputManager
     }
     
 }

@@ -173,7 +173,6 @@ export class Physics {
     }
 
     broadPhase(player, world){
-        const candidates = [];
         const extents = {
             x: {
                 min: Math.floor(player.position.x - player.radius),
@@ -189,17 +188,26 @@ export class Physics {
             }
         }
 
-        for (let x = extents.x.min; x <= extents.x.max; x++) {
-            for (let y = extents.y.min; y <= extents.y.max; y++) {
-                for (let z = extents.z.min; z <= extents.z.max; z++) {
-                    const block = world.getBlock(x,y,z,world.chunkSize);
-                    if(block && block.id !== blocks.empty.id){
-                        const blockPosition = {x,y,z}
-                        candidates.push(blockPosition);
-                        this.addCollisionHelper(blockPosition);
+        // Use spatial hash for faster lookup
+        const hashResults = world.spatialHash.query(extents.x.min, extents.y.min, extents.z.min, extents.x.max, extents.y.max, extents.z.max);
+        const candidates = hashResults.map(r => ({ x: r.x, y: r.y, z: r.z }));
+
+        // Fallback to old method if hash is empty (for debugging or if not populated)
+        if (candidates.length === 0) {
+            for (let x = extents.x.min; x <= extents.x.max; x++) {
+                for (let y = extents.y.min; y <= extents.y.max; y++) {
+                    for (let z = extents.z.min; z <= extents.z.max; z++) {
+                        const block = world.getBlock(x,y,z,world.chunkSize);
+                        if(block && block.id !== blocks.empty.id){
+                            const blockPosition = {x,y,z}
+                            candidates.push(blockPosition);
+                            this.addCollisionHelper(blockPosition);
+                        }
                     }
                 }
             }
+        } else {
+            candidates.forEach(pos => this.addCollisionHelper(pos));
         }
         
         if(this.cameraName.includes('Player')){
