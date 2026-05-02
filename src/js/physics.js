@@ -11,6 +11,55 @@ const collisionGeometry = new THREE.BoxGeometry(1.001, 1.001, 1.001);
 const contactMaterial = new THREE.MeshBasicMaterial({ wireframe: true, color: 0x00ff00 });
 const contactGeometry = new THREE.SphereGeometry(0.05, 6, 6);
 
+class SpatialHash {
+    constructor(cellSize = 1) {
+        this.cellSize = cellSize;
+        this.hash = new Map();
+    }
+
+    getKey(x, y, z) {
+        const cx = Math.floor(x / this.cellSize);
+        const cy = Math.floor(y / this.cellSize);
+        const cz = Math.floor(z / this.cellSize);
+        return `${cx},${cy},${cz}`;
+    }
+
+    insert(x, y, z, data) {
+        const key = this.getKey(x, y, z);
+        if (!this.hash.has(key)) {
+            this.hash.set(key, []);
+        }
+        this.hash.get(key).push({ x, y, z, data });
+    }
+
+    query(minX, minY, minZ, maxX, maxY, maxZ) {
+        const results = [];
+        const minCx = Math.floor(minX / this.cellSize);
+        const minCy = Math.floor(minY / this.cellSize);
+        const minCz = Math.floor(minZ / this.cellSize);
+        const maxCx = Math.floor(maxX / this.cellSize);
+        const maxCy = Math.floor(maxY / this.cellSize);
+        const maxCz = Math.floor(maxZ / this.cellSize);
+
+        for (let cx = minCx; cx <= maxCx; cx++) {
+            for (let cy = minCy; cy <= maxCy; cy++) {
+                for (let cz = minCz; cz <= maxCz; cz++) {
+                    const key = `${cx},${cy},${cz}`;
+                    const cell = this.hash.get(key);
+                    if (cell) {
+                        results.push(...cell);
+                    }
+                }
+            }
+        }
+        return results;
+    }
+
+    clear() {
+        this.hash.clear();
+    }
+}
+
 export class Physics {
     constructor(scene){
         this.simulationRate = 300;

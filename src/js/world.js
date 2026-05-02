@@ -17,7 +17,7 @@ export class World extends THREE.Group {
         self.drawDistance = 1;
         self.main = main;
         self.scene = main.sceneRenderer.scene;
-        self.loaded - false;
+        self.loaded = false;
         self.chunkSize = main.options.chunkSize;
         self.seed = main.options.params.seed;
         self.params = main.options.params;

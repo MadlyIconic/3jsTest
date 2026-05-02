@@ -21,13 +21,16 @@ export class Player {
         this.controls = new PointerLockControls(this.cameraWrapper.camera, domElement);
         this.world = world;
         this.raycasterContainer = raycasterContainer;
-        this.position.set(playerConfig.playerPosition.x, playerConfig.playerPosition.y, playerConfig.playerPosition.z);
+        this.cameraWrapper.position.set(playerConfig.playerPosition.x, playerConfig.playerPosition.y, playerConfig.playerPosition.z);
         this.cameraWrapper.camera.lookAt(new THREE.Vector3(8,10,8));
         this.world.scene.add(this.cameraWrapper.camera);
         this.world.scene.add(this.cameraWrapper.cameraHelper);
 
-        document.addEventListener('keydown', this.onKeyDown.bind(this));
-        document.addEventListener('keyup', this.onKeyUp.bind(this));
+        this.onKeyDownBound = this.onKeyDown.bind(this);
+        this.onKeyUpBound = this.onKeyUp.bind(this);
+
+        document.addEventListener('keydown', this.onKeyDownBound);
+        document.addEventListener('keyup', this.onKeyUpBound);
 
         this.boundsHelper = new THREE.Mesh(
             new THREE.CylinderGeometry(this.radius, this.radius, this.height,16),
@@ -163,5 +166,9 @@ export class Player {
         return this.cameraWrapper.position;
     }
 
+    cleanup() {
+        document.removeEventListener('keydown', this.onKeyDownBound);
+        document.removeEventListener('keyup', this.onKeyUpBound);
+    }
     
 }

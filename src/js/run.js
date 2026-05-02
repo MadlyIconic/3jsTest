@@ -16,6 +16,7 @@ export default class Run{
 
     mainFunction() {
         console.log('config loaded', this.options);
+        let self = this;
         let sceneRenderer = this.sceneRenderer;
         let lights = this.lightingManager.lights;
 
@@ -60,7 +61,7 @@ export default class Run{
             }
             
             updateCameraSelection();
-            renderObjects(sceneRenderer, self.options);
+            renderObjects(sceneRenderer, self.options, lights);
             
             previousTime = currentTime;
         }
@@ -84,7 +85,7 @@ export default class Run{
             previousCamera = currentCamera;
         }
 
-        function renderObjects(sceneRenderer, options){
+        function renderObjects(sceneRenderer, options, lights){
             let lightsWithShadow = lights.filter((light) => light.object.shadow);
             lightsWithShadow.filter((camera) => camera.object.isDirectionalLight == true).forEach((light) => {
                 let editableLight = light.object;

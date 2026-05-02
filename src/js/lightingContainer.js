@@ -33,6 +33,6 @@ export default class LightingContainer{
     }
 
     get position(){
-        return this.camera.position;
+        return this.directionalLight.position;
     }
 }

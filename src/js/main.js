@@ -4,10 +4,7 @@ import SceneRenderer from './sceneRenderer';
 import LightingManager from './lightingManager';
 import nebula from '../img/nebula.jpg'
 import stars from '../img/stars.jpg'
-import BoxBuilder from './boxBuilder'
-import PlaneBuilder from './planeBuilder';
 import CameraBuilder from './cameraBuilder';
-import SphereBuilder from './sphereBuilder';
 import Settings from './settings';
 import EventDrivenObject from './eventDrivenObject';
 import { Player } from './player';
@@ -33,10 +30,7 @@ export default class Main extends EventDrivenObject{
 
         
         this.lightingManager = new LightingManager(this.sceneRenderer);
-        this.boxBuilder = new BoxBuilder();
         this.cameraBuilder = new CameraBuilder();
-        this.planeBuilder = new PlaneBuilder();
-        this.sphereBuilder = new SphereBuilder();
         //this.player = new Player(this.sceneRenderer.scene, this.sceneRenderer.renderer.domElement);
         this.settings.addEventListener('loadconfig', function () {
             self.options = self.settings.options;
