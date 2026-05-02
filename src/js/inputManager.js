@@ -3,12 +3,20 @@ export default class InputManager{
         this.world = world;
         this.player = player;
         this.keys = {};
-        document.addEventListener('mousedown', this.onMouseDown.bind(this));
-        document.addEventListener('keydown', this.onKeyDown.bind(this));
-        document.addEventListener('keyup', this.onKeyUp.bind(this));
+        this.onMouseDownBound = this.onMouseDown.bind(this);
+        this.onKeyDownBound = this.onKeyDown.bind(this);
+        this.onKeyUpBound = this.onKeyUp.bind(this);
+        this.onPointerDownBound = (event) => { event.preventDefault(); event.stopImmediatePropagation(); };
+        this.onContextMenuBound = (event) => event.preventDefault();
+        this.player.domElement.addEventListener('mousedown', this.onMouseDownBound);
+        this.player.domElement.addEventListener('pointerdown', this.onPointerDownBound);
+        this.player.domElement.addEventListener('contextmenu', this.onContextMenuBound);
+        document.addEventListener('keydown', this.onKeyDownBound);
+        document.addEventListener('keyup', this.onKeyUpBound);
     }
 
     onMouseDown(event){
+        event.preventDefault();
         let self = this;
         if(self.player.controls.isLocked && this.player.raycasterContainer.selectedCoords){
             this.world.removeBlock(
@@ -36,8 +44,8 @@ export default class InputManager{
 
     updatePlayerInput(){
         // Movement keys
-        if (this.keys['KeyW']) this.player.input.z = -this.player.maxSpeed;
-        else if (this.keys['KeyS']) this.player.input.z = this.player.maxSpeed;
+        if (this.keys['KeyW']) this.player.input.z = this.player.maxSpeed;
+        else if (this.keys['KeyS']) this.player.input.z = -this.player.maxSpeed;
         else this.player.input.z = this.player.minSpeed;
 
         if (this.keys['KeyA']) this.player.input.x = -this.player.maxSpeed;
@@ -71,8 +79,10 @@ export default class InputManager{
     }
 
     cleanup() {
-        document.removeEventListener('mousedown', this.onMouseDown.bind(this));
-        document.removeEventListener('keydown', this.onKeyDown.bind(this));
-        document.removeEventListener('keyup', this.onKeyUp.bind(this));
+        this.player.domElement.removeEventListener('mousedown', this.onMouseDownBound);
+        this.player.domElement.removeEventListener('pointerdown', this.onPointerDownBound);
+        this.player.domElement.removeEventListener('contextmenu', this.onContextMenuBound);
+        document.removeEventListener('keydown', this.onKeyDownBound);
+        document.removeEventListener('keyup', this.onKeyUpBound);
     }
 }

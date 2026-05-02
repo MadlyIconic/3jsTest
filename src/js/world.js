@@ -311,7 +311,7 @@ export class World extends THREE.Group {
     worldToChunkCoords(x,y,z){
         const newX = Math.floor(x / this.chunkSize.width);
         const newZ = Math.floor(z / this.chunkSize.width);
-        console.log('World to chunk coordsz:', Math.floor(z),this.chunkSize.width, newZ);
+        //console.log('World to chunk coordsz:', Math.floor(z),this.chunkSize.width, newZ);
         const chunkCoords = {
             x: newX, 
             z: newZ

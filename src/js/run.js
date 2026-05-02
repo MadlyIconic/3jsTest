@@ -38,7 +38,7 @@ export default class Run{
         //let worldChunk = new WorldChunk(worldSize, this);
         let raycasterContainer = new RayCasterContainer(playerCameraWrapper, world);
         world.generate();
-        const player = new Player(world, this.sceneRenderer.renderer.domElement, playerCameraWrapper, this.options.playerConfig, raycasterContainer);
+        const player = new Player(world, document.getElementById('gameContainer'), playerCameraWrapper, this.options.playerConfig, raycasterContainer);
         let inputmanager = new InputManager(player, world);
 
         setupUI(this.gui, world, orbitCameraWrapper, player, world.directionalLightingContainer);

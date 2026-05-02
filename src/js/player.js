@@ -16,6 +16,7 @@ export class Player {
         
         this.input = new THREE.Vector3();
         this.velocity = new THREE.Vector3();
+        this.domElement = domElement;
         this.cameraWrapper = cameraWrapper;
         this.cameraWrapper.cameraHelper.visible = false;
         this.controls = new PointerLockControls(this.cameraWrapper.camera, domElement);
