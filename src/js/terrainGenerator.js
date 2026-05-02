@@ -2,12 +2,32 @@ import * as THREE from 'three'
 import {SimplexNoise} from 'three/examples/jsm/math/SimplexNoise.js'
 import { blocks } from './blocks';
 
+/**
+ * Handles procedural terrain generation using Simplex noise
+ */
 export class TerrainGenerator {
+    /**
+     * @param {Object} params - Terrain generation parameters
+     * @param {Object} params.terrain - Terrain specific params
+     * @param {number} params.terrain.scale - Noise scale
+     * @param {number} params.terrain.offset - Height offset
+     * @param {number} params.terrain.magnitude - Height magnitude
+     * @param {Object} size - Chunk size dimensions
+     * @param {number} size.width - Chunk width
+     * @param {number} size.height - Chunk height
+     */
     constructor(params, size) {
         this.params = params;
         this.size = size;
     }
 
+    /**
+     * Generates terrain for a chunk
+     * @param {Object} rng - Random number generator
+     * @param {Array[][][]} data - 3D block data array to fill
+     * @param {number} chunkX - Chunk X coordinate
+     * @param {number} chunkZ - Chunk Z coordinate
+     */
     generate(rng, data, chunkX, chunkZ) {
         const simplex = new SimplexNoise(rng);
         for (let x = 0; x < this.size.width; x++) {
