@@ -29,8 +29,14 @@ describe('TerrainGenerator', () => {
     const generator = new TerrainGenerator(params, size);
     const rng = new RNG(12345);
     const data = [
-      [[{ id: 0 }], [{ id: 0 }]],
-      [[{ id: 0 }], [{ id: 0 }]]
+      [
+        [{ id: 0 }, { id: 0 }],
+        [{ id: 0 }, { id: 0 }]
+      ],
+      [
+        [{ id: 0 }, { id: 0 }],
+        [{ id: 0 }, { id: 0 }]
+      ]
     ];
 
     generator.generate(rng, data, 0, 0);
